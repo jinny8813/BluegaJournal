@@ -26,8 +26,8 @@ jobs:
       - name: Build and push Docker images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_FRONTEND: digital-planner-frontend
-          ECR_REPOSITORY_BACKEND: digital-planner-backend
+          ECR_REPOSITORY_FRONTEND: bluega-journal-frontend
+          ECR_REPOSITORY_BACKEND: bluega-journal-backend
         run: |
           # Build frontend
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$GITHUB_SHA -f frontend/Dockerfile.prod frontend
@@ -39,5 +39,5 @@ jobs:
 
       - name: Deploy to ECS
         run: |
-          aws ecs update-service --cluster digital-planner --service frontend --force-new-deployment
-          aws ecs update-service --cluster digital-planner --service backend --force-new-deployment
+          aws ecs update-service --cluster bluega-journal --service frontend --force-new-deployment
+          aws ecs update-service --cluster bluega-journal --service backend --force-new-deployment

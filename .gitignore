@@ -43,3 +43,9 @@ Thumbs.db
 
 # Docker
 .docker/
+
+# 虛擬環境
+venv/
+.env
+.venv
+ENV/

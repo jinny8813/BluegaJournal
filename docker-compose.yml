@@ -21,12 +21,13 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend:/app
+      - backend_venv:/opt/venv # 添加虛擬環境卷
     ports:
       - "8000:8000"
     environment:
       - DEBUG=1
       - DJANGO_SECRET_KEY=your-secret-key-here
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/digital_planner
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/bluega_journal
     depends_on:
       - db
 
@@ -35,11 +36,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=digital_planner
+      - POSTGRES_DB=bluega_journal
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
 
 volumes:
+  backend_venv: # 添加虛擬環境卷
   postgres_data:
