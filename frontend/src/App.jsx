@@ -1,10 +1,9 @@
-// App.jsx
-import React from "react";
+import TodoList from "./components/TodoList";
 
 function App() {
   return (
-    <div>
-      <p>Hello, React!</p>
+    <div className="min-h-screen bg-gray-100">
+      <TodoList />
     </div>
   );
 }

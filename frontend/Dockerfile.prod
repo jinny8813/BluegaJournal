@@ -1,17 +1,15 @@
-# 生產環境
 FROM node:18-slim as builder
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
 RUN npm run build
 
-# 使用 nginx 來服務靜態文件
 FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
