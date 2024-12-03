@@ -43,21 +43,21 @@ jobs:
             # 確保環境變量文件存在
             if [ ! -f ".env.prod" ]; then
               echo "Creating .env.prod file..."
-              cat > .env.prod << 'EOL'
-              DEBUG=False
-              DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
-              ALLOWED_HOSTS=${{ secrets.EC2_HOST }},localhost,127.0.0.1
-              POSTGRES_DB=bluegajournal
-              POSTGRES_USER=postgres
-              POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
-              POSTGRES_HOST=db
-              POSTGRES_PORT=5432
-              DB_NAME=bluegajournal
-              DB_USER=postgres
-              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-              DB_HOST=db
-              DB_PORT=5432
-              EOL
+              cat > .env.prod <<EOL
+DEBUG=False
+DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+ALLOWED_HOSTS=${{ secrets.EC2_HOST }},localhost,127.0.0.1
+POSTGRES_DB=bluegajournal
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+DB_NAME=bluegajournal
+DB_USER=postgres
+DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+DB_HOST=db
+DB_PORT=5432
+EOL
             fi
 
             # 重新部署
