@@ -40,6 +40,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - app-network
     restart: always
 
   frontend:
@@ -48,6 +50,8 @@ services:
       dockerfile: Dockerfile.prod
     volumes:
       - frontend_build:/app/dist
+    networks:
+      - app-network
     restart: always
 
   nginx:
@@ -62,7 +66,13 @@ services:
     depends_on:
       - backend
       - frontend
+    networks:
+      - app-network
     restart: always
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   postgres_data:

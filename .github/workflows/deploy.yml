@@ -40,8 +40,8 @@ jobs:
             git fetch origin
             git reset --hard origin/master
 
-            # 重新部署
-            docker-compose -f docker-compose.prod.yml up -d --build
+            # 重建並啟動服務
+            docker-compose -f docker-compose.prod.yml up -d --build --force-recreate
 
             # 等待數據庫就緒
             sleep 30
