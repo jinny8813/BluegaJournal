@@ -46,6 +46,12 @@ jobs:
             # 等待數據庫就緒
             sleep 30
 
-            # 運行遷移和收集靜態文件
-            docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
+            # 執行數據庫遷移（帶重試機制）
+            for i in {1..5}; do
+              docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate && break
+              echo "Migration attempt $i failed, retrying in 10 seconds..."
+              sleep 10
+            done
+
+            # 收集靜態文件
             docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
