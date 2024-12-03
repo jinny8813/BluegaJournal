@@ -1,4 +1,9 @@
-from django.http import JsonResponse
+from rest_framework import viewsets
+from .models import Todo
+from .serializers import TodoSerializer
+from rest_framework.permissions import AllowAny
 
-def health_check(request):
-    return JsonResponse({'status': 'ok'}, status=200)
+class TodoViewSet(viewsets.ModelViewSet):
+    queryset = Todo.objects.all()
+    serializer_class = TodoSerializer
+    permission_classes = [AllowAny]

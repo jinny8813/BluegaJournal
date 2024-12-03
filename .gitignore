@@ -24,6 +24,12 @@ var/
 .tox/
 nosetests.xml
 coverage.xml
+coverage/
+.vitest/
+staticfiles/
+dist/
+*.pyc
+__pycache__/
 
 # Python virtual environment
 venv/
