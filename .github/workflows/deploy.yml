@@ -38,7 +38,7 @@ jobs:
 
             # 更新代碼
             git fetch origin
-            git reset --hard origin/main
+            git reset --hard origin/master
 
             # 確保環境變量文件存在
             if [ ! -f ".env.prod" ]; then
