@@ -98,6 +98,9 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
         'HOST': os.getenv('DB_HOST', 'db'),
         'PORT': os.getenv('DB_PORT', '5432'),
+        'TEST': {
+            'NAME': 'test_bluegajournal',  # Django 測試期間使用的資料庫名稱
+        },
     }
 }
 
