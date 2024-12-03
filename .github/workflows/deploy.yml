@@ -65,3 +65,4 @@ EOL
             # 運行遷移和收集靜態文件
             docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
             docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
+
