@@ -32,14 +32,10 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 清理舊的部署
             cd ~/BluegaJournal || exit
             docker-compose -f docker-compose.prod.yml down || true
-
-            # 更新代碼
             git fetch origin
             git reset --hard origin/master
-
             cat > .env.prod << 'EOL'
 DEBUG=False
 DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
@@ -55,14 +51,7 @@ DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 DB_HOST=db
 DB_PORT=5432
 EOL
-
-            # 重新部署
             docker-compose -f docker-compose.prod.yml up -d --build
-
-            # 等待數據庫就緒
             sleep 30
-
-            # 運行遷移和收集靜態文件
             docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
             docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
-
