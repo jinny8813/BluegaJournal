@@ -45,11 +45,11 @@ jobs:
         working-directory: frontend
         run: |
           npm ci
-          npm install -g eslint
+          npm install -g eslint @eslint/js eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh eslint-plugin-testing-library
 
       - name: Run ESLint
         working-directory: frontend
-        run: eslint . --ext .js,.jsx
+        run: npx eslint "src/**/*.{js,jsx}"
 
   build:
     runs-on: ubuntu-latest
