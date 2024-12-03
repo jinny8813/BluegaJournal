@@ -26,34 +26,46 @@ jobs:
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to EC2
-        run: |
-          ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} '
-            # 更新系統
-            sudo apt-get update
-            sudo apt-get upgrade -y
-            
-            # 安裝 Docker 和 Docker Compose
-            if ! command -v docker &> /dev/null; then
-              curl -fsSL https://get.docker.com -o get-docker.sh
-              sudo sh get-docker.sh
-              sudo usermod -aG docker $USER
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 清理舊的部署
+            cd ~/BluegaJournal || exit
+            docker-compose -f docker-compose.prod.yml down || true
+
+            # 更新代碼
+            git fetch origin
+            git reset --hard origin/main
+
+            # 確保環境變量文件存在
+            if [ ! -f ".env.prod" ]; then
+              echo "Creating .env.prod file..."
+              cat > .env.prod << EOL
+              DEBUG=False
+              DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+              ALLOWED_HOSTS=${{ secrets.EC2_HOST }},localhost,127.0.0.1
+              # POSTGRES_DB=${{ secrets.DB_NAME }}
+              # POSTGRES_USER=${{ secrets.DB_USER }}
+              # POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
+              # POSTGRES_HOST=db
+              # POSTGRES_PORT=5432
+              # DB_NAME=${{ secrets.DB_NAME }}
+              # DB_USER=${{ secrets.DB_USER }}
+              # DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+              # DB_HOST=db
+              # DB_PORT=5432
+              EOL
             fi
-            
-            if ! command -v docker-compose &> /dev/null; then
-              sudo apt-get install -y docker-compose
-            fi
-            
-            # 克隆或更新代碼
-            if [ ! -d "BluegaJournal" ]; then
-              git clone https://github.com/jinny8813/BluegaJournal.git
-            else
-              cd BluegaJournal
-              git pull
-            fi
-            
-            cd BluegaJournal
-            
-            # 構建和運行 Docker 容器
-            docker-compose -f docker-compose.prod.yml down
+
+            # 重新部署
             docker-compose -f docker-compose.prod.yml up -d --build
-          '
+
+            # 等待數據庫就緒
+            sleep 30
+
+            # 運行遷移和收集靜態文件
+            docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
+            docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
