@@ -28,7 +28,7 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/mediafiles
     expose:
-      - 8000
+      - "8000"
     environment:
       - DEBUG=False
       - ALLOWED_HOSTS=http://3.24.138.130/,https://3.24.138.130/,localhost,127.0.0.1,ec2-3-24-138-130.ap-southeast-2.compute.amazonaws.com
