@@ -7,3 +7,4 @@ drf-yasg==1.21.7
 pytest>=7.4.3
 pytest-django>=4.7.0
 flake8>=6.1.0
+gunicorn==21.2.0
