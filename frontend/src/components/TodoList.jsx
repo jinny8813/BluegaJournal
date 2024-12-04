@@ -7,22 +7,22 @@ function TodoList() {
   const [loading, setLoading] = useState(true);
   const [newTodoTitle, setNewTodoTitle] = useState("");
 
-  // 獲取所有 todos
   const fetchTodos = async () => {
     try {
       setLoading(true);
       const data = await getTodos();
-      setTodos(data);
+      // 確保返回的是數組
+      setTodos(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err) {
       setError("Failed to fetch todos");
       console.error("TodoList error:", err);
+      setTodos([]); // 錯誤時設置空數組
     } finally {
       setLoading(false);
     }
   };
 
-  // 初始加載
   useEffect(() => {
     fetchTodos();
   }, []);
@@ -75,7 +75,6 @@ function TodoList() {
 
   return (
     <div className="todo-list">
-      {/* 添加新 todo 的表單 */}
       <form onSubmit={handleAddTodo} className="add-todo-form">
         <input
           type="text"
@@ -89,8 +88,7 @@ function TodoList() {
         </button>
       </form>
 
-      {/* Todo 列表 */}
-      {todos.length === 0 ? (
+      {!todos || todos.length === 0 ? (
         <p>No todos found</p>
       ) : (
         <ul className="todos">
@@ -98,7 +96,7 @@ function TodoList() {
             <li key={todo.id} className="todo-item">
               <input
                 type="checkbox"
-                checked={todo.completed}
+                checked={Boolean(todo.completed)}
                 onChange={() => handleToggle(todo)}
               />
               <span className={todo.completed ? "completed" : ""}>

@@ -1,35 +1,25 @@
 import axios from "axios";
 
-// 根據環境設置 baseURL
-const getBaseUrl = () => {
-  // 如果是生產環境且在 EC2 上
-  if (window.location.hostname === '3.24.138.130') {
-    return 'http://3.24.138.130/api';
-  }
-  // 本地開發環境
-  return '/api';
-};
+// 直接寫死 API 地址
+const API_BASE_URL = "http://3.24.138.130/api";
 
 // 創建 axios 實例
 const api = axios.create({
-  baseURL: getBaseUrl(),
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
-  // 禁用憑證
-  withCredentials: false
+  // 關閉憑證
+  withCredentials: false,
 });
 
 // 請求攔截器
 api.interceptors.request.use(
   (config) => {
-    // 打印請求信息
     console.log("API Request:", {
       method: config.method?.toUpperCase(),
-      baseURL: config.baseURL,
-      url: config.url,
-      fullUrl: `${config.baseURL}${config.url}`,
+      url: `${API_BASE_URL}${config.url}`,
       data: config.data,
     });
     return config;

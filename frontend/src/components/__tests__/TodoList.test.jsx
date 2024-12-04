@@ -19,11 +19,8 @@ describe("TodoList", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // 修正 mock 返回值
+    // 確保 getTodos 返回正確的數據結構
     api.getTodos.mockResolvedValue(mockTodos);
-    api.createTodo.mockImplementation((todo) =>
-      Promise.resolve({ ...todo, id: Math.random() })
-    );
   });
 
   it("renders loading state initially", () => {
@@ -36,9 +33,10 @@ describe("TodoList", () => {
 
     await waitFor(() => {
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
-      expect(screen.getByText("Test Todo 1")).toBeInTheDocument();
-      expect(screen.getByText("Test Todo 2")).toBeInTheDocument();
     });
+
+    expect(screen.getByText("Test Todo 1")).toBeInTheDocument();
+    expect(screen.getByText("Test Todo 2")).toBeInTheDocument();
   });
 
   it("adds new todo successfully", async () => {
@@ -46,7 +44,11 @@ describe("TodoList", () => {
     api.createTodo.mockResolvedValueOnce(newTodo);
 
     render(<TodoList />);
-    await waitFor(() => screen.getByPlaceholderText("Add new todo"));
+
+    // 等待加載完成
+    await waitFor(() => {
+      expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+    });
 
     const input = screen.getByPlaceholderText("Add new todo");
     const button = screen.getByText("Add Todo");
@@ -66,28 +68,48 @@ describe("TodoList", () => {
   it("toggles todo completion", async () => {
     render(<TodoList />);
 
+    // 等待初始數據加載
     await waitFor(() => {
-      const checkbox = screen.getAllByRole("checkbox")[0];
-      fireEvent.click(checkbox);
+      expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     });
 
-    expect(api.updateTodo).toHaveBeenCalledWith(1, {
+    const checkbox = screen.getAllByRole("checkbox")[0];
+
+    // 模擬更新成功
+    api.updateTodo.mockResolvedValueOnce({
       id: 1,
       title: "Test Todo 1",
       completed: true,
+    });
+
+    fireEvent.click(checkbox);
+
+    await waitFor(() => {
+      expect(api.updateTodo).toHaveBeenCalledWith(1, {
+        id: 1,
+        title: "Test Todo 1",
+        completed: true,
+      });
     });
   });
 
   it("deletes todo", async () => {
     render(<TodoList />);
 
+    // 等待初始數據加載
     await waitFor(() => {
-      const deleteButton = screen.getAllByText("Delete")[0];
-      fireEvent.click(deleteButton);
+      expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     });
 
-    expect(api.deleteTodo).toHaveBeenCalledWith(1);
+    const deleteButton = screen.getAllByText("Delete")[0];
+
+    // 模擬刪除成功
+    api.deleteTodo.mockResolvedValueOnce({});
+
+    fireEvent.click(deleteButton);
+
     await waitFor(() => {
+      expect(api.deleteTodo).toHaveBeenCalledWith(1);
       expect(screen.queryByText("Test Todo 1")).not.toBeInTheDocument();
     });
   });
