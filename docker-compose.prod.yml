@@ -60,7 +60,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
     volumes:
-      - frontend_build:/app/dist
+      - frontend_build:/usr/share/nginx/html
     networks:
       - app-network
     restart: always
