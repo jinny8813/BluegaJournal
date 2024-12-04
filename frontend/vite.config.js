@@ -14,6 +14,12 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    proxy: {
+      "/api": {
+        target: "http://backend:8000",
+        changeOrigin: true,
+      },
+    },
   },
   optimizeDeps: {
     exclude: ["@rollup/rollup-linux-x64-gnu"],
