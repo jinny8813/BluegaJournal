@@ -25,7 +25,7 @@ RUN echo "Contents of /app/dist:" && ls -la dist
 FROM nginx:alpine
 
 # 複製構建結果
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # 顯示複製後的文件以進行調試
 RUN echo "Contents of /usr/share/nginx/html:" && ls -la /usr/share/nginx/html
