@@ -28,8 +28,6 @@ services:
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/mediafiles
-    expose:
-      - 8000
     environment:
       - DEBUG=0
       - DJANGO_SETTINGS_MODULE=config.settings
@@ -39,9 +37,10 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-postgres}
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
-      - ALLOWED_HOSTS=3.24.138.130,localhost,127.0.0.1
     env_file:
       - .env.prod
+    expose: # 只在內部網絡暴露端口
+      - "8000"
     depends_on:
       db:
         condition: service_healthy
@@ -68,6 +67,7 @@ services:
       disable: true # 禁用健康檢查
     depends_on:
       - backend
+    command: ["echo", "Frontend build completed"] # 添加簡單的命令
 
   nginx:
     build:
@@ -80,17 +80,15 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
-      - frontend
+      backend:
+        condition: service_healthy # 等待後端健康檢查通過
+      frontend:
+        condition: service_completed_successfully # 等待前端構建完成
     networks:
       - app-network
     restart: always
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "wget --no-verbose --tries=1 --spider http://localhost/ || exit 1",
-        ]
+      test: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]  # 使用 curl 替代 wget
       interval: 30s
       timeout: 10s
       retries: 3
