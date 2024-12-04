@@ -15,11 +15,12 @@ const api = axios.create({
 // 添加請求攔截器
 api.interceptors.request.use(
   (config) => {
+    // 移除任何對 localhost 的引用
+    const fullUrl = `${window.location.origin}${config.url}`;
     console.log("Request:", {
       method: config.method?.toUpperCase(),
       url: config.url,
-      baseURL: config.baseURL,
-      fullUrl: `${config.baseURL}${config.url}`,
+      fullUrl,
     });
     return config;
   },
