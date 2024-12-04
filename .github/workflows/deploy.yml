@@ -51,11 +51,13 @@ jobs:
             git fetch origin
             git reset --hard origin/master
 
-            # 確保環境文件存在
-            if [ ! -f .env.prod ]; then
-              echo "Error: .env.prod file not found!"
-              exit 1
-            fi
+            # 驗證必要文件
+            for file in .env.prod docker-compose.prod.yml; do
+              if [ ! -f "$file" ]; then
+                echo "Error: $file not found!"
+                exit 1
+              fi
+            done
 
             # 重建並啟動服務
             echo "Building and starting services..."
@@ -82,16 +84,22 @@ jobs:
               sleep 10
             done
 
-            # 收集靜態文件
-            echo "Collecting static files..."
-            docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
-
             # 檢查服務健康狀況
             echo "Checking service health..."
-            if ! curl -s http://localhost/api/health/ > /dev/null; then
-              echo "Service health check failed!"
-              docker-compose -f docker-compose.prod.yml logs
-              exit 1
-            fi
+            for i in {1..12}; do
+              if curl -s http://localhost/health_check > /dev/null; then
+                echo "Service is healthy!"
+                break
+              fi
+              
+              if [ $i -eq 12 ]; then
+                echo "Service health check failed after 2 minutes"
+                docker-compose -f docker-compose.prod.yml logs
+                exit 1
+              fi
+              
+              echo "Health check attempt $i failed, retrying in 10 seconds..."
+              sleep 10
+            done
 
             echo "Deployment completed successfully!"
