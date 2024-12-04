@@ -60,7 +60,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
     volumes:
-      - frontend_build:/usr/share/nginx/html
+      - build_volume:/app/dist
     networks:
       - app-network
     restart: always
@@ -74,7 +74,7 @@ services:
     volumes:
       - static_volume:/usr/share/nginx/static:ro
       - media_volume:/usr/share/nginx/media:ro
-      - frontend_build:/usr/share/nginx/html:ro
+      - build_volume:/usr/share/nginx/html:ro # 直接使用構建結果
     ports:
       - "80:80"
     depends_on:
@@ -102,4 +102,4 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
-  frontend_build:
+  build_volume:  # 用於存儲構建結果
