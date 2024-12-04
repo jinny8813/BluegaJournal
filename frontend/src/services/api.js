@@ -1,8 +1,7 @@
 import axios from "axios";
 
 // 直接使用固定的 API URL
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://www.bluegajournal.com/api";
+const API_URL = "http://3.24.138.130/api" || "http://www.bluegajournal.com/api";
 
 // 創建 axios 實例
 const api = axios.create({

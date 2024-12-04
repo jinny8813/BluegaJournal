@@ -9,13 +9,11 @@ COPY package*.json ./
 # 安裝依賴
 RUN npm ci
 
-# 複製源代碼和環境文件
+# 複製源代碼
 COPY . .
-COPY .env.prod .env
-
 
 # 添加環境變量
-ENV VITE_API_URL=http://3.24.138.130
+ENV VITE_API_URL=http://3.24.138.130/api
 
 # 複製源代碼
 COPY . .
