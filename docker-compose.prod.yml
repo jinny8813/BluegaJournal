@@ -86,7 +86,7 @@ services:
       - app-network
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health-check"]
+      test: ["CMD", "wget", "-qO-", "http://localhost/health_check"]
       interval: 10s
       timeout: 5s
       retries: 3
