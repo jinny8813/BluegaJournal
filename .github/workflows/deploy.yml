@@ -67,10 +67,6 @@ jobs:
             echo "Waiting for database to be ready..."
             sleep 30
 
-            # 複製前端文件到 nginx 容器
-            echo "Copying frontend files to nginx container..."
-            docker cp bluegajournal_frontend_1:/usr/share/nginx/html/. bluegajournal_nginx_1:/usr/share/nginx/html/
-
             # 執行數據庫遷移（帶重試機制）
             echo "Running database migrations..."
             for i in {1..5}; do
@@ -107,9 +103,11 @@ jobs:
             done
 
             # 驗證前端文件
-            echo "Verifying frontend files..."
-            if ! docker exec bluegajournal_nginx_1 test -f /usr/share/nginx/html/index.html; then
-              echo "Frontend files not found in nginx container!"
+            echo "Verifying frontend deployment..."
+            if ! curl -s http://localhost/ | grep -q "<title>"; then
+              echo "Frontend verification failed!"
+              docker-compose -f docker-compose.prod.yml logs frontend
+              docker-compose -f docker-compose.prod.yml logs nginx
               exit 1
             fi
 
