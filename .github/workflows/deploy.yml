@@ -32,26 +32,66 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e  # 任何命令失敗就停止執行
+            echo "Starting deployment..."
+
+            # 進入項目目錄
+            cd ~/BluegaJournal || exit 1
+
             # 清理舊的部署
-            cd ~/BluegaJournal || exit
+            echo "Stopping existing services..."
             docker-compose -f docker-compose.prod.yml down || true
 
+            # 清理未使用的鏡像和卷
+            echo "Cleaning up Docker resources..."
+            docker system prune -f
+
             # 更新代碼
+            echo "Updating code from repository..."
             git fetch origin
             git reset --hard origin/master
 
+            # 確保環境文件存在
+            if [ ! -f .env.prod ]; then
+              echo "Error: .env.prod file not found!"
+              exit 1
+            fi
+
             # 重建並啟動服務
+            echo "Building and starting services..."
             docker-compose -f docker-compose.prod.yml up -d --build --force-recreate
 
             # 等待數據庫就緒
+            echo "Waiting for database to be ready..."
             sleep 30
 
             # 執行數據庫遷移（帶重試機制）
+            echo "Running database migrations..."
             for i in {1..5}; do
-              docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate && break
+              if docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate; then
+                echo "Migrations completed successfully"
+                break
+              fi
+              
+              if [ $i -eq 5 ]; then
+                echo "Migration failed after 5 attempts"
+                exit 1
+              fi
+              
               echo "Migration attempt $i failed, retrying in 10 seconds..."
               sleep 10
             done
 
             # 收集靜態文件
+            echo "Collecting static files..."
             docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
+
+            # 檢查服務健康狀況
+            echo "Checking service health..."
+            if ! curl -s http://localhost/api/health/ > /dev/null; then
+              echo "Service health check failed!"
+              docker-compose -f docker-compose.prod.yml logs
+              exit 1
+            fi
+
+            echo "Deployment completed successfully!"
