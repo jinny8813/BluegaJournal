@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://3.24.138.130",
+        target: "http://3.24.138.130/api",
         changeOrigin: true,
       },
     },
@@ -17,9 +17,6 @@ export default defineConfig({
         manualChunks: undefined,
       },
     },
-  },
-  define: {
-    "process.env.VITE_API_URL": JSON.stringify("http://3.24.138.130"),
   },
   optimizeDeps: {
     exclude: ["@rollup/rollup-linux-x64-gnu"],
