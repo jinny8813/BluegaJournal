@@ -1,15 +1,24 @@
 import axios from "axios";
 
+const baseURL =
+  process.env.NODE_ENV === "production"
+    ? "http://3.24.138.130/api" // 生產環境
+    : "/api";
+
 // 創建 axios 實例
 const api = axios.create({
-  baseURL: "/api",
-  timeout: 10000,  // 增加超時時間到 10 秒
+  baseURL,
+  timeout: 10000, // 增加超時時間到 10 秒
   headers: {
     "Content-Type": "application/json",
   },
   // 添加重試配置
   retry: 3,
   retryDelay: 1000,
+  // 添加 withCredentials
+  withCredentials: false,
+  xsrfCookieName: "csrftoken",
+  xsrfHeaderName: "X-CSRFToken",
 });
 
 // 添加請求攔截器
@@ -18,7 +27,7 @@ api.interceptors.request.use(
     console.log("Starting Request:", {
       method: config.method?.toUpperCase(),
       url: config.url,
-      data: config.data
+      data: config.data,
     });
     return config;
   },
@@ -33,13 +42,13 @@ api.interceptors.response.use(
   (response) => {
     console.log("Response Received:", {
       status: response.status,
-      data: response.data
+      data: response.data,
     });
     return response;
   },
   async (error) => {
     const { config } = error;
-    
+
     // 如果沒有重試配置，直接拋出錯誤
     if (!config || !config.retry) {
       return Promise.reject(error);
@@ -53,7 +62,7 @@ api.interceptors.response.use(
       console.error("Max retries reached:", {
         url: config.url,
         method: config.method,
-        error: error.message
+        error: error.message,
       });
       return Promise.reject(error);
     }
@@ -62,9 +71,12 @@ api.interceptors.response.use(
     config.__retryCount += 1;
 
     // 等待延遲
-    const backoff = new Promise(resolve => {
+    const backoff = new Promise((resolve) => {
       setTimeout(() => {
-        console.log(`Retrying request (${config.__retryCount}/${config.retry}):`, config.url);
+        console.log(
+          `Retrying request (${config.__retryCount}/${config.retry}):`,
+          config.url
+        );
         resolve();
       }, config.retryDelay || 1000);
     });
@@ -85,7 +97,7 @@ export const getTodos = async () => {
     console.error("Failed to fetch todos:", {
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data
+      data: error.response?.data,
     });
     // 返回空數組而不是拋出錯誤
     return [];
@@ -101,7 +113,7 @@ export const createTodo = async (todo) => {
     console.error("Failed to create todo:", {
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data
+      data: error.response?.data,
     });
     throw error;
   }
@@ -117,7 +129,7 @@ export const updateTodo = async (id, todo) => {
       id,
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data
+      data: error.response?.data,
     });
     throw error;
   }
@@ -133,7 +145,7 @@ export const deleteTodo = async (id) => {
       id,
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data
+      data: error.response?.data,
     });
     throw error;
   }
