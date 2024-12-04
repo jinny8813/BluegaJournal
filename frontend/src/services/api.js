@@ -1,8 +1,10 @@
 import axios from "axios";
 
-// 直接使用相對路徑，不需要環境變量
+// 使用環境變量或默認值
+const API_URL = import.meta.env.VITE_API_URL || "http://3.24.138.130";
+
 const api = axios.create({
-  baseURL: "/api", // 始終使用相對路徑
+  baseURL: `${API_URL}/api`,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -16,12 +18,29 @@ api.interceptors.request.use(
     console.log("Request:", {
       method: config.method?.toUpperCase(),
       url: config.url,
-      fullUrl: `${window.location.origin}${config.baseURL}${config.url}`,
+      baseURL: config.baseURL,
+      fullUrl: `${config.baseURL}${config.url}`,
     });
     return config;
   },
   (error) => {
     console.error("Request Error:", error);
+    return Promise.reject(error);
+  }
+);
+
+// 添加響應攔截器
+api.interceptors.response.use(
+  (response) => {
+    console.log("Response:", response.data);
+    return response;
+  },
+  (error) => {
+    console.error("Response Error:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
     return Promise.reject(error);
   }
 );
@@ -33,11 +52,7 @@ export const getTodos = async () => {
     const response = await api.get("/todos/");
     return response.data;
   } catch (error) {
-    console.error("Failed to fetch todos:", {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data,
-    });
+    console.error("Error fetching todos:", error);
     // 返回空數組而不是拋出錯誤
     return [];
   }
