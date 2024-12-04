@@ -1,13 +1,24 @@
 import axios from "axios";
 
+// 根據環境設置 baseURL
+const getBaseUrl = () => {
+  // 如果是生產環境且在 EC2 上
+  if (window.location.hostname === '3.24.138.130') {
+    return 'http://3.24.138.130/api';
+  }
+  // 本地開發環境
+  return '/api';
+};
+
 // 創建 axios 實例
 const api = axios.create({
-  // 根據當前頁面 URL 設置 baseURL
-  baseURL: `${window.location.origin}/api`,
+  baseURL: getBaseUrl(),
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
+  // 禁用憑證
+  withCredentials: false
 });
 
 // 請求攔截器
@@ -16,7 +27,9 @@ api.interceptors.request.use(
     // 打印請求信息
     console.log("API Request:", {
       method: config.method?.toUpperCase(),
-      url: `${config.baseURL}${config.url}`,
+      baseURL: config.baseURL,
+      url: config.url,
+      fullUrl: `${config.baseURL}${config.url}`,
       data: config.data,
     });
     return config;
@@ -30,7 +43,6 @@ api.interceptors.request.use(
 // 響應攔截器
 api.interceptors.response.use(
   (response) => {
-    // 打印響應信息
     console.log("API Response:", {
       status: response.status,
       data: response.data,
@@ -38,22 +50,23 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // 詳細的錯誤處理
     if (error.response) {
-      // 服務器返回錯誤
       console.error("Server Error:", {
         status: error.response.status,
         data: error.response.data,
+        url: error.config.url,
       });
     } else if (error.request) {
-      // 請求發送但沒有收到響應
       console.error("No Response:", {
         request: error.request,
         message: error.message,
+        url: error.config?.url,
       });
     } else {
-      // 請求設置有誤
-      console.error("Request Config Error:", error.message);
+      console.error("Request Config Error:", {
+        message: error.message,
+        url: error.config?.url,
+      });
     }
     return Promise.reject(error);
   }
@@ -62,13 +75,15 @@ api.interceptors.response.use(
 // API 函數
 export const getTodos = async () => {
   try {
-    console.log("Fetching todos from:", `${window.location.origin}/api/todos/`);
+    console.log("Fetching todos from:", `${getBaseUrl()}/todos/`);
     const response = await api.get("/todos/");
     console.log("Todos received:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Failed to fetch todos:", error);
-    // 返回空數組而不是拋出錯誤
+    console.error("Failed to fetch todos:", {
+      message: error.message,
+      config: error.config,
+    });
     return [];
   }
 };
