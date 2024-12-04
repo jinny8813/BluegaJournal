@@ -1,35 +1,27 @@
 # 構建階段
-# FROM node:18-alpine as build
+FROM node:18-alpine as build
 
-# WORKDIR /app
+WORKDIR /app
 
-# # 複製 package.json 和 package-lock.json
-# COPY package*.json ./
+# 複製 package.json 和 package-lock.json
+COPY package*.json ./
 
-# # 安裝依賴
-# RUN npm ci
+# 安裝依賴
+RUN npm ci
 
-# # 添加構建時的環境變量
-# COPY .env.prod .env
+# 複製源代碼和環境文件
+COPY . .
+COPY .env.prod .env
 
 
-# # 添加環境變量
-# ENV VITE_API_URL=http://3.24.138.130
+# 添加環境變量
+ENV VITE_API_URL=http://3.24.138.130
 
-# # 複製源代碼
-# COPY . .
+# 複製源代碼
+COPY . .
 
-# # 顯示目錄內容以進行調試
-# RUN echo "Contents of /app:" && ls -la
-
-# # 構建應用
-# RUN npm run build
-
-# # 顯示構建結果
-# RUN ls -la dist/
-
-# # 不需要第二階段，因為我們只需要構建結果
-# CMD ["echo", "Build completed"]
+# 構建應用
+RUN npm run build
 
 # # 顯示構建結果以進行調試
 # RUN echo "Contents of /app/dist:" && ls -la dist
@@ -49,38 +41,38 @@
 
 # CMD ["nginx", "-g", "daemon off;"]
 
-# 構建階段
-FROM node:18-alpine as build
+# # 構建階段
+# FROM node:18-alpine as build
 
-WORKDIR /app
+# WORKDIR /app
 
-# 複製 package.json 和 package-lock.json
-COPY package*.json ./
+# # 複製 package.json 和 package-lock.json
+# COPY package*.json ./
 
-# 安裝依賴
-RUN npm ci
+# # 安裝依賴
+# RUN npm ci
 
-# 複製源代碼和環境文件
-COPY . .
-COPY .env.prod .env
+# # 複製源代碼和環境文件
+# COPY . .
+# COPY .env.prod .env
 
-# 構建應用
-RUN npm run build
+# # 構建應用
+# RUN npm run build
 
-# 運行階段：使用 nginx 提供靜態文件
-FROM nginx:1.27-alpine as production
+# # 運行階段：使用 nginx 提供靜態文件
+# FROM nginx:1.27-alpine as production
 
-# 設置工作目錄
-WORKDIR /usr/share/nginx/html
+# # 設置工作目錄
+# WORKDIR /usr/share/nginx/html
 
-# 從構建階段拷貝構建輸出
-COPY --from=build /app/dist .
+# # 從構建階段拷貝構建輸出
+# COPY --from=build /app/dist .
 
-# 覆蓋 nginx 默認配置
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# # 覆蓋 nginx 默認配置
+# COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-# 開放端口
-EXPOSE 80
+# # 開放端口
+# EXPOSE 80
 
-# 啟動 nginx
-CMD ["nginx", "-g", "daemon off;"]
+# # 啟動 nginx
+# CMD ["nginx", "-g", "daemon off;"]
