@@ -84,19 +84,21 @@ services:
     ports:
       - "80:80"
     depends_on:
-      backend:
-        condition: service_healthy
-      frontend:
-        condition: service_completed_successfully
+      - backend
+      - frontend
     networks:
       - app-network
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/health_check"]
-      interval: 10s
-      timeout: 5s
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost/ || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 20s
 
 networks:
   app-network:

@@ -26,11 +26,17 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # 移除默認的 nginx.conf 中的 user 指令
 RUN sed -i '/user/d' /etc/nginx/nginx.conf
 
-# 使用 nginx 用戶
-USER nginx
+# 創建一個測試文件用於健康檢查
+RUN echo "healthy" > /usr/share/nginx/html/health_check.html
+
+# 使用 root 用戶運行（為了解決權限問題）
+USER root
 
 # 設置工作目錄
 WORKDIR /usr/share/nginx/html
 
 # 暴露端口
 EXPOSE 80
+
+# 啟動命令
+CMD ["nginx", "-g", "daemon off;"]
