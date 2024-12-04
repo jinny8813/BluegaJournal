@@ -1,16 +1,15 @@
 import axios from "axios";
 
-// 直接寫死 API 地址
-const API_BASE_URL = "http://3.24.138.130/api";
+// 直接使用固定的 API URL
+const API_URL = "http://3.24.138.130/api";
 
 // 創建 axios 實例
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
-  // 關閉憑證
   withCredentials: false,
 });
 
@@ -19,7 +18,7 @@ api.interceptors.request.use(
   (config) => {
     console.log("API Request:", {
       method: config.method?.toUpperCase(),
-      url: `${API_BASE_URL}${config.url}`,
+      url: `${API_URL}${config.url}`,
       data: config.data,
     });
     return config;
@@ -40,24 +39,11 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response) {
-      console.error("Server Error:", {
-        status: error.response.status,
-        data: error.response.data,
-        url: error.config.url,
-      });
-    } else if (error.request) {
-      console.error("No Response:", {
-        request: error.request,
-        message: error.message,
-        url: error.config?.url,
-      });
-    } else {
-      console.error("Request Config Error:", {
-        message: error.message,
-        url: error.config?.url,
-      });
-    }
+    console.error("API Error:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
     return Promise.reject(error);
   }
 );
@@ -65,15 +51,11 @@ api.interceptors.response.use(
 // API 函數
 export const getTodos = async () => {
   try {
-    console.log("Fetching todos from:", `${getBaseUrl()}/todos/`);
+    console.log("Fetching todos from:", `${API_URL}/todos/`);
     const response = await api.get("/todos/");
-    console.log("Todos received:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Failed to fetch todos:", {
-      message: error.message,
-      config: error.config,
-    });
+    console.error("Failed to fetch todos:", error);
     return [];
   }
 };
