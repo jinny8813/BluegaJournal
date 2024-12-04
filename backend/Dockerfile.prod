@@ -6,7 +6,7 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DEBUG=0
-ENV DJANGO_SETTINGS_MODULE=core.settings.prod
+ENV DJANGO_SETTINGS_MODULE=config.settings
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -18,7 +18,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN python manage.py collectstatic --noinput
+# 創建靜態文件目錄
+RUN mkdir -p /app/staticfiles
+
+# 設置環境變量
+ENV STATIC_ROOT=/app/staticfiles
+
+RUN python manage.py collectstatic --noinput --clear
 
 # 暴露端口
 EXPOSE 8000
