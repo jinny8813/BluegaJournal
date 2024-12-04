@@ -18,6 +18,12 @@ RUN echo "Contents of /app:" && ls -la
 # 構建應用
 RUN npm run build
 
+# 顯示構建結果
+RUN ls -la dist/
+
+# 不需要第二階段，因為我們只需要構建結果
+CMD ["echo", "Build completed"]
+
 # # 顯示構建結果以進行調試
 # RUN echo "Contents of /app/dist:" && ls -la dist
 

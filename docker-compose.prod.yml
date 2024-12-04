@@ -63,7 +63,9 @@ services:
       - build_volume:/app/dist
     networks:
       - app-network
-    restart: always
+    restart: "no" # 改變重啟策略
+    healthcheck:
+      disable: true # 禁用健康檢查
     depends_on:
       - backend
 
@@ -102,4 +104,4 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
-  build_volume:  # 用於存儲構建結果
+  build_volume: # 用於存儲構建結果
