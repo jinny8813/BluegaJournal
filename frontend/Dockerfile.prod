@@ -3,17 +3,14 @@ FROM node:18-alpine as build
 
 WORKDIR /app
 
+# 清理任何現有文件
+RUN rm -rf ./*
+
 # 複製 package.json 和 package-lock.json
 COPY package*.json ./
 
-# 安裝依賴
-RUN npm ci
-
-# 複製源代碼
-COPY . .
-
-# 添加環境變量
-ENV VITE_API_URL=/api
+# 清理 npm 緩存並安裝依賴
+RUN npm cache clean --force && npm ci
 
 # 複製源代碼
 COPY . .
