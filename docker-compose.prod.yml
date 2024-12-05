@@ -96,6 +96,22 @@ services:
       retries: 3
       start_period: 20s
 
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/logs:/var/log/letsencrypt
+    ports:
+      - "80:80" # 臨時添加，用於證書申請
+    command: certonly --standalone \
+      --preferred-challenges http \
+      --email jinny8813@gmail.com \
+      --agree-tos \
+      --no-eff-email \
+      --force-renewal \
+      -d bluegajournal.com -d www.bluegajournal.com
+
 networks:
   app-network:
     driver: bridge
