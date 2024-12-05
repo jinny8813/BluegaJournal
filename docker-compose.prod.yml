@@ -91,8 +91,6 @@ services:
         condition: service_healthy
       frontend:
         condition: service_completed_successfully
-      certbot:
-        condition: service_completed_successfully # 等待證書服務
     networks:
       - app-network
     restart: always # 改回 always，確保服務持續運行
@@ -110,8 +108,6 @@ services:
       - ./certbot/www:/var/www/certbot
       - ./certbot/logs:/var/log/letsencrypt
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    depends_on:
-      - nginx
 
 networks:
   app-network:
