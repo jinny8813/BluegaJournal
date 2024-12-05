@@ -88,7 +88,7 @@ services:
         condition: service_completed_successfully # 等待前端構建完成
     networks:
       - app-network
-    restart: always
+    restart: "no"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://127.0.0.1/health || exit 1"] # 使用 curl 替代 wget
       interval: 30s
