@@ -63,7 +63,7 @@ services:
     networks:
       - app-network
     environment:
-      - VITE_API_URL=http://3.24.138.130/api
+      - VITE_API_URL=https://www.bluegajournal.com/api
     restart: "no" # 改變重啟策略
     healthcheck:
       disable: true # 禁用健康檢查
