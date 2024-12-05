@@ -13,7 +13,7 @@ RUN npm ci
 COPY . .
 
 # 添加環境變量
-ENV VITE_API_URL=http://3.24.138.130/api
+ENV VITE_API_URL=/api
 
 # 複製源代碼
 COPY . .
