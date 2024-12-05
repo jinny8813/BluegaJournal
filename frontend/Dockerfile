@@ -27,8 +27,8 @@ RUN npm install --save-dev \
 # 複製源代碼
 COPY . .
 
-# 設置環境變量
-ENV VITE_API_URL=http://localhost:8000/api
+# # 設置環境變量
+# ENV VITE_API_URL=http://localhost:8000/api
 
 # 暴露端口
 EXPOSE 5173

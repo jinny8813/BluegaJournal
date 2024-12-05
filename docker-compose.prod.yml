@@ -48,7 +48,7 @@ services:
       - app-network
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8000/api/health/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -63,7 +63,7 @@ services:
     networks:
       - app-network
     environment:
-      - VITE_API_URL=http://3.24.138.130
+      - VITE_API_URL=http://3.24.138.130/api
     restart: "no" # 改變重啟策略
     healthcheck:
       disable: true # 禁用健康檢查
@@ -90,7 +90,7 @@ services:
       - app-network
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"] # 使用 curl 替代 wget
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1/health || exit 1"] # 使用 curl 替代 wget
       interval: 30s
       timeout: 10s
       retries: 3
