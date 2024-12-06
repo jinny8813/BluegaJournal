@@ -1,5 +1,5 @@
 # 開發環境
-FROM python:3.10-slim
+FROM python:3.10
 
 WORKDIR /app
 

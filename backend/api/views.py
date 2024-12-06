@@ -1,133 +1,44 @@
-from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from django.core.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 from .models import Todo
 from .serializers import TodoSerializer
-import logging
 
-logger = logging.getLogger(__name__)
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def todo_list(request):
+    if request.method == 'GET':
+        todos = Todo.objects.filter(user=request.user)
+        serializer = TodoSerializer(todos, many=True)
+        return Response(serializer.data)
 
-class TodoListCreateView(generics.ListCreateAPIView):
-    queryset = Todo.objects.all()
-    serializer_class = TodoSerializer
-    permission_classes = [AllowAny]
+    elif request.method == 'POST':
+        serializer = TodoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_queryset(self):
-        """獲取所有待辦事項，按創建時間倒序排序"""
-        try:
-            return Todo.objects.all().order_by('-created_at')
-        except Exception as e:
-            logger.error(f"Error in get_queryset: {str(e)}")
-            return Todo.objects.none()
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def todo_detail(request, pk):
+    try:
+        todo = Todo.objects.get(pk=pk, user=request.user)
+    except Todo.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    def list(self, request, *args, **kwargs):
-        """列出所有待辦事項"""
-        try:
-            queryset = self.get_queryset()
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.error(f"Error in list: {str(e)}")
-            return Response(
-                {"error": "Failed to fetch todos"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+    if request.method == 'GET':
+        serializer = TodoSerializer(todo)
+        return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):
-        """創建新的待辦事項"""
-        try:
-            serializer = self.get_serializer(data=request.data)
-            if serializer.is_valid():
-                todo = serializer.save()
-                return Response(
-                    serializer.data,
-                    status=status.HTTP_200_OK  # 改為 200
-                )
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        except ValidationError as e:
-            logger.error(f"Validation error in create: {str(e)}")
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        except Exception as e:
-            logger.error(f"Error in create: {str(e)}")
-            return Response(
-                {"error": "Failed to create todo"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+    elif request.method == 'PUT':
+        serializer = TodoSerializer(todo, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class TodoDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Todo.objects.all()
-    serializer_class = TodoSerializer
-    permission_classes = [AllowAny]
-
-    def retrieve(self, request, *args, **kwargs):
-        """獲取單個待辦事項"""
-        try:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Todo.DoesNotExist:
-            logger.warning(f"Todo not found with id: {kwargs.get('pk')}")
-            return Response(
-                {"error": "Todo not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        except Exception as e:
-            logger.error(f"Error in retrieve: {str(e)}")
-            return Response(
-                {"error": "Failed to fetch todo"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-    def update(self, request, *args, **kwargs):
-        """更新待辦事項"""
-        try:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance, data=request.data, partial=kwargs.get('partial', False))
-            if serializer.is_valid():
-                todo = serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        except Todo.DoesNotExist:
-            logger.warning(f"Todo not found with id: {kwargs.get('pk')}")
-            return Response(
-                {"error": "Todo not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        except Exception as e:
-            logger.error(f"Error in update: {str(e)}")
-            return Response(
-                {"error": "Failed to update todo"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-    def destroy(self, request, *args, **kwargs):
-        """刪除待辦事項"""
-        try:
-            instance = self.get_object()
-            instance.delete()
-            return Response(
-                {"message": "Todo deleted successfully"},
-                status=status.HTTP_200_OK  # 改為 200
-            )
-        except Todo.DoesNotExist:
-            logger.warning(f"Todo not found with id: {kwargs.get('pk')}")
-            return Response(
-                {"error": "Todo not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        except Exception as e:
-            logger.error(f"Error in destroy: {str(e)}")
-            return Response(
-                {"error": "Failed to delete todo"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+    elif request.method == 'DELETE':
+        todo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

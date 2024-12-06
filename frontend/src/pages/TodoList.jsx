@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTodos, createTodo, updateTodo, deleteTodo } from "../services/api";
+import todoService from "../services/todoService";
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
@@ -10,14 +10,13 @@ function TodoList() {
   const fetchTodos = async () => {
     try {
       setLoading(true);
-      const data = await getTodos();
-      // 確保返回的是數組
-      setTodos(Array.isArray(data) ? data : []);
+      const data = await todoService.getTodos();
+      setTodos(data);
       setError(null);
     } catch (err) {
       setError("Failed to fetch todos");
       console.error("TodoList error:", err);
-      setTodos([]); // 錯誤時設置空數組
+      setTodos([]);
     } finally {
       setLoading(false);
     }
@@ -33,9 +32,8 @@ function TodoList() {
     if (!newTodoTitle.trim()) return;
 
     try {
-      const newTodo = await createTodo({
+      const newTodo = await todoService.createTodo({
         title: newTodoTitle,
-        completed: false,
       });
       setTodos([...todos, newTodo]);
       setNewTodoTitle("");
@@ -48,10 +46,7 @@ function TodoList() {
   // 切換完成狀態
   const handleToggle = async (todo) => {
     try {
-      const updatedTodo = await updateTodo(todo.id, {
-        ...todo,
-        completed: !todo.completed,
-      });
+      const updatedTodo = await todoService.toggleTodo(todo);
       setTodos(todos.map((t) => (t.id === todo.id ? updatedTodo : t)));
     } catch (err) {
       setError("Failed to update todo");
@@ -62,7 +57,7 @@ function TodoList() {
   // 刪除 todo
   const handleDelete = async (id) => {
     try {
-      await deleteTodo(id);
+      await todoService.deleteTodo(id);
       setTodos(todos.filter((todo) => todo.id !== id));
     } catch (err) {
       setError("Failed to delete todo");

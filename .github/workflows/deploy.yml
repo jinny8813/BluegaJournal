@@ -45,6 +45,7 @@ jobs:
             # 清理未使用的鏡像和卷
             echo "Cleaning up Docker resources..."
             docker system prune -f
+            docker volume rm bluegajournal_build_volume || true
 
             # 更新代碼
             echo "Updating code from repository..."

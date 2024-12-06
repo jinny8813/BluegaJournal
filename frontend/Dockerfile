@@ -10,25 +10,26 @@ COPY package*.json ./
 # 安裝依賴
 RUN npm install
 
-# 特別安裝 TailwindCSS 和相關依賴
-RUN npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
+# # 特別安裝 TailwindCSS 和相關依賴
+# RUN npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
 
-# 特別安裝測試相關依賴
-RUN npm install --save-dev \
-    @testing-library/react \
-    @testing-library/jest-dom \
-    @testing-library/user-event \
-    jest \
-    jest-environment-jsdom \
-    @babel/preset-react \
-    @babel/preset-env \
-    identity-obj-proxy
+# # 特別安裝測試相關依賴
+# RUN npm install --save-dev \
+#     @testing-library/react \
+#     @testing-library/jest-dom \
+#     @testing-library/user-event \
+#     jest \
+#     jest-environment-jsdom \
+#     @babel/preset-react \
+#     @babel/preset-env \
+#     identity-obj-proxy
 
 # 複製源代碼
 COPY . .
 
 # 設置環境變量
 ENV VITE_API_URL=http://localhost:8000/api
+ENV NODE_ENV=development
 
 # 暴露端口
 EXPOSE 5173

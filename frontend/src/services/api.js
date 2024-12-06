@@ -1,8 +1,9 @@
 import axios from "axios";
 
-// 直接使用固定的 API URL
-// const API_URL = "http://3.24.138.130/api" || "http://www.bluegajournal.com/api";
-const API_URL = "/api";
+// 開發環境使用代理，生產環境使用完整 URL
+const API_URL = import.meta.env.DEV
+  ? "http://localhost:8000"
+  : "https://bluegajournal.com";
 
 // 創建 axios 實例
 const api = axios.create({
@@ -11,21 +12,28 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: false,
 });
 
-// 請求攔截器
+// 請求攔截器：添加 token
 api.interceptors.request.use(
   (config) => {
-    console.log("API Request:", {
-      method: config.method?.toUpperCase(),
-      url: `${API_URL}${config.url}`,
-      data: config.data,
-    });
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?.access) {
+      config.headers.Authorization = `Bearer ${user.access}`;
+    }
+
+    // 開發環境打印請求信息
+    if (import.meta.env.DEV) {
+      console.log("API Request:", {
+        method: config.method?.toUpperCase(),
+        url: config.url,
+        data: config.data,
+      });
+    }
+
     return config;
   },
   (error) => {
-    console.error("Request Error:", error);
     return Promise.reject(error);
   }
 );
@@ -33,62 +41,27 @@ api.interceptors.request.use(
 // 響應攔截器
 api.interceptors.response.use(
   (response) => {
-    console.log("API Response:", {
-      status: response.status,
-      data: response.data,
-    });
+    if (import.meta.env.DEV) {
+      console.log("API Response:", {
+        status: response.status,
+        data: response.data,
+      });
+    }
     return response;
   },
   (error) => {
-    console.error("API Error:", {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data,
-    });
+    // 統一錯誤處理
+    if (error.response?.status === 401) {
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
+
+    if (import.meta.env.DEV) {
+      console.error("API Error:", error);
+    }
+
     return Promise.reject(error);
   }
 );
-
-// API 函數
-export const getTodos = async () => {
-  try {
-    console.log("Fetching todos from:", `${API_URL}/todos/`);
-    const response = await api.get("/todos/");
-    return response.data;
-  } catch (error) {
-    console.error("Failed to fetch todos:", error);
-    return [];
-  }
-};
-
-export const createTodo = async (todo) => {
-  try {
-    const response = await api.post("/todos/", todo);
-    return response.data;
-  } catch (error) {
-    console.error("Failed to create todo:", error);
-    throw error;
-  }
-};
-
-export const updateTodo = async (id, todo) => {
-  try {
-    const response = await api.put(`/todos/${id}/`, todo);
-    return response.data;
-  } catch (error) {
-    console.error("Failed to update todo:", error);
-    throw error;
-  }
-};
-
-export const deleteTodo = async (id) => {
-  try {
-    const response = await api.delete(`/todos/${id}/`);
-    return response.data;
-  } catch (error) {
-    console.error("Failed to delete todo:", error);
-    throw error;
-  }
-};
 
 export default api;
