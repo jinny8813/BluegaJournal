@@ -73,7 +73,14 @@ function TodoList() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div
+          role="status" // 添加這個
+          className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
+          aria-label="Loading" // 添加這個以提高可訪問性
+        >
+          <span className="sr-only">Loading...</span>{" "}
+          {/* 添加這個用於螢幕閱讀器 */}
+        </div>
       </div>
     );
   }

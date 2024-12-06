@@ -1,11 +1,11 @@
-// TodoList.test.jsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { vi } from "vitest";
-import TodoList from "./TodoList";
-import { getTodos, createTodo, updateTodo, deleteTodo } from "../services/api";
+import { describe, test, expect, beforeEach, vi } from "vitest";
+import "@testing-library/jest-dom";
+import TodoList from "../TodoList";
+import * as api from "../../services/api";
 
-// Mock API 服務
-vi.mock("../services/api", () => ({
+// Mock 整個 API 模組
+vi.mock("../../services/api", () => ({
   getTodos: vi.fn(),
   createTodo: vi.fn(),
   updateTodo: vi.fn(),
@@ -21,8 +21,14 @@ describe("TodoList", () => {
   beforeEach(() => {
     // 重置所有 mock
     vi.clearAllMocks();
+
     // 設置默認返回值
-    getTodos.mockResolvedValue(mockTodos);
+    api.getTodos.mockResolvedValue(mockTodos);
+    api.createTodo.mockImplementation((todo) =>
+      Promise.resolve({ ...todo, id: Math.random() })
+    );
+    api.updateTodo.mockImplementation((id, todo) => Promise.resolve(todo));
+    api.deleteTodo.mockResolvedValue(undefined);
   });
 
   test("renders loading state initially", () => {
@@ -43,7 +49,7 @@ describe("TodoList", () => {
 
   test("adds new todo", async () => {
     const newTodo = { id: 3, title: "New Todo", completed: false };
-    createTodo.mockResolvedValue(newTodo);
+    api.createTodo.mockResolvedValueOnce(newTodo);
 
     render(<TodoList />);
     await waitFor(() => {
@@ -59,7 +65,7 @@ describe("TodoList", () => {
     await waitFor(() => {
       expect(screen.getByText("New Todo")).toBeInTheDocument();
     });
-    expect(createTodo).toHaveBeenCalledWith({
+    expect(api.createTodo).toHaveBeenCalledWith({
       title: "New Todo",
       completed: false,
     });
@@ -74,7 +80,7 @@ describe("TodoList", () => {
     const checkbox = screen.getByTestId("todo-checkbox-1");
     fireEvent.click(checkbox);
 
-    expect(updateTodo).toHaveBeenCalledWith(1, {
+    expect(api.updateTodo).toHaveBeenCalledWith(1, {
       id: 1,
       title: "Test Todo 1",
       completed: true,
@@ -90,14 +96,14 @@ describe("TodoList", () => {
     const deleteButton = screen.getByTestId("todo-delete-1");
     fireEvent.click(deleteButton);
 
-    expect(deleteTodo).toHaveBeenCalledWith(1);
+    expect(api.deleteTodo).toHaveBeenCalledWith(1);
     await waitFor(() => {
       expect(screen.queryByText("Test Todo 1")).not.toBeInTheDocument();
     });
   });
 
   test("handles error state", async () => {
-    getTodos.mockRejectedValue(new Error("Failed to fetch"));
+    api.getTodos.mockRejectedValueOnce(new Error("Failed to fetch"));
     render(<TodoList />);
 
     await waitFor(() => {
