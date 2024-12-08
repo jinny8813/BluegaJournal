@@ -1,3 +1,4 @@
+# backend/api/models.py
 from django.db import models
 from django.conf import settings
 
@@ -14,6 +15,18 @@ class Todo(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        # 可以添加索引
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+        ]
+        # 可以添加權限
+        permissions = [
+            ("view_own_todo", "Can view own todo"),
+        ]
 
     def __str__(self):
-        return self.title
+        return f"{self.title} (by {self.user.username})"
+
+    def save(self, *args, **kwargs):
+        # 可以在這裡添加額外的保存邏輯
+        super().save(*args, **kwargs)

@@ -34,11 +34,16 @@ def logout(request):
     except Exception:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['PUT'])
+@api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
     user = request.user
-    serializer = UpdateUserSerializer(user, data=request.data, partial=True)
+    serializer = UpdateUserSerializer(
+        user, 
+        data=request.data, 
+        partial=True,
+        context={'request': request}  # 添加這行
+    )
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
