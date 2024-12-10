@@ -21,18 +21,18 @@ jobs:
 
   lint:
     needs: determine_workflow
-    uses: ./.github/workflows/backend/lint.yml
+    uses: ./.github/workflows/backend-lint.yml
 
   unit_tests:
     needs: lint
-    uses: ./.github/workflows/backend/unit-tests.yml
+    uses: ./.github/workflows/backend-unit-tests.yml
 
   integration_tests:
     needs: unit_tests
     if: needs.determine_workflow.outputs.run_full_suite == 'true'
-    uses: ./.github/workflows/backend/integration-tests.yml
+    uses: ./.github/workflows/backend-integration-tests.yml
 
   security_scan:
     needs: integration_tests
     if: needs.determine_workflow.outputs.run_full_suite == 'true'
-    uses: ./.github/workflows/backend/security-scan.yml
+    uses: ./.github/workflows/backend-security-scan.yml

@@ -1,7 +1,8 @@
-# .github/workflows/backend/unit-tests.yml
-name: Backend Unit Tests
+# .github/workflows/backend/lint.yml
+name: Backend Linting
 
 on:
+  workflow_call:
   push:
     branches: [master, dev, "feature/**"]
     paths:
@@ -12,7 +13,7 @@ on:
       - "backend/**"
 
 jobs:
-  unit-test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,18 +25,25 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-django pytest-cov
+          pip install flake8 pylint black isort
 
-      - name: Run unit tests
+      - name: Run black
         run: |
           cd backend
-          pytest --cov=. --cov-report=xml
+          black . --check
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          file: ./backend/coverage.xml
-          flags: unittests
+      - name: Run isort
+        run: |
+          cd backend
+          isort . --check-only
+
+      - name: Run flake8
+        run: |
+          cd backend
+          flake8 .
+
+      - name: Run pylint
+        run: |
+          cd backend
+          pylint **/*.py
