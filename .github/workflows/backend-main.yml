@@ -3,9 +3,10 @@ name: Backend Main Workflow
 
 on:
   push:
-    branches: [master, dev, "feature/**"]
+    branches: [master, dev]
     paths:
       - "backend/**"
+      - ".github/workflows/backend/**"
   pull_request:
     branches: [master, dev]
     paths:
@@ -21,18 +22,98 @@ jobs:
 
   lint:
     needs: determine_workflow
-    uses: ./.github/workflows/backend-lint.yml
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Run linting
+        run: |
+          docker-compose build backend
+          docker-compose run --rm backend sh -c "
+            pip install flake8 black isort pylint &&
+            black . --check &&
+            isort . --check-only &&
+            flake8 . &&
+            pylint **/*.py
+          "
 
   unit_tests:
     needs: lint
-    uses: ./.github/workflows/backend-unit-tests.yml
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Run unit tests
+        run: |
+          docker-compose build backend
+          docker-compose run --rm backend python manage.py test api.tests
 
   integration_tests:
     needs: unit_tests
     if: needs.determine_workflow.outputs.run_full_suite == 'true'
-    uses: ./.github/workflows/backend-integration-tests.yml
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Run integration tests
+        run: |
+          docker-compose build backend
+          docker-compose run --rm backend pytest -m integration -v
 
   security_scan:
     needs: integration_tests
     if: needs.determine_workflow.outputs.run_full_suite == 'true'
-    uses: ./.github/workflows/backend-security-scan.yml
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Run security checks
+        run: |
+          docker-compose build backend
+          docker-compose run --rm backend sh -c "
+            pip install safety bandit &&
+            safety check &&
+            bandit -r . -ll
+          "
