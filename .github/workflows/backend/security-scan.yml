@@ -1,0 +1,34 @@
+# .github/workflows/backend/security-scan.yml
+name: Backend Security Scan
+
+on:
+  push:
+    branches: [master, dev]
+  schedule:
+    - cron: "0 0 * * 0" # 每週日運行
+  workflow_dispatch: # 允許手動觸發
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Security vulnerabilities scan
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+      - name: Run Bandit
+        run: |
+          cd backend
+          pip install bandit
+          bandit -r . -ll
+
+      - name: Run safety check
+        run: |
+          cd backend
+          pip install safety
+          safety check
