@@ -1,11 +1,10 @@
 # backend/tests/integration/test_todo_user_integration.py
+from api.models import Todo
 from django.contrib.auth import get_user_model
 from django.test import TestCase, tag
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-
-from api.models import Todo
 
 User = get_user_model()
 
@@ -15,9 +14,7 @@ class TodoUserIntegrationTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         # 創建測試用戶
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
         self.client.force_authenticate(user=self.user)
 
         # 創建另一個用戶

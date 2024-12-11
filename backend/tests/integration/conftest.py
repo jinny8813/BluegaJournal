@@ -1,9 +1,8 @@
 # backend/api/tests/conftest.py
 import pytest
+from api.models import Todo
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
-
-from api.models import Todo
 
 User = get_user_model()
 
@@ -15,9 +14,7 @@ def api_client():
 
 @pytest.fixture
 def test_user():
-    user = User.objects.create_user(
-        username="testuser", email="test@example.com", password="testpass123"
-    )
+    user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
     return user
 
 

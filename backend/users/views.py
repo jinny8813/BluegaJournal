@@ -6,12 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import (
-    ChangePasswordSerializer,
-    RegisterSerializer,
-    UpdateUserSerializer,
-    UserSerializer,
-)
+from .serializers import ChangePasswordSerializer, RegisterSerializer, UpdateUserSerializer, UserSerializer
 
 User = get_user_model()
 
@@ -72,7 +67,5 @@ def change_password(request):
             user.set_password(serializer.data.get("new_password"))
             user.save()
             return Response({"message": "Password changed successfully"})
-        return Response(
-            {"error": "Incorrect old password"}, status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response({"error": "Incorrect old password"}, status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -16,7 +16,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./backend # 使用項目根目錄作為上下文
       dockerfile: Dockerfile
     volumes:
       - ./backend:/app

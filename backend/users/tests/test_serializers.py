@@ -2,13 +2,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
-
-from users.serializers import (
-    ChangePasswordSerializer,
-    RegisterSerializer,
-    UpdateUserSerializer,
-    UserSerializer,
-)
+from users.serializers import ChangePasswordSerializer, RegisterSerializer, UpdateUserSerializer, UserSerializer
 
 User = get_user_model()
 
@@ -62,18 +56,14 @@ class RegisterSerializerTests(TestCase):
 
 class UpdateUserSerializerTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
         self.factory = APIRequestFactory()
         self.request = self.factory.get("/")
         self.request.user = self.user
 
     def test_validate_email_unique(self):
         """測試郵箱唯一性驗證"""
-        User.objects.create_user(
-            username="another", email="another@example.com", password="testpass123"
-        )
+        User.objects.create_user(username="another", email="another@example.com", password="testpass123")
         serializer = UpdateUserSerializer(
             self.user,
             data={"email": "another@example.com"},

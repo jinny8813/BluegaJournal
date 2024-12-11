@@ -1,22 +1,17 @@
 # backend/api/tests/test_serializers.py
+from api.models import Todo
+from api.serializers import TodoSerializer
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
-
-from api.models import Todo
-from api.serializers import TodoSerializer
 
 User = get_user_model()
 
 
 class TodoSerializerTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
-        )
-        self.todo = Todo.objects.create(
-            user=self.user, title="Test Todo", completed=False
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
+        self.todo = Todo.objects.create(user=self.user, title="Test Todo", completed=False)
         self.serializer = TodoSerializer(instance=self.todo)
 
     def test_contains_expected_fields(self):
