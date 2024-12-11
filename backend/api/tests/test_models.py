@@ -1,6 +1,7 @@
 # backend/api/tests/test_models.py
-from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.test import TestCase
+
 from api.models import Todo
 
 User = get_user_model()

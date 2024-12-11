@@ -1,14 +1,10 @@
 # users/tests/test_serializers.py
-from django.test import TestCase
 from django.contrib.auth import get_user_model
-from users.serializers import (
-    UserSerializer,
-    RegisterSerializer,
-    UpdateUserSerializer,
-    ChangePasswordSerializer,
-)
+from django.test import TestCase
 from rest_framework.test import APIRequestFactory
-from django.contrib.auth.hashers import check_password
+
+from users.serializers import (ChangePasswordSerializer, RegisterSerializer,
+                               UpdateUserSerializer, UserSerializer)
 
 User = get_user_model()
 

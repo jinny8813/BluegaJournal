@@ -1,16 +1,13 @@
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
-from .serializers import (
-    UserSerializer,
-    RegisterSerializer,
-    ChangePasswordSerializer,
-    UpdateUserSerializer,
-)
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .serializers import (ChangePasswordSerializer, RegisterSerializer,
+                          UpdateUserSerializer, UserSerializer)
 
 User = get_user_model()
 
@@ -50,7 +47,10 @@ def logout(request):
 def update_profile(request):
     user = request.user
     serializer = UpdateUserSerializer(
-        user, data=request.data, partial=True, context={"request": request}  # 添加這行
+        user,
+        data=request.data,
+        partial=True,
+        context={"request": request},
     )
     if serializer.is_valid():
         serializer.save()

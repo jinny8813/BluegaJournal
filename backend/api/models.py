@@ -1,6 +1,6 @@
 # backend/api/models.py
-from django.db import models
 from django.conf import settings
+from django.db import models
 
 
 class Todo(models.Model):

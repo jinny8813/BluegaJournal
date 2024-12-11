@@ -1,9 +1,10 @@
 # backend/tests/integration/test_todo_user_integration.py
+from django.contrib.auth import get_user_model
 from django.test import TestCase, tag
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from django.contrib.auth import get_user_model
+
 from api.models import Todo
 
 User = get_user_model()
