@@ -14,7 +14,6 @@ import Register from "./pages/Register";
 import TodoList from "./pages/TodoList";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
-import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 function App() {
