@@ -7,7 +7,9 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    groups = models.ManyToManyField("auth.Group", verbose_name="groups", blank=True, related_name="custom_user_set")
+    groups = models.ManyToManyField(
+        "auth.Group", verbose_name="groups", blank=True, related_name="custom_user_set"
+    )
     user_permissions = models.ManyToManyField(
         "auth.Permission",
         verbose_name="user permissions",
