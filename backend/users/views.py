@@ -1,3 +1,5 @@
+# backend/users/views.py
+"""用戶相關視圖函數模塊"""
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 from rest_framework import status
@@ -6,7 +8,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import ChangePasswordSerializer, RegisterSerializer, UpdateUserSerializer, UserSerializer
+from .serializers import (
+    ChangePasswordSerializer,
+    RegisterSerializer,
+    UpdateUserSerializer,
+    UserSerializer,
+)
 
 User = get_user_model()
 
@@ -14,6 +21,11 @@ User = get_user_model()
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def register(request):
+    """
+    用戶註冊視圖
+
+    處理新用戶註冊並返回用戶信息和訪問令牌
+    """
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
@@ -32,18 +44,28 @@ def register(request):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def logout(request):
+    """
+    用戶登出視圖
+
+    使當前的刷新令牌失效
+    """
     try:
         refresh_token = request.data["refresh"]
         token = RefreshToken(refresh_token)
         token.blacklist()
         return Response(status=status.HTTP_205_RESET_CONTENT)
-    except Exception:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    except Exception as error:
+        return Response({"error": str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["PUT", "PATCH"])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
+    """
+    更新用戶資料視圖
+
+    允許用戶更新其個人資料
+    """
     user = request.user
     serializer = UpdateUserSerializer(
         user,
@@ -60,6 +82,11 @@ def update_profile(request):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def change_password(request):
+    """
+    更改密碼視圖
+
+    允許用戶更改其密碼
+    """
     serializer = ChangePasswordSerializer(data=request.data)
     if serializer.is_valid():
         user = request.user
@@ -67,5 +94,7 @@ def change_password(request):
             user.set_password(serializer.data.get("new_password"))
             user.save()
             return Response({"message": "Password changed successfully"})
-        return Response({"error": "Incorrect old password"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Incorrect old password"}, status=status.HTTP_400_BAD_REQUEST
+        )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

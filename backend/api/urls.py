@@ -1,3 +1,5 @@
+# backend/api/urls.py
+"""API URL 配置"""
 from django.urls import path
 
 from . import views

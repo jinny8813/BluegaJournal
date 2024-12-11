@@ -9,8 +9,12 @@ User = get_user_model()
 
 class TodoModelTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
-        self.todo = Todo.objects.create(user=self.user, title="Test Todo", completed=False)
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpass123"
+        )
+        self.todo = Todo.objects.create(
+            user=self.user, title="Test Todo", completed=False
+        )
 
     def test_todo_creation(self):
         """測試 Todo 創建"""

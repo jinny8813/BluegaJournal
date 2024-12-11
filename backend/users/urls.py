@@ -1,9 +1,11 @@
+# backend/users/urls.py
+"""用戶相關 URL 配置模塊"""
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from . import views
 
-app_name = "users"
+APP_NAME = "users"
 
 urlpatterns = [
     path("register/", views.register, name="register"),

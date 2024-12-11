@@ -11,9 +11,13 @@ User = get_user_model()
 
 class TodoViewTests(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpass123"
+        )
         self.client.force_authenticate(user=self.user)
-        self.todo = Todo.objects.create(user=self.user, title="Test Todo", completed=False)
+        self.todo = Todo.objects.create(
+            user=self.user, title="Test Todo", completed=False
+        )
         self.list_url = reverse("api:todo-list")
         self.detail_url = reverse("api:todo-detail", args=[self.todo.id])
 
@@ -58,7 +62,9 @@ class TodoViewTests(APITestCase):
 
     def test_todo_user_isolation(self):
         """測試用戶只能訪問自己的 Todo"""
-        other_user = User.objects.create_user(username="otheruser", email="other@example.com", password="testpass123")
+        other_user = User.objects.create_user(
+            username="otheruser", email="other@example.com", password="testpass123"
+        )
         self.client.force_authenticate(user=other_user)
         response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

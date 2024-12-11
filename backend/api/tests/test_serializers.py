@@ -11,8 +11,12 @@ User = get_user_model()
 
 class TodoSerializerTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
-        self.todo = Todo.objects.create(user=self.user, title="Test Todo", completed=False)
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpass123"
+        )
+        self.todo = Todo.objects.create(
+            user=self.user, title="Test Todo", completed=False
+        )
         self.serializer = TodoSerializer(instance=self.todo)
 
     def test_contains_expected_fields(self):

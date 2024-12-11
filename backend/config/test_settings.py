@@ -1,4 +1,6 @@
-from .settings import *
+# config/test_settings.py
+"""測試環境配置"""
+from .settings import *  # noqa
 
 DATABASES = {
     "default": {
