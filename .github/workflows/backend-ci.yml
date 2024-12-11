@@ -64,7 +64,7 @@ jobs:
             PYLINT_OUTPUT=$(find . -type f -name "*.py" ! -path "*/migrations/*" ! -path "*/tests/*" -exec pylint {} +)
             echo "$PYLINT_OUTPUT"
             
-            PYLINT_SCORE=$(echo "$PYLINT_OUTPUT" | sed -n "s/^.*rated at \([0-9.]*\).*$/\1/p")
+            PYLINT_SCORE=$(echo "$PYLINT_OUTPUT" | awk "/rated at/ {print \$7}" | tr -d "/10")
             echo "Pylint Score: $PYLINT_SCORE"
             
             if [ -z "$PYLINT_SCORE" ]; then
@@ -72,7 +72,7 @@ jobs:
               exit 1
             fi
             
-            if (( $(echo "$PYLINT_SCORE >= 8.5" | bc -l) )); then
+            if (( $(echo "$PYLINT_SCORE >= 8.5" | awk '{print ($1 >= 8.5)}') )); then
               echo "Pylint score is above 8.5 (Current: $PYLINT_SCORE)"
             else
               echo "Pylint score is below 8.5 (Current: $PYLINT_SCORE)"
