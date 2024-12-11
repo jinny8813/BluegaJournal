@@ -15,9 +15,7 @@ class TodoUserIntegrationTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         # 創建測試用戶
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
         self.client.force_authenticate(user=self.user)
 
         # 創建另一個用戶
