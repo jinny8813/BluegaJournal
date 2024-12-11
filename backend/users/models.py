@@ -2,34 +2,49 @@
 """用戶模型定義模塊"""
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    """自定義用戶模型
+    """自定義用戶模型"""
 
-    擴展 Django 的默認用戶模型，添加額外的字段和時間戳
-    """
+    class UserType(models.TextChoices):
+        """用戶類型選項"""
 
-    email = models.EmailField(unique=True, verbose_name="電子郵件")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="創建時間")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="更新時間")
+        REGULAR = "regular", _("Regular User")
+        PREMIUM = "premium", _("Premium User")
+        ADMIN = "admin", _("Admin User")
 
-    groups = models.ManyToManyField(
-        "auth.Group", verbose_name="groups", blank=True, related_name="custom_user_set"
+    email = models.EmailField(
+        _("email address"),
+        unique=True,
+        error_messages={
+            "unique": _("A user with that email already exists."),
+        },
     )
-    user_permissions = models.ManyToManyField(
-        "auth.Permission",
-        verbose_name="user permissions",
-        blank=True,
-        related_name="custom_user_set",
+    user_type = models.CharField(
+        _("user type"),
+        max_length=20,
+        choices=UserType.choices,
+        default=UserType.REGULAR,
+        null=True,  # 添加這個使其向後兼容
+        blank=True,  # 添加這個使其向後兼容
     )
+    phone = models.CharField(_("phone number"), max_length=20, blank=True, null=True)
+    avatar = models.ImageField(_("avatar"), upload_to="avatars/", blank=True, null=True)
+    bio = models.TextField(_("biography"), max_length=500, blank=True, null=True)
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("updated at"), auto_now=True)
+    last_active = models.DateTimeField(_("last active"), null=True, blank=True)
 
-    def __str__(self) -> str:
-        """返回用戶的字符串表示"""
-        return str(self.username)
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
     class Meta:
-        """模型的元數據"""
+        verbose_name = _("user")
+        verbose_name_plural = _("users")
+        ordering = ["-created_at"]
 
-        verbose_name = "用戶"
-        verbose_name_plural = "用戶"
+    def __str__(self):
+        return f"{self.email} ({self.get_user_type_display()})"

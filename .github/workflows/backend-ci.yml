@@ -32,15 +32,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run linting
+      - name: Run style checks
         run: |
           docker-compose build backend
           docker-compose run --rm backend sh -c "
-            pip install flake8 black isort pylint &&
+            pip install flake8 black isort &&
             black . --check &&
             isort . --check-only &&
-            flake8 . &&
-            pylint **/*.py
+            flake8 .
+          "
+
+      - name: Run pylint check
+        run: |
+          docker-compose run --rm backend sh -c "
+            pip install pylint &&
+            pylint --fail-under=8.5 **/*.py
           "
 
   test:

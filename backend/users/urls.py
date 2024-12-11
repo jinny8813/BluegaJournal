@@ -1,17 +1,16 @@
 # backend/users/urls.py
-"""用戶相關 URL 配置模塊"""
+"""用戶 URL 配置"""
 from django.urls import path
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from . import views
 
-APP_NAME = "users"
+app_name = "users"
 
 urlpatterns = [
     path("register/", views.register, name="register"),
-    path("login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("login/", views.CustomTokenObtainPairView.as_view(), name="login"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("logout/", views.logout, name="logout"),
-    path("profile/", views.update_profile, name="update_profile"),
-    path("change-password/", views.change_password, name="change_password"),
+    path("profile/", views.user_profile, name="profile"),
 ]
