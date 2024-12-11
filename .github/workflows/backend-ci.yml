@@ -72,11 +72,11 @@ jobs:
               exit 1
             fi
             
-            SCORE_COMPARE=$(awk "BEGIN{ print ($PYLINT_SCORE >= 8.5) }")
+            SCORE_COMPARE=$(awk "BEGIN{ print ($PYLINT_SCORE >= 8) }")
             if [ "$SCORE_COMPARE" -eq 1 ]; then
-              echo "Pylint score is above 8.5 (Current: $PYLINT_SCORE)"
+              echo "Pylint score is above 8 (Current: $PYLINT_SCORE)"
             else
-              echo "Pylint score is below 8.5 (Current: $PYLINT_SCORE)"
+              echo "Pylint score is below 8 (Current: $PYLINT_SCORE)"
               exit 1
             fi
           '

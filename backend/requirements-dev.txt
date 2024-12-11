@@ -4,3 +4,8 @@ isort==5.13.2
 flake8==7.0.0
 pylint==3.1.0
 autopep8==2.1.0
+mypy>=1.0.0
+django-stubs>=4.2.3
+pylint-django>=2.5.3
+pylint-celery>=0.3
+pytest-cov>=4.1.0
