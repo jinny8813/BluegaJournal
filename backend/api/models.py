@@ -2,11 +2,10 @@
 from django.db import models
 from django.conf import settings
 
+
 class Todo(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='todos'
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="todos"
     )
     title = models.CharField(max_length=200)
     completed = models.BooleanField(default=False)
@@ -14,10 +13,10 @@ class Todo(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
         # 可以添加索引
         indexes = [
-            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=["user", "-created_at"]),
         ]
         # 可以添加權限
         permissions = [

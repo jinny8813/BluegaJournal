@@ -1,9 +1,9 @@
 from django.urls import path
 from . import views
 
-app_name = 'api'
+app_name = "api"
 
 urlpatterns = [
-    path('todos/', views.todo_list, name='todo-list'),
-    path('todos/<int:pk>/', views.todo_detail, name='todo-detail'),
+    path("todos/", views.todo_list, name="todo-list"),
+    path("todos/<int:pk>/", views.todo_detail, name="todo-detail"),
 ]

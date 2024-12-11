@@ -4,10 +4,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     # API endpoints
-    path('api/users/', include('users.urls', namespace='users')),
-    path('api/', include('api.urls', namespace='api')),
+    path("api/users/", include("users.urls", namespace="users")),
+    path("api/", include("api.urls", namespace="api")),
 ]
 
 # 開發環境添加靜態文件和媒體文件的路由
