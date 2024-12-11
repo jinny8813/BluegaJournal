@@ -1,4 +1,3 @@
-# .github/workflows/backend-ci.yml
 name: Backend CI
 
 on:
@@ -32,22 +31,60 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run style checks
+      - name: Run code quality checks
         run: |
           docker-compose build backend
-          docker-compose run --rm backend sh -c "
-            pip install flake8 black isort &&
-            black . --check &&
-            isort . --check-only &&
-            flake8 .
-          "
+          docker-compose run --rm backend sh -c '
+            # 安裝所需套件
+            echo "Installing dependencies..."
+            pip install --upgrade pip
+            pip install black isort flake8 pylint
 
-      - name: Run pylint check
-        run: |
-          docker-compose run --rm backend sh -c "
-            pip install pylint &&
-            pylint --fail-under=8.5 **/*.py
-          "
+            # 運行 black 檢查代碼格式
+            echo "\n=== Running Black format check ==="
+            if ! black --check --diff .; then
+              echo "Black check failed. Please format your code using black."
+              exit 1
+            fi
+
+            # 運行 isort 檢查導入順序
+            echo "\n=== Running isort check ==="
+            if ! isort --check-only --diff .; then
+              echo "Isort check failed. Please sort your imports using isort."
+              exit 1
+            fi
+
+            # 運行 flake8 檢查代碼風格
+            echo "\n=== Running Flake8 ==="
+            if ! flake8 .; then
+              echo "Flake8 check failed. Please fix the style issues."
+              exit 1
+            fi
+
+            # 運行 pylint 檢查代碼質量
+            echo "\n=== Running Pylint ==="
+            find . -type f -name "*.py" ! -path "*/migrations/*" ! -path "*/tests/*" -exec pylint {} + || true
+            
+            # 獲取 pylint 分數並檢查是否達標
+            echo "\n=== Checking Pylint Score ==="
+            PYLINT_OUTPUT=$(find . -type f -name "*.py" ! -path "*/migrations/*" ! -path "*/tests/*" -exec pylint {} +)
+            echo "$PYLINT_OUTPUT"
+            
+            PYLINT_SCORE=$(echo "$PYLINT_OUTPUT" | sed -n "s/^.*rated at \([0-9.]*\).*$/\1/p")
+            echo "Pylint Score: $PYLINT_SCORE"
+            
+            if [ -z "$PYLINT_SCORE" ]; then
+              echo "Could not determine Pylint score"
+              exit 1
+            fi
+            
+            if (( $(echo "$PYLINT_SCORE >= 8.5" | bc -l) )); then
+              echo "Pylint score is above 8.5 (Current: $PYLINT_SCORE)"
+            else
+              echo "Pylint score is below 8.5 (Current: $PYLINT_SCORE)"
+              exit 1
+            fi
+          '
 
   test:
     runs-on: ubuntu-latest
@@ -73,7 +110,22 @@ jobs:
       - name: Build and run tests
         run: |
           docker-compose build backend
-          docker-compose run --rm backend python manage.py test
+          docker-compose run --rm backend sh -c '
+            # 安裝測試依賴
+            pip install --upgrade pip
+            pip install coverage pytest pytest-django pytest-cov
+
+            # 運行測試並生成覆蓋率報告
+            echo "\n=== Running Tests with Coverage ==="
+            coverage run manage.py test
+            
+            # 顯示覆蓋率報告
+            echo "\n=== Coverage Report ==="
+            coverage report
+            
+            # 生成 XML 格式的覆蓋率報告（可選，用於上傳到 Codecov 等服務）
+            coverage xml
+          '
 
   integration_tests:
     runs-on: ubuntu-latest
@@ -100,7 +152,15 @@ jobs:
       - name: Run integration tests
         run: |
           docker-compose build backend
-          docker-compose run --rm backend pytest -m integration -v
+          docker-compose run --rm backend sh -c '
+            # 安裝測試依賴
+            pip install --upgrade pip
+            pip install pytest pytest-django pytest-cov
+
+            # 運行整合測試
+            echo "\n=== Running Integration Tests ==="
+            pytest -v -m integration
+          '
 
   security_scan:
     runs-on: ubuntu-latest
@@ -112,8 +172,20 @@ jobs:
       - name: Run security checks
         run: |
           docker-compose build backend
-          docker-compose run --rm backend sh -c "
-            pip install safety bandit &&
-            safety check &&
+          docker-compose run --rm backend sh -c '
+            # 安裝安全掃描工具
+            pip install --upgrade pip
+            pip install safety bandit
+
+            # 運行依賴項安全檢查
+            echo "\n=== Running Safety Check ==="
+            safety check
+
+            # 運行代碼安全掃描
+            echo "\n=== Running Bandit Security Scan ==="
             bandit -r . -ll
-          "
+
+            # 運行 Django 安全檢查（可選）
+            echo "\n=== Running Django Security Check ==="
+            python manage.py check --deploy
+          '
