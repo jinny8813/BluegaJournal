@@ -6,8 +6,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import (ChangePasswordSerializer, RegisterSerializer,
-                          UpdateUserSerializer, UserSerializer)
+from .serializers import (
+    ChangePasswordSerializer,
+    RegisterSerializer,
+    UpdateUserSerializer,
+    UserSerializer,
+)
 
 User = get_user_model()
 
