@@ -124,19 +124,6 @@ const authService = {
     }
   },
 
-  // 重置密碼請求
-  requestPasswordReset: async (email) => {
-    try {
-      const response = await api.post("/api/users/reset-password/", {
-        email,
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Password reset request failed:", error);
-      throw error;
-    }
-  },
-
   // 驗證用戶是否已登入
   isAuthenticated: () => {
     const user = authService.getCurrentUser();
