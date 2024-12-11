@@ -1,12 +1,14 @@
 # backend/api/urls.py
-"""API URL 配置"""
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
 from . import views
+
+router = DefaultRouter()
+router.register(r"todos", views.TodoViewSet, basename="todo")
 
 app_name = "api"
 
 urlpatterns = [
-    path("todos/", views.todo_list, name="todo-list"),
-    path("todos/<int:pk>/", views.todo_detail, name="todo-detail"),
+    path("", include(router.urls)),
 ]

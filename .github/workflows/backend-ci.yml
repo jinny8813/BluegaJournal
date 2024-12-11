@@ -72,7 +72,8 @@ jobs:
               exit 1
             fi
             
-            if (( $(echo "$PYLINT_SCORE >= 8.5" | awk '{print ($1 >= 8.5)}') )); then
+            SCORE_COMPARE=$(awk "BEGIN{ print ($PYLINT_SCORE >= 8.5) }")
+            if [ "$SCORE_COMPARE" -eq 1 ]; then
               echo "Pylint score is above 8.5 (Current: $PYLINT_SCORE)"
             else
               echo "Pylint score is below 8.5 (Current: $PYLINT_SCORE)"
@@ -124,9 +125,6 @@ jobs:
             # 顯示覆蓋率報告
             echo "\n=== Coverage Report ==="
             coverage report
-            
-            # 生成 XML 格式的覆蓋率報告（可選，用於上傳到 Codecov 等服務）
-            coverage xml
           '
 
   integration_tests:
@@ -191,8 +189,6 @@ jobs:
         run: |
           docker compose build backend
           docker compose run --rm backend sh -c '
-            # ... (安全檢查的內容保持不變)
-          '
             # 安裝安全掃描工具
             pip install --upgrade pip
             pip install safety bandit

@@ -85,6 +85,13 @@ class UpdateUserSerializerTests(TestCase):
 
 class ChangePasswordSerializerTests(TestCase):
     def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="oldpass123"
+        )
+        self.factory = APIRequestFactory()
+        self.request = self.factory.get("/")
+        self.request.user = self.user
+
         self.valid_data = {
             "old_password": "oldpass123",
             "new_password": "newpass123!",
@@ -93,12 +100,27 @@ class ChangePasswordSerializerTests(TestCase):
 
     def test_passwords_match(self):
         """測試新密碼匹配"""
-        serializer = ChangePasswordSerializer(data=self.valid_data)
+        serializer = ChangePasswordSerializer(
+            data=self.valid_data, context={"request": self.request}
+        )
         self.assertTrue(serializer.is_valid())
 
     def test_passwords_mismatch(self):
         """測試新密碼不匹配"""
         invalid_data = self.valid_data.copy()
         invalid_data["new_password2"] = "wrongpass"
-        serializer = ChangePasswordSerializer(data=invalid_data)
+        serializer = ChangePasswordSerializer(
+            data=invalid_data, context={"request": self.request}
+        )
         self.assertFalse(serializer.is_valid())
+        self.assertIn("new_password", serializer.errors)
+
+    def test_old_password_validation(self):
+        """測試舊密碼驗證"""
+        invalid_data = self.valid_data.copy()
+        invalid_data["old_password"] = "wrongpass"
+        serializer = ChangePasswordSerializer(
+            data=invalid_data, context={"request": self.request}
+        )
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("old_password", serializer.errors)

@@ -1,59 +1,39 @@
 # backend/api/views.py
-"""API 視圖函數定義"""
-from django.shortcuts import get_object_or_404
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 from .models import Todo
 from .serializers import TodoSerializer
 
 
-@api_view(["GET", "POST"])
-@permission_classes([IsAuthenticated])
-def todo_list(request):
+class TodoViewSet(viewsets.ModelViewSet):
     """
-    待辦事項列表視圖
+    待辦事項的 ViewSet
 
-    GET: 獲取當前用戶的所有待辦事項
-    POST: 創建新的待辦事項
+    提供列表、創建、檢索、更新和刪除功能
+    支持按完成狀態過濾和標題搜索
     """
-    if request.method == "GET":
-        todos = Todo.objects.filter(user=request.user)
-        serializer = TodoSerializer(todos, many=True)
-        return Response(serializer.data)
 
-    serializer = TodoSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save(user=request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer_class = TodoSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """獲取當前用戶的待辦事項，支持過濾和搜索"""
+        queryset = Todo.objects.filter(user=self.request.user)
 
-@api_view(["GET", "PUT", "PATCH", "DELETE"])
-@permission_classes([IsAuthenticated])
-def todo_detail(request, pk):
-    """
-    待辦事項詳情視圖
+        # 完成狀態過濾
+        completed = self.request.query_params.get("completed")
+        if completed is not None:
+            completed = completed.lower() == "true"
+            queryset = queryset.filter(completed=completed)
 
-    GET: 獲取特定待辦事項
-    PUT/PATCH: 更新待辦事項
-    DELETE: 刪除待辦事項
-    """
-    todo = get_object_or_404(Todo, pk=pk, user=request.user)
+        # 標題搜索
+        search = self.request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(title__icontains=search)
 
-    if request.method == "GET":
-        serializer = TodoSerializer(todo)
-        return Response(serializer.data)
+        return queryset
 
-    if request.method in ["PUT", "PATCH"]:
-        serializer = TodoSerializer(todo, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    if request.method == "DELETE":
-        todo.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def perform_create(self, serializer):
+        """創建時自動設置用戶"""
+        serializer.save(user=self.request.user)
