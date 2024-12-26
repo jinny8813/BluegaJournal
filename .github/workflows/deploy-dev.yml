@@ -4,36 +4,64 @@ on:
   push:
     branches:
       - dev
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: development
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.7.0
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Create SSH key
+      - name: Add known hosts
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to EC2
+      - name: Create deployment directory
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            mkdir -p ~/BluegaJournal
+            mkdir -p ~/BluegaJournal/scripts
+            mkdir -p ~/BluegaJournal/docker/dev
+            mkdir -p ~/BluegaJournal/nginx/conf.d
+
+      - name: Copy deployment files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker/dev/*,scripts/deploy-dev.sh,nginx/conf.d/*,backend/*,frontend/*"
+          target: "~/BluegaJournal"
+          strip_components: 0
+
+      - name: Set execute permission and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ~/BluegaJournal
+            chmod +x scripts/deploy-dev.sh
             ./scripts/deploy-dev.sh
+
+      - name: Verify deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/BluegaJournal
+            docker-compose -f docker/dev/docker-compose.yml ps
+            curl -s http://localhost/health_check || echo "Health check failed"
