@@ -4,7 +4,7 @@ set -e
 echo "Starting development deployment..."
 
 # 設置工作目錄
-cd ~/BluegaJournal
+cd ~/BluegaJournalDev
 
 # 設置環境變量
 export COMPOSE_FILE=docker/dev/docker-compose.yml
