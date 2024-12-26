@@ -97,7 +97,7 @@ docker-compose -f $COMPOSE_FILE ps
 
 # 檢查健康狀態
 echo "Checking application health..."
-curl -s http://localhost:8080/health_check || echo "Health check failed"
+curl -s http://localhost:8081/health_check || echo "Health check failed"
 
 # 顯示所有容器的日誌
 echo "All container logs:"

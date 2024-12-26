@@ -6,14 +6,14 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '3.24.138.130',
-    'dev.bluegajournal.com:8080',  # 添加帶端口的域名
+    'dev.bluegajournal.com:8081',  # 添加帶端口的域名
 ]
 
 # CORS 設置
 CORS_ALLOWED_ORIGINS = [
-    "http://dev.bluegajournal.com:8080",
-    "http://localhost:8080",
-    "http://3.24.138.130:8080",
+    "http://dev.bluegajournal.com:8081",
+    "http://localhost:8081",
+    "http://3.24.138.130:8081",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -43,9 +43,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 CSRF_TRUSTED_ORIGINS = [
-    "http://dev.bluegajournal.com:8080",
-    "http://localhost:8080",
-    "http://3.24.138.130:8080",
+    "http://dev.bluegajournal.com:8081",
+    "http://localhost:8081",
+    "http://3.24.138.130:8081",
 ]
 
 # 日誌設置
