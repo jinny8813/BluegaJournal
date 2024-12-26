@@ -14,27 +14,15 @@ export ENV=dev
 mkdir -p docker/dev
 mkdir -p nginx/conf.d
 
-# 驗證環境文件
-if [ ! -f .env.dev ]; then
-    echo "Error: .env.dev file not found!"
-    exit 1
-fi
-
-# 驗證環境變量
-source .env.dev
-if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ]; then
-    echo "Error: Database environment variables not set!"
-    exit 1
-fi
-
-echo "Checking Docker network..."
-docker network ls | grep dev_network || docker network create dev_network
-
-# 停止現有服務
-docker-compose -f $COMPOSE_FILE down || true
+# 停止並移除現有容器
+docker-compose -f $COMPOSE_FILE down -v
 
 # 清理 Docker 資源
 docker system prune -f
+
+# 確保網絡存在
+docker network prune -f
+docker network create dev_network 2>/dev/null || true
 
 # 構建新鏡像
 docker-compose -f $COMPOSE_FILE build
@@ -44,7 +32,14 @@ docker-compose -f $COMPOSE_FILE up -d
 
 # 等待數據庫就緒
 echo "Waiting for database to be ready..."
-sleep 20
+for i in {1..30}; do
+    if docker-compose -f $COMPOSE_FILE exec -T db pg_isready -U postgres; then
+        echo "Database is ready!"
+        break
+    fi
+    echo "Waiting for database... ($i/30)"
+    sleep 2
+done
 
 # 執行數據庫遷移
 echo "Running database migrations..."
@@ -61,4 +56,4 @@ docker-compose -f $COMPOSE_FILE ps
 
 # 檢查健康狀態
 echo "Checking application health..."
-curl -s http://localhost/health_check || echo "Health check failed"
+curl -s http://localhost:8080/health_check || echo "Health check failed"
