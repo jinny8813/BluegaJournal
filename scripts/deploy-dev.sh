@@ -3,9 +3,16 @@ set -e
 
 echo "Starting development deployment..."
 
+# 設置工作目錄
+cd ~/BluegaJournal
+
 # 設置環境變量
 export COMPOSE_FILE=docker/dev/docker-compose.yml
 export ENV=dev
+
+# 確保目錄存在
+mkdir -p docker/dev
+mkdir -p nginx/conf.d
 
 # 停止現有服務
 docker-compose -f $COMPOSE_FILE down || true
@@ -13,38 +20,29 @@ docker-compose -f $COMPOSE_FILE down || true
 # 清理 Docker 資源
 docker system prune -f
 
-# 更新代碼
-git fetch origin
-git reset --hard origin/develop
+# 構建新鏡像
+docker-compose -f $COMPOSE_FILE build
 
-# 驗證必要文件
-for file in .env.dev $COMPOSE_FILE; do
-  if [ ! -f "$file" ]; then
-    echo "Error: $file not found!"
-    exit 1
-  fi
-done
-
-# 構建和啟動服務
-docker-compose -f $COMPOSE_FILE up -d --build --force-recreate
+# 啟動服務
+docker-compose -f $COMPOSE_FILE up -d
 
 # 等待數據庫就緒
-sleep 10
+echo "Waiting for database to be ready..."
+sleep 20
 
 # 執行數據庫遷移
-for i in {1..5}; do
-  if docker-compose -f $COMPOSE_FILE exec -T backend python manage.py migrate; then
-    echo "Migrations completed successfully"
-    break
-  fi
-  
-  if [ $i -eq 5 ]; then
-    echo "Migration failed after 5 attempts"
-    exit 1
-  fi
-  
-  echo "Migration attempt $i failed, retrying in 10 seconds..."
-  sleep 10
-done
+echo "Running database migrations..."
+docker-compose -f $COMPOSE_FILE exec -T backend python manage.py migrate
 
-echo "Development deployment completed successfully!"
+# 收集靜態文件
+echo "Collecting static files..."
+docker-compose -f $COMPOSE_FILE exec -T backend python manage.py collectstatic --noinput
+
+echo "Deployment completed!"
+
+# 檢查服務狀態
+docker-compose -f $COMPOSE_FILE ps
+
+# 檢查健康狀態
+echo "Checking application health..."
+curl -s http://localhost/health_check || echo "Health check failed"
