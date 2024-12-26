@@ -14,6 +14,19 @@ export ENV=dev
 mkdir -p docker/dev
 mkdir -p nginx/conf.d
 
+# 驗證環境文件
+if [ ! -f .env.dev ]; then
+    echo "Error: .env.dev file not found!"
+    exit 1
+fi
+
+# 驗證環境變量
+source .env.dev
+if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ]; then
+    echo "Error: Database environment variables not set!"
+    exit 1
+fi
+
 # 停止現有服務
 docker-compose -f $COMPOSE_FILE down || true
 

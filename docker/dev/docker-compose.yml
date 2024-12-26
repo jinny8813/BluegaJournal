@@ -14,13 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -29,37 +22,36 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
+            # 設置工作目錄
+            DEPLOY_DIR=~/BluegaJournalDev
+
             # 確保目錄存在
-            mkdir -p ~/BluegaJournalDev
-            cd ~/BluegaJournalDev
+            mkdir -p $DEPLOY_DIR
+            cd $DEPLOY_DIR
 
-            # 如果目錄不為空，清理舊文件
-            if [ "$(ls -A)" ]; then
-              docker-compose -f docker/dev/docker-compose.yml down || true
-              git clean -fd
-              git reset --hard
+            # 創建環境文件
+            cat > .env.dev << 'EOF'
+            DEBUG=True
+            DJANGO_SETTINGS_MODULE=config.settings.dev
+            DB_NAME=bluega_journal_dev
+            DB_USER=postgres
+            DB_PASSWORD=postgres
+            DB_HOST=db
+            DB_PORT=5432
+            ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130
+            EOF
+
+            # 克隆或更新代碼
+            if [ -d .git ]; then
+              git fetch
+              git reset --hard origin/dev
+            else
+              git clone https://github.com/jinny8813/BluegaJournal.git .
+              git checkout dev
             fi
-
-            # 克隆代碼
-            git clone https://github.com/jinny8813/BluegaJournal.git . || git pull
-            git checkout dev
 
             # 設置權限
             chmod +x scripts/deploy-dev.sh
-
-            # 創建環境文件（如果不存在）
-            if [ ! -f .env.dev ]; then
-              cat << 'EOF' > .env.dev
-DEBUG=True
-DJANGO_SETTINGS_MODULE=config.settings.dev
-DB_NAME=bluega_journal
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_HOST=db
-DB_PORT=5432
-ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130
-EOF
-            fi
 
             # 執行部署腳本
             ./scripts/deploy-dev.sh
