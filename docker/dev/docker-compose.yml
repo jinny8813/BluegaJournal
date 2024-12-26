@@ -30,8 +30,8 @@ services:
       - ../../backend:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-    env_file:
-      - ../../.env.dev
+    networks:
+      - dev_network
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.dev
       - DB_NAME=bluega_journal_dev
@@ -41,9 +41,17 @@ services:
       - DB_PORT=5432
       - DEBUG=True
       - ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130:8080
+      - CORS_ALLOWED_ORIGINS=http://dev.bluegajournal.com:8080,http://localhost:8080,http://3.24.138.130:8080
     depends_on:
       db:
         condition: service_healthy
+    command: >
+      sh -c "
+        python manage.py wait_for_db &&
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        python manage.py runserver 0.0.0.0:8000
+      "
 
   frontend:
     build:
