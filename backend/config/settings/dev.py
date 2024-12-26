@@ -11,9 +11,9 @@ ALLOWED_HOSTS = [
 
 # CORS 設置
 CORS_ALLOWED_ORIGINS = [
-    "http://dev.bluegajournal.com",
-    "http://localhost",
-    "http://3.24.138.130",
+    "https://dev.bluegajournal.com",
+    "https://localhost",
+    "https://3.24.138.130",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -43,9 +43,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 CSRF_TRUSTED_ORIGINS = [
-    "http://dev.bluegajournal.com",
-    "http://localhost",
-    "http://3.24.138.130",
+    "https://dev.bluegajournal.com",
+    "https://localhost",
+    "https://3.24.138.130",
 ]
 
 # 日誌設置

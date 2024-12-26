@@ -42,7 +42,7 @@ services:
       - DB_PORT=5432
       - DEBUG=True
       - ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130
-      - CORS_ALLOWED_ORIGINS=http://dev.bluegajournal.com,http://localhost,http://3.24.138.130
+      - CORS_ALLOWED_ORIGINS=https://dev.bluegajournal.com,https://localhost,https://3.24.138.130
     depends_on:
       db:
         condition: service_healthy
@@ -62,7 +62,7 @@ services:
       - dev_network
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://dev.bluegajournal.com/api # 更新 API URL
+      - VITE_API_URL=https://dev.bluegajournal.com/api # 更新 API URL
     depends_on:
       - backend
 
