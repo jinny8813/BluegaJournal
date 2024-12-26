@@ -49,8 +49,8 @@ services:
       context: ../../frontend
       dockerfile: Dockerfile.dev
     volumes:
-      - ../../frontend:/app
-      - /app/node_modules
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
     environment:
       - NODE_ENV=development
       - VITE_API_URL=http://dev.bluegajournal.com/api
