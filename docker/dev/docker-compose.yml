@@ -12,11 +12,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - static_volume:/staticfiles
-      - media_volume:/media
+      - ../../nginx/conf.d:/etc/nginx/conf.d:ro
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media   
     networks:
       - dev_network
     depends_on:
