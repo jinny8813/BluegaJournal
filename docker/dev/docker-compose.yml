@@ -14,9 +14,9 @@ services:
       - "80:80"
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      - /etc/nginx/conf.d:/etc/nginx/conf.d
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - static_volume:/staticfiles
+      - media_volume:/media
     networks:
       - dev_network
     depends_on:
