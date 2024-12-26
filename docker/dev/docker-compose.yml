@@ -15,7 +15,7 @@ services:
       - "443:443"
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ../../nginx/dev/conf.d:/etc/nginx/conf.d
+      - ../../nginx/conf.d/dev:/etc/nginx/conf.d
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     networks:
