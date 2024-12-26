@@ -17,6 +17,8 @@ services:
       - /etc/nginx/conf.d:/etc/nginx/conf.d
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+    networks:
+      - dev_network
     depends_on:
       - backend
       - frontend
