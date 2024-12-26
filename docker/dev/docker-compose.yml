@@ -1,5 +1,10 @@
 version: "3.8"
 
+# 首先定義網絡
+networks:
+  dev_network:
+    driver: bridge
+
 services:
   nginx:
     build:
@@ -15,18 +20,7 @@ services:
       - frontend
     environment:
       - NGINX_HOST=dev.bluegajournal.com
-      - NGINX_PORT=80
-
-  db:
-    image: postgres:14-alpine
-    volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "5433:5432"
+      - NGINX_PORT=8080
 
   backend:
     build:
@@ -40,18 +34,44 @@ services:
       - ../../.env.dev
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.dev
+      - DB_HOST=db
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
 
   frontend:
     build:
       context: ../../frontend
       dockerfile: Dockerfile.dev
+    networks:
+      - dev_network
     environment:
       - NODE_ENV=development
       - VITE_API_URL=http://dev.bluegajournal.com:8080/api # 更新 API URL
     depends_on:
       - backend
+
+  db:
+    image: postgres:14-alpine
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - dev_network
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data_dev:
