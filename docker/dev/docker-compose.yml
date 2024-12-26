@@ -6,7 +6,7 @@ services:
       context: ../../nginx
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -26,7 +26,7 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   backend:
     build:
@@ -49,7 +49,7 @@ services:
       dockerfile: Dockerfile.dev
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://dev.bluegajournal.com/api
+      - VITE_API_URL=http://dev.bluegajournal.com:8080/api # 更新 API URL
     depends_on:
       - backend
 
