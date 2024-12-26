@@ -11,7 +11,7 @@ services:
       context: ../../nginx
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /etc/nginx/conf.d:/etc/nginx/conf.d
@@ -22,7 +22,7 @@ services:
       - frontend
     environment:
       - NGINX_HOST=dev.bluegajournal.com
-      - NGINX_PORT=8080
+      - NGINX_PORT=8081
 
   backend:
     build:
@@ -42,8 +42,8 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DEBUG=True
-      - ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130:8080
-      - CORS_ALLOWED_ORIGINS=http://dev.bluegajournal.com:8080,http://localhost:8080,http://3.24.138.130:8080
+      - ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130:8081
+      - CORS_ALLOWED_ORIGINS=http://dev.bluegajournal.com:8081,http://localhost:8081,http://3.24.138.130:8081
     depends_on:
       db:
         condition: service_healthy
@@ -63,7 +63,7 @@ services:
       - dev_network
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://dev.bluegajournal.com:8080/api # 更新 API URL
+      - VITE_API_URL=http://dev.bluegajournal.com:8081/api # 更新 API URL
     depends_on:
       - backend
 
