@@ -1,57 +1,63 @@
-name: Deploy to Development
+version: "3.8"
 
-on:
-  push:
-    branches:
-      - dev
-  workflow_dispatch:
+services:
+  nginx:
+    build:
+      context: ../../nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ../../nginx/conf.d:/etc/nginx/conf.d
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - backend
+      - frontend
+    environment:
+      - NGINX_HOST=dev.bluegajournal.com
+      - NGINX_PORT=80
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    environment: development
+  db:
+    image: postgres:14-alpine
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "5432:5432"
 
-    steps:
-      - uses: actions/checkout@v3
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ../../backend:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    env_file:
+      - ../../.env.dev
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.dev
+    depends_on:
+      - db
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script_stop: true
-          script: |
-            # 設置工作目錄
-            DEPLOY_DIR=~/BluegaJournalDev
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ../../frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://dev.bluegajournal.com/api
+    depends_on:
+      - backend
 
-            # 確保目錄存在
-            mkdir -p $DEPLOY_DIR
-            cd $DEPLOY_DIR
-
-            # 創建環境文件
-            cat > .env.dev << 'EOF'
-            DEBUG=True
-            DJANGO_SETTINGS_MODULE=config.settings.dev
-            DB_NAME=bluega_journal_dev
-            DB_USER=postgres
-            DB_PASSWORD=postgres
-            DB_HOST=db
-            DB_PORT=5432
-            ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130
-            EOF
-
-            # 克隆或更新代碼
-            if [ -d .git ]; then
-              git fetch
-              git reset --hard origin/dev
-            else
-              git clone https://github.com/jinny8813/BluegaJournal.git .
-              git checkout dev
-            fi
-
-            # 設置權限
-            chmod +x scripts/deploy-dev.sh
-
-            # 執行部署腳本
-            ./scripts/deploy-dev.sh
+volumes:
+  postgres_data_dev:
+  static_volume:
+  media_volume:
