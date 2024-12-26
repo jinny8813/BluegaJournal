@@ -34,14 +34,16 @@ services:
       - ../../.env.dev
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.dev
+      - DB_NAME=bluega_journal_dev
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
       - DB_HOST=db
+      - DB_PORT=5432
+      - DEBUG=True
+      - ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130:8080
     depends_on:
       db:
         condition: service_healthy
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             python manage.py runserver 0.0.0.0:8000"
 
   frontend:
     build:
@@ -62,9 +64,9 @@ services:
     networks:
       - dev_network
     environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=bluega_journal_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
       - "5433:5432"
     healthcheck:
