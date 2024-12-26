@@ -6,7 +6,8 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '3.24.138.130',
-    'dev.bluegajournal.com',  # 添加帶端口的域名
+    'backend',
+    'backend:8000'
 ]
 
 # CORS 設置
