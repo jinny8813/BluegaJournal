@@ -27,6 +27,9 @@ if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ]; then
     exit 1
 fi
 
+echo "Checking Docker network..."
+docker network ls | grep dev_network || docker network create dev_network
+
 # 停止現有服務
 docker-compose -f $COMPOSE_FILE down || true
 
