@@ -1,63 +1,65 @@
-version: "3.8"
+name: Deploy to Development
 
-services:
-  nginx:
-    build:
-      context: ../../nginx
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-    volumes:
-      - ../../nginx/conf.d:/etc/nginx/conf.d
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-    depends_on:
-      - backend
-      - frontend
-    environment:
-      - NGINX_HOST=dev.bluegajournal.com
-      - NGINX_PORT=80
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
 
-  db:
-    image: postgres:14-alpine
-    volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "5432:5432"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: development
 
-  backend:
-    build:
-      context: ../../backend
-      dockerfile: Dockerfile.prod # 使用生產環境的 Dockerfile
-    volumes:
-      - ../../backend:/app # 保留開發時的代碼掛載
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-    env_file:
-      - ../../.env.dev
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.dev
-    depends_on:
-      - db
+    steps:
+      - uses: actions/checkout@v3
 
-  frontend:
-    build:
-      context: ../../frontend
-      dockerfile: Dockerfile.prod # 使用生產環境的 Dockerfile
-    volumes:
-      - ../../frontend:/app # 保留開發時的代碼掛載
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://dev.bluegajournal.com/api
-    depends_on:
-      - backend
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-volumes:
-  postgres_data_dev:
-  static_volume:
-  media_volume:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            # 確保目錄存在
+            mkdir -p ~/BluegaJournalDev
+            cd ~/BluegaJournalDev
+
+            # 如果目錄不為空，清理舊文件
+            if [ "$(ls -A)" ]; then
+              docker-compose -f docker/dev/docker-compose.yml down || true
+              git clean -fd
+              git reset --hard
+            fi
+
+            # 克隆代碼
+            git clone https://github.com/jinny8813/BluegaJournal.git . || git pull
+            git checkout dev
+
+            # 設置權限
+            chmod +x scripts/deploy-dev.sh
+
+            # 創建環境文件（如果不存在）
+            if [ ! -f .env.dev ]; then
+              cat << 'EOF' > .env.dev
+DEBUG=True
+DJANGO_SETTINGS_MODULE=config.settings.dev
+DB_NAME=bluega_journal
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_HOST=db
+DB_PORT=5432
+ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130
+EOF
+            fi
+
+            # 執行部署腳本
+            ./scripts/deploy-dev.sh
