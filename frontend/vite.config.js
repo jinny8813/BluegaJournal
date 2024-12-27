@@ -4,6 +4,14 @@ import react from "@vitejs/plugin-react";
 export default defineConfig(({ mode }) => {
   const config = {
     plugins: [react()],
+    optimizeDeps: {
+      include: ["react-router-dom"],
+    },
+    resolve: {
+      alias: {
+        "@": "/src",
+      },
+    },
     server: {
       host: true,
       port: 5173,
