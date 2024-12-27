@@ -26,10 +26,13 @@ RUN pip install --no-cache-dir -r requirements/prod.txt
 # 複製專案文件
 COPY . .
 
-# 收集靜態文件
-RUN python manage.py collectstatic --noinput
+# 創建必要的目錄
+RUN mkdir -p /app/staticfiles /app/media
+
+# 設置權限
+RUN chown -R www-data:www-data /app
 
 EXPOSE 8000
 
 # 使用 gunicorn 運行應用
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application", "--workers", "4", "--timeout", "120"]
