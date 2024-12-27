@@ -14,26 +14,44 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Create SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
           script: |
-            cd ~/BluegaJournal
+            # 設置工作目錄
+            DEPLOY_DIR=~/BluegaJournal
+
+            # 確保目錄存在並清理
+            mkdir -p $DEPLOY_DIR
+            cd $DEPLOY_DIR
+            rm -f .env.prod
+
+            # 創建新的環境文件
+            echo "DEBUG=True" > .env.prod
+            echo "DJANGO_SETTINGS_MODULE=config.settings.prod" >> .env.prod
+            echo "DB_NAME=bluega_journal_prod" >> .env.prod
+            echo "DB_USER=postgres" >> .env.prod
+            echo "DB_PASSWORD=postgres" >> .env.prod
+            echo "DB_HOST=db" >> .env.prod
+            echo "DB_PORT=5432" >> .env.prod
+            echo "ALLOWED_HOSTS=bluegajournal.com,localhost,3.24.138.130" >> .env.prod
+
+            # 克隆或更新代碼
+            if [ -d .git ]; then
+              git fetch
+              git checkout master
+              git reset --hard origin/master
+            else
+              git clone https://github.com/jinny8813/BluegaJournal.git .
+              git checkout master
+            fi
+
+            # 設置權限
+            chmod +x scripts/deploy-prod.sh
+
+            # 執行部署腳本
             ./scripts/deploy-prod.sh

@@ -3,65 +3,102 @@ set -e
 
 echo "Starting production deployment..."
 
+# 設置工作目錄
+cd ~/BluegaJournal
+
 # 設置環境變量
 export COMPOSE_FILE=docker/prod/docker-compose.yml
 export ENV=prod
 
-# 停止現有服務
-docker-compose -f $COMPOSE_FILE down || true
+# 確保目錄存在
+mkdir -p docker/prod
+mkdir -p nginx/conf.d
+
+# 停止並移除現有容器
+echo "Stopping existing containers..."
+docker-compose -f $COMPOSE_FILE down -v
 
 # 清理 Docker 資源
+echo "Cleaning Docker resources..."
 docker system prune -f
 
-# 更新代碼
-git fetch origin
-git reset --hard origin/main
+# 確保網絡存在
+echo "Setting up Docker network..."
+docker network prune -f
+docker network create bluega_network_prod 2>/dev/null || true
 
-# 驗證必要文件
-for file in .env.prod $COMPOSE_FILE; do
-  if [ ! -f "$file" ]; then
-    echo "Error: $file not found!"
-    exit 1
-  fi
-done
+# 構建新鏡像
+echo "Building new images..."
+docker-compose -f $COMPOSE_FILE build
 
-# 構建和啟動服務
-docker-compose -f $COMPOSE_FILE up -d --build --force-recreate
+# 啟動服務
+echo "Starting services..."
+docker-compose -f $COMPOSE_FILE up -d
 
 # 等待數據庫就緒
-sleep 10
-
-# 執行數據庫遷移
-for i in {1..5}; do
-  if docker-compose -f $COMPOSE_FILE exec -T backend python manage.py migrate; then
-    echo "Migrations completed successfully"
-    break
-  fi
-  
-  if [ $i -eq 5 ]; then
-    echo "Migration failed after 5 attempts"
-    exit 1
-  fi
-  
-  echo "Migration attempt $i failed, retrying in 10 seconds..."
-  sleep 10
+echo "Waiting for database to be ready..."
+for i in {1..30}; do
+    if docker-compose -f $COMPOSE_FILE exec -T db pg_isready -U postgres; then
+        echo "Database is ready!"
+        break
+    fi
+    echo "Waiting for database... ($i/30)"
+    sleep 2
 done
 
-# 健康檢查
-for i in {1..12}; do
-  if curl -s http://localhost/health_check > /dev/null; then
-    echo "Service is healthy!"
-    break
-  fi
-  
-  if [ $i -eq 12 ]; then
-    echo "Service health check failed"
-    docker-compose -f $COMPOSE_FILE logs
-    exit 1
-  fi
-  
-  echo "Health check attempt $i failed, retrying in 10 seconds..."
-  sleep 10
-done
+# 顯示容器狀態
+echo "Container status:"
+docker-compose -f $COMPOSE_FILE ps
 
-echo "Production deployment completed successfully!"
+# 顯示數據庫日誌
+echo "Database logs:"
+docker-compose -f $COMPOSE_FILE logs db
+
+# 顯示後端日誌
+echo "Backend logs:"
+docker-compose -f $COMPOSE_FILE logs backend
+
+# 執行數據庫遷移（添加錯誤處理）
+echo "Running database migrations..."
+if ! docker-compose -f $COMPOSE_FILE exec -T backend python manage.py migrate; then
+    echo "Migration failed. Checking database connection..."
+    docker-compose -f $COMPOSE_FILE exec -T backend python -c "
+import os
+import psycopg2
+try:
+    conn = psycopg2.connect(
+        dbname=os.environ.get('DB_NAME'),
+        user=os.environ.get('DB_USER'),
+        password=os.environ.get('DB_PASSWORD'),
+        host=os.environ.get('DB_HOST'),
+        port=os.environ.get('DB_PORT')
+    )
+    print('Database connection successful')
+    conn.close()
+except Exception as e:
+    print('Database connection failed:', str(e))
+"
+    # 顯示環境變量
+    echo "Environment variables:"
+    docker-compose -f $COMPOSE_FILE exec -T backend env
+    
+    # 如果還是失敗，退出
+    exit 1
+fi
+
+# 收集靜態文件
+echo "Collecting static files..."
+docker-compose -f $COMPOSE_FILE exec -T backend python manage.py collectstatic --noinput
+
+echo "Deployment completed!"
+
+# 檢查服務狀態
+docker-compose -f $COMPOSE_FILE ps
+
+# 檢查健康狀態
+echo "Checking application health..."
+curl -s http://localhost/health_check || echo "Health check failed"
+
+# 顯示所有容器的日誌
+echo "All container logs:"
+docker-compose -f $COMPOSE_FILE logs
