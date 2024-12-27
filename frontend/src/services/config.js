@@ -10,7 +10,8 @@ const apiConfig = {
     timeout: 10000,
   },
   development: {
-    baseURL: "", // 開發環境使用相對路徑
+    baseURL:
+      import.meta.env.VITE_API_BASE_URL || "https://dev.bluegajournal.com:8443", // 開發環境使用相對路徑
     timeout: 15000,
   },
   production: {

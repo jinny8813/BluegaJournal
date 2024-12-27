@@ -7,15 +7,17 @@ networks:
 
 services:
   nginx:
+    image: nginx:alpine
     build:
       context: ../../nginx
       dockerfile: Dockerfile.dev
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:8080"
+      - "8443:8443"
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
       - ../../nginx/conf.d/dev:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./logs/nginx:/var/log/nginx
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     networks:
@@ -23,8 +25,6 @@ services:
     depends_on:
       - backend
       - frontend
-    environment:
-      - NGINX_HOST=dev.bluegajournal.com
 
   backend:
     build:
@@ -49,6 +49,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    ports:
+      - "8000:8000"
     command: >
       sh -c "
         sleep 10 &&
@@ -65,7 +67,10 @@ services:
       - dev_network
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=https://dev.bluegajournal.com/api
+      - VITE_API_URL=https://dev.bluegajournal.com:8443/api
+      - HOST=0.0.0.0
+    ports:
+      - "5173:5173"
     depends_on:
       - backend
 

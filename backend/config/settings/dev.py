@@ -12,9 +12,9 @@ ALLOWED_HOSTS = [
 
 # CORS 設置
 CORS_ALLOWED_ORIGINS = [
-    "https://dev.bluegajournal.com",
-    "https://localhost",
-    "https://3.24.138.130",
+    'https://dev.bluegajournal.com:8443',  # 需要包含端口
+    'http://localhost:5173',
+    "https://3.24.138.130:8443",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
