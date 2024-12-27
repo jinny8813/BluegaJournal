@@ -4,16 +4,17 @@ services:
   nginx:
     image: nginx:alpine
     container_name: bluega_nginx_prod
+    build:
+      context: ../../nginx
+      dockerfile: Dockerfile.prod
     ports:
-      - "8080:8080"
-      - "8443:8443"
+      - "80:80"
+      - "443:443"
     volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
       - ../../nginx/conf.d/prod:/etc/nginx/conf.d
-      - ../../certbot/conf:/etc/letsencrypt
-      - ../../certbot/www:/var/www/certbot
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-      - ../../nginx/log:/var/log/nginx
     depends_on:
       - backend
       - frontend
@@ -64,10 +65,14 @@ services:
       - POSTGRES_PASSWORD=postgres
     networks:
       - bluega_network_prod
+    ports:
+      - "5432:5432"
 
   redis:
     image: redis:alpine
     container_name: bluega_redis_prod
+    ports:
+      - "6379:6379"
     networks:
       - bluega_network_prod
 
