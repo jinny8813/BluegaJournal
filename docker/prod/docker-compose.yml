@@ -5,8 +5,8 @@ services:
     image: nginx:alpine
     container_name: bluega_nginx_prod
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "8080:8080"
+      - "8443:8443"
     volumes:
       - ../../nginx/conf.d/prod:/etc/nginx/conf.d
       - ../../certbot/conf:/etc/letsencrypt
@@ -28,6 +28,8 @@ services:
     volumes:
       - ../../frontend:/app
       - /app/node_modules
+    expose:
+      - "80"
     networks:
       - bluega_network_prod
 
