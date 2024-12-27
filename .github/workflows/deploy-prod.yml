@@ -14,6 +14,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -52,6 +63,10 @@ jobs:
                 mv /tmp/.env.prod.backup .env.prod
               fi
             fi
+
+            # 複製前端構建文件
+            mkdir -p frontend/dist
+            cp -r frontend/dist/* frontend/dist/
 
             # 創建新的環境文件
             echo "DEBUG=False" > .env.prod
