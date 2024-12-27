@@ -25,6 +25,9 @@ jobs:
             # 設置工作目錄
             DEPLOY_DIR=~/BluegaJournal
 
+            mkdir -p ~/BluegaJournal/nginx/conf.d/prod
+            mkdir -p ~/BluegaJournal/scripts
+
             # 確保目錄存在並清理
             mkdir -p $DEPLOY_DIR
             cd $DEPLOY_DIR
