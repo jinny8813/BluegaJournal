@@ -4,7 +4,7 @@ const MainLayout = ({ children }) => {
   const location = useLocation();
 
   return (
-    <div className="w-screen h-screen flex flex-col">
+    <div className="w-full h-screen flex flex-col">
       {/* Navbar */}
       <nav className="bg-blue-950 shadow-lg">
         <div className="w-full pl-6">
@@ -53,7 +53,7 @@ const MainLayout = ({ children }) => {
 
       {/* Main Content */}
       <main className="flex-grow bg-gray-50">
-        <div className="w-full h-full p-4">{children}</div>
+        <div className="w-full h-full">{children}</div>
       </main>
 
       {/* Footer */}
