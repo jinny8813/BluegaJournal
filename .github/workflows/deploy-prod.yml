@@ -23,10 +23,10 @@ jobs:
           script_stop: true
           script: |
             # 設置工作目錄
-            DEPLOY_DIR=~/BluegaJournal
+            DEPLOY_DIR=~/BluegaJournalProd
 
-            mkdir -p ~/BluegaJournal/nginx/conf.d/prod
-            mkdir -p ~/BluegaJournal/scripts
+            mkdir -p ~/BluegaJournalProd/nginx/conf.d/prod
+            mkdir -p ~/BluegaJournalProd/scripts
 
             # 確保目錄存在並清理
             mkdir -p $DEPLOY_DIR
