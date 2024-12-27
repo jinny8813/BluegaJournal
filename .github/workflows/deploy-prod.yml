@@ -31,14 +31,16 @@ jobs:
             rm -f .env.prod
 
             # 創建新的環境文件
-            echo "DEBUG=True" > .env.prod
+            echo "DEBUG=False" > .env.prod
             echo "DJANGO_SETTINGS_MODULE=config.settings.prod" >> .env.prod
-            echo "DB_NAME=bluega_journal_prod" >> .env.prod
+            echo "DB_NAME=bluega_journal_dev" >> .env.prod
             echo "DB_USER=postgres" >> .env.prod
             echo "DB_PASSWORD=postgres" >> .env.prod
             echo "DB_HOST=db" >> .env.prod
             echo "DB_PORT=5432" >> .env.prod
-            echo "ALLOWED_HOSTS=bluegajournal.com,localhost,3.24.138.130" >> .env.prod
+            echo "ALLOWED_HOSTS=bluegajournal.com,localhost,${{ secrets.EC2_HOST }}" >> .env.prod
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env.prod
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.prod
 
             # 克隆或更新代碼
             if [ -d .git ]; then
