@@ -1,11 +1,14 @@
-import "./App.css";
-import TodoList from "./components/TodoList";
+import { BrowserRouter as Router } from "react-router-dom";
+import MainLayout from "./components/common/Layout/MainLayout";
+import AppRoutes from "./routes";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <TodoList />
-    </div>
+    <Router>
+      <MainLayout>
+        <AppRoutes />
+      </MainLayout>
+    </Router>
   );
 }
 

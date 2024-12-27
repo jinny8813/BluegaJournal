@@ -1,0 +1,57 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            # 設置工作目錄
+            DEPLOY_DIR=~/BluegaJournalDev
+
+            # 確保目錄存在並清理
+            mkdir -p $DEPLOY_DIR
+            cd $DEPLOY_DIR
+            rm -f .env.dev
+
+            # 創建新的環境文件
+            echo "DEBUG=True" > .env.dev
+            echo "DJANGO_SETTINGS_MODULE=config.settings.dev" >> .env.dev
+            echo "DB_NAME=bluega_journal_dev" >> .env.dev
+            echo "DB_USER=postgres" >> .env.dev
+            echo "DB_PASSWORD=postgres" >> .env.dev
+            echo "DB_HOST=db" >> .env.dev
+            echo "DB_PORT=5432" >> .env.dev
+            echo "ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130" >> .env.dev
+
+            # 克隆或更新代碼
+            if [ -d .git ]; then
+              git fetch
+              git checkout dev
+              git reset --hard origin/dev
+            else
+              git clone https://github.com/jinny8813/BluegaJournal.git .
+              git checkout dev
+            fi
+
+            # 設置權限
+            chmod +x scripts/deploy-dev.sh
+
+            # 執行部署腳本
+            ./scripts/deploy-dev.sh

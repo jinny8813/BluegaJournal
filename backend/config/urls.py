@@ -1,33 +1,40 @@
+# backend/config/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-from django.http import HttpResponse
+# from .views import get_services
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
-def health_check(request):
-    return HttpResponse("ok", content_type="text/plain")
-
-schema_view = get_schema_view(
-   openapi.Info(
-      title="Todos API",
-      default_version='v1',
-      description="API for Todo application",
-   ),
-   public=True,
-   permission_classes=(permissions.AllowAny,),
-)
+@api_view(['GET'])
+def get_services(request):
+    """
+    簡單的測試端點，返回可用的服務列表
+    """
+    services = [
+        {
+            'id': 'blog',
+            'title': '部落格',
+            'description': '分享最新的文章和想法',
+            'path': '/blog',
+        },
+        {
+            'id': 'planner',
+            'title': '電子手帳',
+            'description': '製作你的個人化手帳',
+            'path': '/planner',
+        },
+        {
+            'id': 'shop',
+            'title': '商店',
+            'description': '購買我們的商品',
+            'path': '/shop',
+        }
+    ]
+    return Response(services, status=status.HTTP_200_OK)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/health/', health_check, name='health_check'),
-    path('api/', include('api.urls')),
-    # API 文檔
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('api/', get_services, name='get_services'),
+    path('api/planner/', include('apps.planner.urls')),
+]
