@@ -11,7 +11,7 @@ services:
       context: ../../nginx
       dockerfile: Dockerfile.dev
     ports:
-      - "3000:80"
+      - "8080:80"
       - "8443:443"
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
@@ -67,7 +67,8 @@ services:
       - dev_network
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=https://dev.bluegajournal.com/api
+      - VITE_API_URL=https://dev.bluegajournal.com:8443/api
+      - HOST=0.0.0.0
     ports:
       - "5173:5173"
     depends_on:
