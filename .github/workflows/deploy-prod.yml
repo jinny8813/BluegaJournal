@@ -25,13 +25,33 @@ jobs:
             # 設置工作目錄
             DEPLOY_DIR=~/BluegaJournalProd
 
-            mkdir -p ~/BluegaJournalProd/nginx/conf.d/prod
-            mkdir -p ~/BluegaJournalProd/scripts
+            # 如果目錄不存在，創建它
+            if [ ! -d "$DEPLOY_DIR" ]; then
+              mkdir -p "$DEPLOY_DIR"
+            fi
 
-            # 確保目錄存在並清理
-            mkdir -p $DEPLOY_DIR
-            cd $DEPLOY_DIR
-            rm -f .env.prod
+            # 進入工作目錄
+            cd "$DEPLOY_DIR"
+
+            # 如果不是 git 倉庫，初始化它
+            if [ ! -d .git ]; then
+              rm -rf * .[!.]*  # 清空目錄（保留當前目錄和父目錄）
+              git clone https://github.com/jinny8813/BluegaJournal.git .
+            else
+              # 保存環境文件
+              if [ -f .env.prod ]; then
+                mv .env.prod /tmp/.env.prod.backup
+              fi
+              
+              # 重置並更新倉庫
+              git fetch origin
+              git reset --hard origin/master
+              
+              # 恢復環境文件
+              if [ -f /tmp/.env.prod.backup ]; then
+                mv /tmp/.env.prod.backup .env.prod
+              fi
+            fi
 
             # 創建新的環境文件
             echo "DEBUG=False" > .env.prod
@@ -45,18 +65,29 @@ jobs:
             echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env.prod
             echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.prod
 
-            # 克隆或更新代碼
-            if [ -d .git ]; then
-              git fetch
-              git checkout master
-              git reset --hard origin/master
-            else
-              git clone https://github.com/jinny8813/BluegaJournal.git .
-              git checkout master
-            fi
+            # 創建必要的目錄
+            mkdir -p nginx/conf.d
 
-            # 設置權限
-            chmod +x scripts/deploy-prod.sh
+            # 執行部署命令
+            echo "Stopping existing containers..."
+            docker-compose -f docker/prod/docker-compose.yml down
 
-            # 執行部署腳本
-            ./scripts/deploy-prod.sh
+            echo "Cleaning up unused resources..."
+            docker system prune -f
+
+            echo "Building and starting new containers..."
+            docker-compose -f docker/prod/docker-compose.yml up -d --build
+
+            echo "Waiting for database to be ready..."
+            sleep 15
+
+            echo "Running database migrations..."
+            docker-compose -f docker/prod/docker-compose.yml exec -T backend python manage.py migrate
+
+            echo "Collecting static files..."
+            docker-compose -f docker/prod/docker-compose.yml exec -T backend python manage.py collectstatic --noinput
+
+            echo "Checking container status..."
+            docker-compose -f docker/prod/docker-compose.yml ps
+
+            echo "Deployment completed successfully!"
