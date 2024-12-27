@@ -9,6 +9,6 @@ COPY conf.d/prod/prod.conf /etc/nginx/conf.d/
 # 創建必要的目錄
 RUN mkdir -p /app/staticfiles /app/media
 
-EXPOSE 8080
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
