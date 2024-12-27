@@ -1,0 +1,5 @@
+# 設置默認行為，以防止 CRLF 自動轉換
+* text=auto
+
+# 明確指定 shell 腳本使用 LF
+*.sh text eol=lf
