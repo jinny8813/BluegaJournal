@@ -17,10 +17,11 @@ RUN apt-get update && \
         && pip install --no-cache-dir --upgrade pip
 
 # 複製依賴文件
-COPY requirements/prod.txt requirements.txt
+COPY requirements/base.txt requirements/base.txt
+COPY requirements/prod.txt requirements/prod.txt
 
 # 安裝 Python 依賴
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements/prod.txt
 
 # 複製專案文件
 COPY . .
