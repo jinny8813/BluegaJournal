@@ -11,13 +11,13 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - ../../frontend/dist:/usr/share/nginx/html
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ../../nginx/conf.d/prod:/etc/nginx/conf.d
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+      - ./logs/nginx:/var/log/nginx
     depends_on:
       - backend
-      - frontend
     networks:
       - bluega_network_prod
 
