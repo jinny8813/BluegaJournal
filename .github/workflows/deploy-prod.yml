@@ -33,7 +33,7 @@ jobs:
             # 創建新的環境文件
             echo "DEBUG=False" > .env.prod
             echo "DJANGO_SETTINGS_MODULE=config.settings.prod" >> .env.prod
-            echo "DB_NAME=bluega_journal_dev" >> .env.prod
+            echo "DB_NAME=bluega_journal_prod" >> .env.prod
             echo "DB_USER=postgres" >> .env.prod
             echo "DB_PASSWORD=postgres" >> .env.prod
             echo "DB_HOST=db" >> .env.prod
