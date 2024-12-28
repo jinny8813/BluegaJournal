@@ -38,20 +38,20 @@ services:
     image: nginx:alpine
     container_name: bluega_nginx_prod
     build:
-      context: ../..
-      dockerfile: nginx/Dockerfile.prod
+      context: ../../nginx
+      dockerfile: Dockerfile.prod
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ../../nginx/conf.d/prod:/etc/nginx/conf.d
-      - ../../frontend/dist:/usr/share/nginx/html
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - static_volume:/app/staticfiles
       - media_volume:/app/media
       - ./logs/nginx:/var/log/nginx
     depends_on:
       - backend
+      - frontend
     networks:
       - bluega_network_prod
 
