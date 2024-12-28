@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['bluegajournal.com', 'www.bluegajournal.com', 'localhost', 'backend']
+ALLOWED_HOSTS = ['bluegajournal.com', 'www.bluegajournal.com', 'localhost', 'backend', 'backend:8000']
 
 # 確保這些設置正確
 CSRF_TRUSTED_ORIGINS = ['https://bluegajournal.com', 'https://www.bluegajournal.com']
