@@ -1,27 +1,6 @@
 version: "3.8"
 
 services:
-  nginx:
-    image: nginx:alpine
-    container_name: bluega_nginx_prod
-    build:
-      context: ../../nginx
-      dockerfile: Dockerfile.prod
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ../../nginx/conf.d/prod:/etc/nginx/conf.d
-      - ../../frontend/dist:/usr/share/nginx/html:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-      - ./logs/nginx:/var/log/nginx
-    depends_on:
-      - backend
-    networks:
-      - bluega_network_prod
-
   frontend:
     build:
       context: ../../frontend
@@ -52,6 +31,27 @@ services:
       - redis
     expose:
       - "8000"
+    networks:
+      - bluega_network_prod
+
+  nginx:
+    image: nginx:alpine
+    container_name: bluega_nginx_prod
+    build:
+      context: ../../nginx
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../../nginx/conf.d/prod:/etc/nginx/conf.d
+      - ../../frontend/dist:/usr/share/nginx/html:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - backend
     networks:
       - bluega_network_prod
 
