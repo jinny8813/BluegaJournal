@@ -38,8 +38,8 @@ services:
     image: nginx:alpine
     container_name: bluega_nginx_prod
     build:
-      context: ../../nginx
-      dockerfile: Dockerfile.prod
+      context: ../..
+      dockerfile: nginx/Dockerfile.prod
     ports:
       - "80:80"
       - "443:443"
