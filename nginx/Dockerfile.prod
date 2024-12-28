@@ -3,11 +3,8 @@ FROM nginx:alpine
 # 不需要刪除默認配置，直接複製新的配置即可
 COPY conf.d/prod/default.conf /etc/nginx/conf.d/default.conf
 
-# 複製前端構建文件
-COPY ../frontend/dist/ /usr/share/nginx/html/
-
 # 創建必要的目錄
-RUN mkdir -p /etc/nginx/ssl /var/log/nginx
+RUN mkdir -p /etc/nginx/ssl /var/log/nginx /usr/share/nginx/html
 
 # 設置權限
 RUN chmod -R 755 /usr/share/nginx/html \
