@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   nginx:
@@ -11,7 +11,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ../../frontend/dist:/usr/share/nginx/html:ro 
+      - ../../nginx/conf.d/prod:/etc/nginx/conf.d
+      - ../../frontend/dist:/usr/share/nginx/html:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -27,7 +28,7 @@ services:
       dockerfile: Dockerfile.prod
     container_name: bluega_frontend_prod
     volumes:
-      - ../../frontend/dist:/app/dist 
+      - ../../frontend/dist:/app/dist
       - /app/node_modules
     expose:
       - "80"
