@@ -34,7 +34,7 @@ jobs:
           script_stop: true
           script: |
             # 設置工作目錄
-            DEPLOY_DIR=~/BluegaJournalProd
+            DEPLOY_DIR=~/BluegaJournal
 
             # 如果目錄不存在，創建它
             if [ ! -d "$DEPLOY_DIR" ]; then
