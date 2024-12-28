@@ -9,5 +9,13 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# 不需要 nginx，只需要構建靜態文件
-CMD ["npm", "run", "preview"]
+# Nginx 階段
+FROM nginx:alpine
+
+# 從構建階段複製構建文件
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# 設置權限
+RUN chmod -R 755 /usr/share/nginx/html
+
+EXPOSE 80 443
