@@ -1,14 +1,15 @@
 import React from "react";
-import DateControl from "../controls/DateControl";
-import LayoutSelector from "../controls/LayoutSelector";
-import ThemeSelector from "../controls/ThemeSelector";
-import PageNavigator from "../controls/PageNavigator";
-import ScaleControl from "../controls/ScaleControl";
+import DateControl from "./controls/DateControl";
+import LayoutSelector from "./controls/LayoutSelector";
+import ThemeSelector from "./controls/ThemeSelector";
+import PageNavigator from "./controls/PageNavigator";
+import ScaleControl from "./controls/ScaleControl";
 
 const PlannerControls = ({
   startDate,
   duration,
   selectedLayouts,
+  layouts,
   currentTheme,
   themes,
   scale,
@@ -42,6 +43,7 @@ const PlannerControls = ({
           <LayoutSelector
             selectedLayouts={selectedLayouts}
             onLayoutChange={onLayoutChange}
+            layouts={layouts}
           />
 
           <ThemeSelector

@@ -1,0 +1,534 @@
+{
+  "page_config": {
+    "width": 1080,
+    "height": 720
+  },
+  "layouts": {
+    "monthly_calender": {
+      "id": "monthly_calender",
+      "type": "monthly",
+      "label": "Monthly Calender",
+      "coverTitle": "Monthly Calender",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 711
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 63, 1044, 63],
+          [36, 171, 1044, 171],
+          [36, 279, 1044, 279],
+          [36, 387, 1044, 387],
+          [36, 495, 1044, 495],
+          [36, 603, 1044, 603],
+          [36, 711, 1044, 711]
+        ],
+        "vertical": [
+          [36, 45, 36, 711],
+          [1044, 45, 1044, 711],
+          [162, 45, 162, 711],
+          [270, 45, 270, 711],
+          [378, 45, 378, 711],
+          [486, 45, 486, 711],
+          [594, 45, 594, 711],
+          [702, 45, 702, 711],
+          [810, 45, 810, 711],
+          [918, 45, 918, 711]
+        ]
+      }
+    },
+    "monthly_project": {
+      "id": "monthly_project",
+      "type": "monthly",
+      "label": "Monthly Project",
+      "coverTitle": "Monthly Project",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "monthly_gallery": {
+      "id": "monthly_gallery",
+      "type": "monthly",
+      "label": "Monthly Gallery",
+      "coverTitle": "Monthly Gallery",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "monthly_finance": {
+      "id": "monthly_finance",
+      "type": "monthly",
+      "label": "Monthly Finance",
+      "coverTitle": "Monthly Finance",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "monthly_wellness": {
+      "id": "monthly_wellness",
+      "type": "monthly",
+      "label": "Monthly Wellness",
+      "coverTitle": "Monthly Wellness",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "monthly_review": {
+      "id": "monthly_review",
+      "type": "monthly",
+      "label": "Monthly Review",
+      "coverTitle": "Monthly Review",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "weekly_timeline": {
+      "id": "weekly_timeline",
+      "type": "weekly",
+      "label": "Weekly Timeline",
+      "coverTitle": "Weekly Timeline",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "weekly_listTodo": {
+      "id": "weekly_listTodo",
+      "type": "weekly",
+      "label": "Weekly ListTodo",
+      "coverTitle": "Weekly ListTodo",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "weekly_budget": {
+      "id": "weekly_budget",
+      "type": "weekly",
+      "label": "Weekly Budget",
+      "coverTitle": "Weekly Budget",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "weekly_health": {
+      "id": "weekly_health",
+      "type": "weekly",
+      "label": "Weekly Health",
+      "coverTitle": "Weekly Health",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "weekly_journal": {
+      "id": "weekly_journal",
+      "type": "weekly",
+      "label": "Weekly Journal",
+      "coverTitle": "Weekly Journal",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "weekly_anyNote": {
+      "id": "weekly_anyNote",
+      "type": "weekly",
+      "label": "Weekly AnyNote",
+      "coverTitle": "Weekly AnyNote",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    }
+  },
+  "defaults": {
+    "index": {
+      "id": "index",
+      "type": "index",
+      "label": "Index",
+      "coverTitle": "Index",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "yearly_glance": {
+      "id": "yearly_glance",
+      "type": "yearly",
+      "label": "Yearly Glance",
+      "coverTitle": "Yearly Glance",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "yearly_overview": {
+      "id": "yearly_overview",
+      "type": "yearly",
+      "label": "Yearly Overview",
+      "coverTitle": "Yearly Overview",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "yearly_intro": {
+      "id": "yearly_intro",
+      "type": "yearly",
+      "label": "Yearly Intro",
+      "coverTitle": "Yearly Intro",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "yearly_outro": {
+      "id": "yearly_outro",
+      "type": "yearly",
+      "label": "Yearly Outro",
+      "coverTitle": "Yearly Outro",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    }
+  }
+}

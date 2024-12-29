@@ -36,6 +36,7 @@ const servicePaths = {
   },
   planner: {
     base: "/api/planner",
+    configs: "/api/planner/configs/",
     generate: "/api/planner/generate",
     templates: "/api/planner/templates",
   },

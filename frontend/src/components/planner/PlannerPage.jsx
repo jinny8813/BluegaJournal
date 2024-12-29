@@ -2,27 +2,48 @@ import React from "react";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerControls from "./PlannerControls/PlannerControls";
 import { usePlannerState } from "../../hooks/usePlannerState";
-import { themeConfig } from "../../config/themes";
+import { useThemes } from "../../hooks/useThemes";
+import { useLayouts } from "../../hooks/useLayouts";
 
 const PlannerPage = () => {
   const {
     startDate,
     duration,
-    selectedLayouts,
-    currentTheme,
     scale,
     currentPage,
     totalPages,
     scrollContainerRef,
     handleDateChange,
     handleDurationChange,
-    handleLayoutChange,
-    setCurrentTheme,
     setScale,
     handlePageChange,
   } = usePlannerState();
 
-  const [isLoading, setIsLoading] = React.useState(false);
+  const {
+    themes,
+    currentTheme,
+    loading: themesLoading,
+    error: themesError,
+    handleThemeChange,
+  } = useThemes();
+
+  const {
+    layouts,
+    selectedLayouts,
+    loading: layoutsLoading,
+    error: layoutsError,
+    handleLayoutChange,
+  } = useLayouts();
+
+  // 處理加載狀態
+  if (layoutsLoading || themesLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // 處理錯誤狀態
+  if (layoutsError || themesError) {
+    return <div>Error: {layoutsError || themesError}</div>;
+  }
 
   const handleDownload = async () => {
     setIsLoading(true);
@@ -43,10 +64,11 @@ const PlannerPage = () => {
         style={{ backgroundColor: "#F5F5F5" }}
       >
         <PlannerPreviews
+          layouts={layouts}
+          selectedLayouts={selectedLayouts}
+          currentTheme={currentTheme}
           scale={scale}
           scrollContainerRef={scrollContainerRef}
-          pages={[]} // 需要實現頁面生成邏輯
-          currentTheme={currentTheme}
         />
       </div>
 
@@ -57,20 +79,20 @@ const PlannerPage = () => {
         <PlannerControls
           startDate={startDate}
           duration={duration}
-          selectedLayouts={selectedLayouts}
-          currentTheme={currentTheme}
-          themes={themeConfig.themes}
           scale={scale}
           currentPage={currentPage}
           totalPages={totalPages}
           onDateChange={handleDateChange}
           onDurationChange={handleDurationChange}
-          onLayoutChange={handleLayoutChange}
-          onThemeChange={setCurrentTheme}
           onScaleChange={setScale}
           onPageChange={handlePageChange}
           onDownload={handleDownload}
-          isLoading={isLoading}
+          themes={themes}
+          currentTheme={currentTheme}
+          onThemeChange={handleThemeChange}
+          layouts={layouts}
+          selectedLayouts={selectedLayouts}
+          onLayoutChange={handleLayoutChange}
         />
       </div>
     </div>
