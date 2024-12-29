@@ -15,26 +15,26 @@ const TableGrid = ({ config, theme }) => {
       }}
     >
       {/* 垂直表格線 */}
-      {vertical.lines.map((x, i) => (
+      {vertical.map(([x1, y1, x2, y2], i) => (
         <line
           key={`v-${i}`}
-          x1={horizontal.start_left + x}
-          y1={vertical.start_top}
-          x2={horizontal.start_left + x}
-          y2={vertical.end_top}
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
           stroke={theme.styles.gridLines.large.color}
           strokeWidth={theme.styles.gridLines.large.width}
         />
       ))}
 
       {/* 水平表格線 */}
-      {horizontal.lines.map((y, i) => (
+      {horizontal.map(([x1, y1, x2, y2], i) => (
         <line
           key={`h-${i}`}
-          x1={horizontal.start_left}
-          y1={vertical.start_top + y}
-          x2={horizontal.end_left}
-          y2={vertical.start_top + y}
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
           stroke={theme.styles.gridLines.large.color}
           strokeWidth={theme.styles.gridLines.large.width}
         />

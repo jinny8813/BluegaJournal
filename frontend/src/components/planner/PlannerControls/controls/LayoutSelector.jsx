@@ -1,6 +1,16 @@
 import React from "react";
 
-const LayoutSelector = ({ selectedLayouts, onLayoutChange }) => {
+const LayoutSelector = ({ layouts, selectedLayouts, onLayoutChange }) => {
+  if (!layouts?.layouts) return null;
+
+  // 將布局按類型分組
+  const monthlyLayouts = Object.values(layouts.layouts).filter(
+    (layout) => layout.type === "monthly"
+  );
+  const weeklyLayouts = Object.values(layouts.layouts).filter(
+    (layout) => layout.type === "weekly"
+  );
+
   return (
     <div className="space-y-4">
       {/* 月記事布局 */}
@@ -9,28 +19,21 @@ const LayoutSelector = ({ selectedLayouts, onLayoutChange }) => {
           月記事布局 (必選)
         </label>
         <div className="space-y-2">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={selectedLayouts.monthly.includes("monthly-calendar")}
-              onChange={() => onLayoutChange("monthly-calendar", "monthly")}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              disabled={
-                selectedLayouts.monthly.length === 1 &&
-                selectedLayouts.monthly.includes("monthly-calendar")
-              }
-            />
-            <span className="text-sm text-gray-700">月曆視圖</span>
-          </label>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={selectedLayouts.monthly.includes("monthly-notes")}
-              onChange={() => onLayoutChange("monthly-notes", "monthly")}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">月記事本</span>
-          </label>
+          {monthlyLayouts.map((layout) => (
+            <label key={layout.id} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={selectedLayouts.monthly.includes(layout.id)}
+                onChange={() => onLayoutChange(layout.id)}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                disabled={
+                  selectedLayouts.monthly.length === 1 &&
+                  selectedLayouts.monthly.includes(layout.id)
+                }
+              />
+              <span className="text-sm text-gray-700">{layout.label}</span>
+            </label>
+          ))}
         </div>
       </div>
 
@@ -40,19 +43,21 @@ const LayoutSelector = ({ selectedLayouts, onLayoutChange }) => {
           週記事布局 (選填)
         </label>
         <div className="space-y-2">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={selectedLayouts.weekly.includes("weekly-planner")}
-              onChange={() => onLayoutChange("weekly-planner", "weekly")}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">週計畫表</span>
-          </label>
+          {weeklyLayouts.map((layout) => (
+            <label key={layout.id} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={selectedLayouts.weekly.includes(layout.id)}
+                onChange={() => onLayoutChange(layout.id)}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-700">{layout.label}</span>
+            </label>
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default LayoutSelector;
+export default React.memo(LayoutSelector);

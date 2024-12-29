@@ -9,6 +9,7 @@ const PlannerControls = ({
   startDate,
   duration,
   selectedLayouts,
+  layouts,
   currentTheme,
   themes,
   scale,
@@ -42,6 +43,7 @@ const PlannerControls = ({
           <LayoutSelector
             selectedLayouts={selectedLayouts}
             onLayoutChange={onLayoutChange}
+            layouts={layouts}
           />
 
           <ThemeSelector

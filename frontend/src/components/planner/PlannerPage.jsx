@@ -3,6 +3,7 @@ import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerControls from "./PlannerControls/PlannerControls";
 import { usePlannerState } from "../../hooks/usePlannerState";
 import { useThemes } from "../../hooks/useThemes";
+import { useLayouts } from "../../hooks/useLayouts";
 
 const PlannerPage = () => {
   const {
@@ -16,13 +17,8 @@ const PlannerPage = () => {
     handleDurationChange,
     setScale,
     handlePageChange,
-    // 布局相關
-    layouts,
-    selectedLayouts,
-    layoutsLoading,
-    layoutsError,
-    handleLayoutChange,
   } = usePlannerState();
+
   const {
     themes,
     currentTheme,
@@ -31,7 +27,13 @@ const PlannerPage = () => {
     handleThemeChange,
   } = useThemes();
 
-  const [isLoading, setIsLoading] = React.useState(false);
+  const {
+    layouts,
+    selectedLayouts,
+    loading: layoutsLoading,
+    error: layoutsError,
+    handleLayoutChange,
+  } = useLayouts();
 
   // 處理加載狀態
   if (layoutsLoading || themesLoading) {
@@ -85,13 +87,12 @@ const PlannerPage = () => {
           onScaleChange={setScale}
           onPageChange={handlePageChange}
           onDownload={handleDownload}
-          isLoading={isLoading}
-          layouts={layouts}
-          selectedLayouts={selectedLayouts}
-          onLayoutChange={handleLayoutChange}
           themes={themes}
           currentTheme={currentTheme}
           onThemeChange={handleThemeChange}
+          layouts={layouts}
+          selectedLayouts={selectedLayouts}
+          onLayoutChange={handleLayoutChange}
         />
       </div>
     </div>
