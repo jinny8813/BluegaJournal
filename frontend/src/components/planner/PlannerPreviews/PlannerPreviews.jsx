@@ -1,37 +1,107 @@
 import React from "react";
+import BaseGrid from "./elements/BaseGrid";
+import TableGrid from "./elements/TableGrid";
 
-const PlannerPreviews = ({ scale }) => {
+const layouts = {
+  page_config: {
+    width: 1080,
+    height: 720,
+  },
+  layouts: {
+    monthly_2_4: {
+      id: "monthly_2_4",
+      type: "monthly",
+      label: "Monthly Layout 2×4",
+      coverTitle: "Monthly Layout I",
+      base_grid: {
+        horizontal: {
+          count: 75,
+          gap: 9,
+          start_top: 45,
+          end_top: 657,
+        },
+        vertical: {
+          count: 113,
+          gap: 9,
+          start_left: 36,
+          end_left: 1044,
+        },
+      },
+      table_grid: {
+        horizontal: {
+          lines: [0, 612],
+          start_left: 36,
+          end_left: 1044,
+        },
+        vertical: {
+          lines: [0, 1008],
+          start_top: 45,
+          end_top: 657,
+        },
+      },
+    },
+  },
+};
+
+const themes = {
+  themes: {
+    white: {
+      id: "white",
+      label: "純白色",
+      styles: {
+        background: "#FFFFFF",
+        text: { covers: "#000000", page_titles: "#474747" },
+        gridLines: {
+          small: {
+            color: "rgba(0, 0, 0, 0.2)",
+            width: "0.25px",
+          },
+          large: {
+            color: "#000000",
+            width: "0.5px",
+          },
+        },
+      },
+    },
+  },
+};
+
+const PlannerPreviews = ({
+  selectedLayout = "monthly_2_4",
+  theme = "white",
+  scale = 0.5,
+}) => {
+  // 使用傳入的主題或預設主題
+  const PageConfig = layouts.page_config;
+  const themeConfig = themes.themes[theme];
+  const layoutConfig = layouts.layouts[selectedLayout];
+
+  // 假設的內容數據
+  const content = {
+    month_label: "2024年1月",
+  };
+
   return (
-    <div className="h-full flex flex-col">
-      {/* 預覽容器 - 使用 flex 置中 */}
-      <div className="flex-1 flex items-center justify-center overflow-auto">
-        {/* A4 紙張預覽 */}
+    <div className="h-screen bg-gray-100 p-8">
+      <div className="h-full flex flex-col">
+        {/* 預覽容器 */}
         <div
-          className="bg-white shadow-lg rounded-lg"
+          className="shadow-xl"
           style={{
-            width: `${595 * scale}px`, // A4 寬度 (點)
-            height: `${842 * scale}px`, // A4 高度 (點)
+            width: PageConfig.width,
+            height: PageConfig.height,
+            backgroundColor: themeConfig.styles.background,
             transform: `scale(${scale})`,
             transformOrigin: "center center",
           }}
         >
-          {/* 紙張內容 */}
-          <div className="p-8">
-            <div className="border-b border-gray-300 pb-4 mb-4">
-              <h3 className="text-xl font-semibold text-black">2024 年 1 月</h3>
-            </div>
+          {/* 基礎網格 */}
+          <BaseGrid config={layoutConfig.base_grid} theme={themeConfig} />
 
-            {/* 日曆表格 */}
-            <div className="grid grid-cols-7 gap-2 text-center text-black">
-              <div className="text-red-500">日</div>
-              <div>一</div>
-              <div>二</div>
-              <div>三</div>
-              <div>四</div>
-              <div>五</div>
-              <div className="text-red-500">六</div>
-            </div>
-          </div>
+          {/* 表格 */}
+          <TableGrid config={layoutConfig.table_grid} theme={themeConfig} />
+
+          {/* 文字 */}
         </div>
       </div>
     </div>

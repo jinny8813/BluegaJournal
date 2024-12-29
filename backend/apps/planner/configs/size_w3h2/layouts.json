@@ -1,0 +1,40 @@
+{
+  "page_config": {
+    "width": 1080,
+    "height": 720
+  },
+  "layouts": {
+    "monthly_2_4": {
+      "id": "monthly_2_4",
+      "type": "monthly",
+      "label": "Monthly Layout 2×4",
+      "coverTitle": "Monthly Layout I",
+      "base_grid": {
+        "horizontal": {
+          "count": 75,
+          "gap": 9,
+          "start_top": 45,
+          "end_top": 657
+        },
+        "vertical": {
+          "count": 113,
+          "gap": 9,
+          "start_left": 36,
+          "end_left": 1044
+        }
+      },
+      "table_grid": {
+        "horizontal": {
+          "lines": [0, 612],
+          "start_left": 36,
+          "end_left": 1044
+        },
+        "vertical": {
+          "lines": [0, 1008],
+          "start_top": 45,
+          "end_top": 657
+        }
+      }
+    }
+  }
+}

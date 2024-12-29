@@ -4,5 +4,5 @@ from . import views
 app_name = 'planner'
 
 urlpatterns = [
-    # 暫時留空
+    path('/', views.get_layouts, name='get_layouts'),
 ]
