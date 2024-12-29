@@ -1,6 +1,6 @@
 import React from "react";
 
-const ScaleControl = ({ scale, onScaleChange }) => {
+const ScaleControl = ({ scale = 0.75, onScaleChange }) => {
   return (
     <div className="space-y-2 mb-4">
       <label className="block text-sm font-medium text-gray-700">
@@ -10,7 +10,7 @@ const ScaleControl = ({ scale, onScaleChange }) => {
         type="range"
         min="0.3"
         max="1.5"
-        step="0.1"
+        step="0.01"
         value={scale}
         onChange={(e) => onScaleChange(parseFloat(e.target.value))}
         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
@@ -19,4 +19,4 @@ const ScaleControl = ({ scale, onScaleChange }) => {
   );
 };
 
-export default ScaleControl;
+export default React.memo(ScaleControl);

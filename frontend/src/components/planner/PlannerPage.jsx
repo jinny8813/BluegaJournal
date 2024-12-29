@@ -4,18 +4,17 @@ import PlannerControls from "./PlannerControls/PlannerControls";
 import { usePlannerState } from "../../hooks/usePlannerState";
 import { useThemes } from "../../hooks/useThemes";
 import { useLayouts } from "../../hooks/useLayouts";
+import { useScale } from "../../hooks/useScale";
 
 const PlannerPage = () => {
   const {
     startDate,
     duration,
-    scale,
     currentPage,
     totalPages,
     scrollContainerRef,
     handleDateChange,
     handleDurationChange,
-    setScale,
     handlePageChange,
   } = usePlannerState();
 
@@ -34,6 +33,8 @@ const PlannerPage = () => {
     error: layoutsError,
     handleLayoutChange,
   } = useLayouts();
+
+  const { scale, handleScaleChange } = useScale();
 
   // 處理加載狀態
   if (layoutsLoading || themesLoading) {
@@ -79,12 +80,10 @@ const PlannerPage = () => {
         <PlannerControls
           startDate={startDate}
           duration={duration}
-          scale={scale}
           currentPage={currentPage}
           totalPages={totalPages}
           onDateChange={handleDateChange}
           onDurationChange={handleDurationChange}
-          onScaleChange={setScale}
           onPageChange={handlePageChange}
           onDownload={handleDownload}
           themes={themes}
@@ -93,6 +92,8 @@ const PlannerPage = () => {
           layouts={layouts}
           selectedLayouts={selectedLayouts}
           onLayoutChange={handleLayoutChange}
+          scale={scale}
+          onScaleChange={handleScaleChange}
         />
       </div>
     </div>
