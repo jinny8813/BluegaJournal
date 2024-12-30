@@ -4,54 +4,52 @@ import TableGrid from "./elements/TableGrid";
 
 const PlannerPreviews = ({
   layouts,
-  selectedLayouts,
+  getOrderedLayouts,
   currentTheme,
   scale = 0.75,
   currentPage = 0,
+  getMonthlyTitle,
+  getWeeklyTitle,
+  getMonthlyDates,
+  getWeeklyDates,
 }) => {
   // 生成預覽頁面配置
   const previewPages = useMemo(() => {
-    if (!layouts?.layouts || !selectedLayouts) return [];
+    if (!layouts?.layouts) return [];
 
     const pages = [];
+    const orderedLayouts = getOrderedLayouts();
 
     // 處理月記事布局
-    selectedLayouts.monthly.forEach((layoutId) => {
-      const layout = layouts.layouts[layoutId];
-      if (layout) {
-        // 每個布局生成兩頁
-        pages.push(
-          {
+    orderedLayouts.forEach((layout) => {
+      if (layout.type === "monthly") {
+        const monthlyDates = getMonthlyDates();
+        monthlyDates.forEach((date) => {
+          pages.push({
             ...layout,
-            pageNumber: pages.length + 1,
-          },
-          {
+            title: getMonthlyTitle(date, layout.coverTitle),
+          });
+        });
+      } else if (layout.type === "weekly") {
+        const weeklyDates = getWeeklyDates();
+        weeklyDates.forEach((date) => {
+          pages.push({
             ...layout,
-            pageNumber: pages.length + 2,
-          }
-        );
-      }
-    });
-    // 處理週記事布局
-    selectedLayouts.weekly.forEach((layoutId) => {
-      const layout = layouts.layouts[layoutId];
-      if (layout) {
-        // 每個布局生成兩頁
-        pages.push(
-          {
-            ...layout,
-            pageNumber: pages.length + 1,
-          },
-          {
-            ...layout,
-            pageNumber: pages.length + 2,
-          }
-        );
+            title: getWeeklyTitle(date, layout.coverTitle),
+          });
+        });
       }
     });
 
     return pages;
-  }, [layouts, selectedLayouts]);
+  }, [
+    layouts,
+    getOrderedLayouts,
+    getMonthlyDates,
+    getWeeklyDates,
+    getMonthlyTitle,
+    getWeeklyTitle,
+  ]);
 
   if (!currentTheme || !layouts || previewPages.length === 0) return null;
 
@@ -82,7 +80,7 @@ const PlannerPreviews = ({
               }}
             >
               {/* 基礎網格 */}
-              <BaseGrid config={page.base_grid} theme={currentTheme} />
+              <BaseGrid config={layouts.base_grid} theme={currentTheme} />
               {/* 表格網格 */}
               <TableGrid config={page.table_grid} theme={currentTheme} />
               {/* 頁面標題 */}
@@ -90,7 +88,7 @@ const PlannerPreviews = ({
                 className="absolute top-4 left-4 text-lg font-medium"
                 style={{ color: currentTheme.styles.text.page_titles }}
               >
-                {page.coverTitle} - {page.pageNumber % 2 === 0 ? "B" : "A"}
+                {page.title}
               </div>
               {/* 頁碼 */}
             </div>

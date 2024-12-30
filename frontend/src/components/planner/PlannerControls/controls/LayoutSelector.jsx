@@ -13,47 +13,59 @@ const LayoutSelector = ({ layouts, selectedLayouts, onLayoutChange }) => {
 
   return (
     <div className="space-y-4">
-      {/* 月記事布局 */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          月記事布局 (必選)
-        </label>
-        <div className="space-y-2">
-          {monthlyLayouts.map((layout) => (
-            <label key={layout.id} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={selectedLayouts.monthly.includes(layout.id)}
-                onChange={() => onLayoutChange(layout.id)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                disabled={
-                  selectedLayouts.monthly.length === 1 &&
-                  selectedLayouts.monthly.includes(layout.id)
-                }
-              />
-              <span className="text-sm text-gray-700">{layout.label}</span>
+        <div className="flex gap-4">
+          {/* 月記事布局 */}
+          <div className="w-1/2">
+            <label className="block text-sm font-medium text-gray-700 py-2">
+              月記事布局
             </label>
-          ))}
-        </div>
-      </div>
+            {monthlyLayouts.map((layout) => {
+              const isSelected = selectedLayouts.horizontal.includes(layout.id);
+              const isMonthlyCalender = layout.id === "monthly_calender";
 
-      {/* 週記事布局 */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          週記事布局 (選填)
-        </label>
-        <div className="space-y-2">
-          {weeklyLayouts.map((layout) => (
-            <label key={layout.id} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={selectedLayouts.weekly.includes(layout.id)}
-                onChange={() => onLayoutChange(layout.id)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">{layout.label}</span>
+              return (
+                <label key={layout.id} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => onLayoutChange(layout.id)}
+                    disabled={isMonthlyCalender && isSelected}
+                    className={`
+                    rounded border-gray-300 text-blue-600 
+                    focus:ring-blue-500
+                    ${
+                      isMonthlyCalender && isSelected
+                        ? "cursor-not-allowed opacity-50"
+                        : ""
+                    }
+                  `}
+                  />
+                  <span className="text-sm text-gray-700">
+                    {layout.label}
+                    {isMonthlyCalender && isSelected}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+          {/* 週記事布局 */}
+          <div className="w-1/2">
+            <label className="block text-sm font-medium text-gray-700 py-2">
+              週記事布局
             </label>
-          ))}
+            {weeklyLayouts.map((layout) => (
+              <label key={layout.id} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={selectedLayouts.horizontal.includes(layout.id)}
+                  onChange={() => onLayoutChange(layout.id)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">{layout.label}</span>
+              </label>
+            ))}
+          </div>
         </div>
       </div>
     </div>

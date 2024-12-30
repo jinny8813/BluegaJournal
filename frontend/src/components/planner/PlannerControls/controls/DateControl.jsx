@@ -1,6 +1,11 @@
-import React from 'react';
+import React from "react";
 
-const DateControl = ({ startDate, duration, onDateChange, onDurationChange }) => {
+const DateControl = ({
+  startDate,
+  duration,
+  onDateChange,
+  onDurationChange,
+}) => {
   return (
     <div className="space-y-4">
       <div className="space-y-2">

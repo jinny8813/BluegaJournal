@@ -5,18 +5,11 @@ import { usePlannerState } from "../../hooks/usePlannerState";
 import { useThemes } from "../../hooks/useThemes";
 import { useLayouts } from "../../hooks/useLayouts";
 import { useScale } from "../../hooks/useScale";
+import { useDateRange } from "../../hooks/useDateRange";
 
 const PlannerPage = () => {
-  const {
-    startDate,
-    duration,
-    currentPage,
-    totalPages,
-    scrollContainerRef,
-    handleDateChange,
-    handleDurationChange,
-    handlePageChange,
-  } = usePlannerState();
+  const { currentPage, totalPages, scrollContainerRef, handlePageChange } =
+    usePlannerState();
 
   const {
     themes,
@@ -29,12 +22,24 @@ const PlannerPage = () => {
   const {
     layouts,
     selectedLayouts,
+    getOrderedLayouts,
     loading: layoutsLoading,
     error: layoutsError,
     handleLayoutChange,
   } = useLayouts();
 
   const { scale, handleScaleChange } = useScale();
+
+  const {
+    startDate,
+    duration,
+    handleDateChange,
+    handleDurationChange,
+    getMonthlyTitle,
+    getWeeklyTitle,
+    getMonthlyDates,
+    getWeeklyDates,
+  } = useDateRange();
 
   // 處理加載狀態
   if (layoutsLoading || themesLoading) {
@@ -66,10 +71,14 @@ const PlannerPage = () => {
       >
         <PlannerPreviews
           layouts={layouts}
-          selectedLayouts={selectedLayouts}
+          getOrderedLayouts={getOrderedLayouts}
           currentTheme={currentTheme}
           scale={scale}
           scrollContainerRef={scrollContainerRef}
+          getMonthlyTitle={getMonthlyTitle}
+          getWeeklyTitle={getWeeklyTitle}
+          getMonthlyDates={getMonthlyDates}
+          getWeeklyDates={getWeeklyDates}
         />
       </div>
 
@@ -78,12 +87,8 @@ const PlannerPage = () => {
         style={{ backgroundColor: "#E5E5E5" }}
       >
         <PlannerControls
-          startDate={startDate}
-          duration={duration}
           currentPage={currentPage}
           totalPages={totalPages}
-          onDateChange={handleDateChange}
-          onDurationChange={handleDurationChange}
           onPageChange={handlePageChange}
           onDownload={handleDownload}
           themes={themes}
@@ -94,6 +99,10 @@ const PlannerPage = () => {
           onLayoutChange={handleLayoutChange}
           scale={scale}
           onScaleChange={handleScaleChange}
+          startDate={startDate}
+          duration={duration}
+          onDateChange={handleDateChange}
+          onDurationChange={handleDurationChange}
         />
       </div>
     </div>
