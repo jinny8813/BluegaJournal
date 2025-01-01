@@ -1,16 +1,13 @@
-import React from "react";
-import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
-import PlannerControls from "./PlannerControls/PlannerControls";
-import { usePlannerState } from "../../hooks/usePlannerState";
+import React, { useMemo } from "react";
 import { useThemes } from "../../hooks/useThemes";
 import { useLayouts } from "../../hooks/useLayouts";
 import { useScale } from "../../hooks/useScale";
 import { useDateRange } from "../../hooks/useDateRange";
+import { usePageNavigator } from "../../hooks/usePageNavigator";
+import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
+import PlannerControls from "./PlannerControls/PlannerControls";
 
 const PlannerPage = () => {
-  const { currentPage, totalPages, scrollContainerRef, handlePageChange } =
-    usePlannerState();
-
   const {
     themes,
     currentTheme,
@@ -41,6 +38,58 @@ const PlannerPage = () => {
     getWeeklyDates,
   } = useDateRange();
 
+  // 生成預覽頁面配置
+  const previewPages = useMemo(() => {
+    if (!layouts?.layouts) return [];
+
+    const pages = [];
+    const orderedLayouts = getOrderedLayouts();
+
+    // 處理月記事布局
+    orderedLayouts.forEach((layout) => {
+      if (layout.type === "monthly") {
+        const monthlyDates = getMonthlyDates();
+        monthlyDates.forEach((date) => {
+          pages.push({
+            ...layout,
+            pageNumber: pages.length + 1,
+            title: getMonthlyTitle(date, layout.coverTitle),
+          });
+        });
+      } else if (layout.type === "weekly") {
+        const weeklyDates = getWeeklyDates();
+        weeklyDates.forEach((date) => {
+          pages.push({
+            ...layout,
+            pageNumber: pages.length + 1,
+            title: getWeeklyTitle(date, layout.coverTitle),
+          });
+        });
+      }
+    });
+
+    return pages;
+  }, [
+    layouts,
+    getOrderedLayouts,
+    getMonthlyDates,
+    getWeeklyDates,
+    getMonthlyTitle,
+    getWeeklyTitle,
+  ]);
+
+  // 計算總頁數
+  const totalPages = previewPages.length;
+
+  const {
+    scrollContainerRef,
+    currentPage,
+    inputValue,
+    handlePageChange,
+    handleInputChange,
+    handleInputConfirm,
+  } = usePageNavigator(totalPages);
+
   // 處理加載狀態
   if (layoutsLoading || themesLoading) {
     return <div>Loading...</div>;
@@ -51,34 +100,24 @@ const PlannerPage = () => {
     return <div>Error: {layoutsError || themesError}</div>;
   }
 
-  const handleDownload = async () => {
-    setIsLoading(true);
-    try {
-      // 實現下載邏輯
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    } catch (error) {
-      console.error("Download failed:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDownload = () => {
+    console.log("download");
   };
 
   return (
     <div className="flex h-[calc(100vh-7.25rem)]">
       <div
-        className="w-3/4 overflow-auto"
-        style={{ backgroundColor: "#F5F5F5" }}
+        className="w-3/4 p-8 overflow-auto"
+        style={{ backgroundColor: "#C5C5C5", scrollBehavior: "smooth" }}
+        ref={scrollContainerRef}
       >
         <PlannerPreviews
           layouts={layouts}
-          getOrderedLayouts={getOrderedLayouts}
+          previewPages={previewPages}
           currentTheme={currentTheme}
           scale={scale}
+          currentPage={currentPage}
           scrollContainerRef={scrollContainerRef}
-          getMonthlyTitle={getMonthlyTitle}
-          getWeeklyTitle={getWeeklyTitle}
-          getMonthlyDates={getMonthlyDates}
-          getWeeklyDates={getWeeklyDates}
         />
       </div>
 
@@ -87,10 +126,6 @@ const PlannerPage = () => {
         style={{ backgroundColor: "#E5E5E5" }}
       >
         <PlannerControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          onDownload={handleDownload}
           themes={themes}
           currentTheme={currentTheme}
           onThemeChange={handleThemeChange}
@@ -103,6 +138,13 @@ const PlannerPage = () => {
           duration={duration}
           onDateChange={handleDateChange}
           onDurationChange={handleDurationChange}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          inputValue={inputValue}
+          onPageChange={handlePageChange}
+          onInputChange={handleInputChange}
+          onInputConfirm={handleInputConfirm}
+          onDownload={handleDownload}
         />
       </div>
     </div>

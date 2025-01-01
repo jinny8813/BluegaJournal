@@ -2,8 +2,8 @@ import React from "react";
 import DateControl from "./controls/DateControl";
 import LayoutSelector from "./controls/LayoutSelector";
 import ThemeSelector from "./controls/ThemeSelector";
-import PageNavigator from "./controls/PageNavigator";
 import ScaleControl from "./controls/ScaleControl";
+import PageNavigator from "./controls/PageNavigator";
 
 const PlannerControls = ({
   startDate,
@@ -13,16 +13,19 @@ const PlannerControls = ({
   currentTheme,
   themes,
   scale,
-  currentPage,
-  totalPages,
   onDateChange,
   onDurationChange,
   onLayoutChange,
   onThemeChange,
   onScaleChange,
-  onPageChange,
   onDownload,
   isLoading,
+  currentPage,
+  totalPages,
+  inputValue,
+  onPageChange,
+  onInputChange,
+  onInputConfirm,
 }) => {
   return (
     <div className="space-y-4">
@@ -65,7 +68,10 @@ const PlannerControls = ({
         <PageNavigator
           currentPage={currentPage}
           totalPages={totalPages}
+          inputValue={inputValue}
           onPageChange={onPageChange}
+          onInputChange={onInputChange}
+          onInputConfirm={onInputConfirm}
         />
 
         <button

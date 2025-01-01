@@ -1,6 +1,16 @@
 import React from "react";
 
-const PageNavigator = ({ currentPage, totalPages, onPageChange }) => {
+const PageNavigator = ({
+  currentPage,
+  totalPages,
+  inputValue,
+  onPageChange,
+  onInputChange,
+  onInputConfirm,
+}) => {
+  // 確保 totalPages 至少為 1
+  const safeTotalPages = Math.max(1, totalPages || 1);
+
   return (
     <div className="flex items-center justify-between mb-4">
       <button
@@ -29,29 +39,28 @@ const PageNavigator = ({ currentPage, totalPages, onPageChange }) => {
 
       <div className="flex items-center space-x-2">
         <input
-          type="number"
-          value={currentPage}
-          onChange={(e) => {
-            const value = parseInt(e.target.value);
-            if (!isNaN(value)) {
-              onPageChange(value);
+          type="text"
+          value={inputValue || ""}
+          onChange={(e) => onInputChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              onInputConfirm();
             }
           }}
+          onBlur={onInputConfirm}
           className="w-16 px-2 py-1 border rounded-md text-center"
-          min="1"
-          max={totalPages}
         />
-        <span className="text-gray-600">/ {totalPages}</span>
+        <span className="text-gray-600">/ {safeTotalPages}</span>
       </div>
 
       <button
         onClick={() => onPageChange(currentPage + 1)}
         className={`p-2 rounded-lg transition-colors ${
-          currentPage < totalPages
+          currentPage < safeTotalPages
             ? "hover:bg-gray-100 text-gray-700"
             : "text-gray-300 cursor-not-allowed"
         }`}
-        disabled={currentPage >= totalPages}
+        disabled={currentPage >= safeTotalPages}
       >
         <svg
           className="w-5 h-5"
@@ -71,4 +80,4 @@ const PageNavigator = ({ currentPage, totalPages, onPageChange }) => {
   );
 };
 
-export default PageNavigator;
+export default React.memo(PageNavigator);
