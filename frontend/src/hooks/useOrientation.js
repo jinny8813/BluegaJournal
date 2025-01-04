@@ -4,7 +4,6 @@ export const useOrientation = () => {
   const [orientation, setOrientation] = useState("horizontal");
 
   const handleOrientationChange = useCallback((newOrientation) => {
-    console.log("Orientation changed to:", newOrientation); // 添加日誌
     setOrientation(newOrientation);
   }, []);
 

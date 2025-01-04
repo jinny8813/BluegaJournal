@@ -1,0 +1,40 @@
+{
+  "contents": {
+    "zh": {
+      "monthly_calendar": {
+        "title": {
+          "text": "月主行事曆"
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      }
+    },
+    "en": {
+      "monthly_calendar": {
+        "title": {
+          "text": "Monthly Calendar"
+        },
+        "content": [
+          {
+            "text": "Weekly To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

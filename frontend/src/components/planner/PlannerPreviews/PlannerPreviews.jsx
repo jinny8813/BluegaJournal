@@ -1,15 +1,18 @@
 import React, { useMemo } from "react";
 import BaseGrid from "./elements/BaseGrid";
 import TableGrid from "./elements/TableGrid";
+import Text from "./elements/Text";
 
 const PlannerPreviews = ({
   layouts,
   previewPages,
   currentTheme,
   scale = 0.75,
-  orientation,
+  contents,
+  language = "en",
 }) => {
-  if (!currentTheme || !layouts || previewPages.length === 0) return null;
+  if (!currentTheme || !layouts || !contents || previewPages.length === 0)
+    return null;
 
   // 計算縮放後的紙張尺寸
   const scaledWidth = layouts.page_config.width * scale;
@@ -48,6 +51,13 @@ const PlannerPreviews = ({
             >
               {page.title}
             </div>
+            <Text
+              language={language}
+              pageId={page.id}
+              config={contents}
+              scale={scale}
+              theme={currentTheme.styles.text.page_contents}
+            />
             {/* 頁碼 */}
             <div
               className="absolute bottom-4 right-4 text-sm"

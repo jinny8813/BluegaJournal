@@ -20,7 +20,7 @@ const LayoutSelector = ({ layouts, selectedLayouts, onLayoutChange }) => {
         <div className="flex flex-col">
           {monthlyLayouts.map((layout) => {
             const isSelected = selectedLayouts.myLayouts.includes(layout.id);
-            const isMonthlyCalender = layout.id === "monthly_calender";
+            const isMonthlyCalendar = layout.id === "monthly_calendar";
 
             return (
               <label key={layout.id} className="flex items-center space-x-2">
@@ -28,12 +28,12 @@ const LayoutSelector = ({ layouts, selectedLayouts, onLayoutChange }) => {
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => onLayoutChange(layout.id)}
-                  disabled={isMonthlyCalender && isSelected}
+                  disabled={isMonthlyCalendar && isSelected}
                   className={`
                     rounded border-gray-300 text-blue-600 
                     focus:ring-blue-500
                     ${
-                      isMonthlyCalender && isSelected
+                      isMonthlyCalendar && isSelected
                         ? "cursor-not-allowed opacity-50"
                         : ""
                     }
@@ -41,7 +41,7 @@ const LayoutSelector = ({ layouts, selectedLayouts, onLayoutChange }) => {
                 />
                 <span className="text-sm text-gray-700">
                   {layout.label}
-                  {isMonthlyCalender && isSelected}
+                  {isMonthlyCalendar && isSelected}
                 </span>
               </label>
             );

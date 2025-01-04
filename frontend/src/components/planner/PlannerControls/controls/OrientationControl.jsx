@@ -15,7 +15,7 @@ const OrientationControl = ({ orientation, onOrientationChange }) => {
             onChange={(e) => onOrientationChange(e.target.value)}
             className="form-radio text-blue-600"
           />
-          <span className="ml-2">橫式</span>
+          <span className="ml-2 text-sm text-gray-700">橫式</span>
         </label>
         <label className="inline-flex items-center">
           <input
@@ -25,7 +25,7 @@ const OrientationControl = ({ orientation, onOrientationChange }) => {
             onChange={(e) => onOrientationChange(e.target.value)}
             className="form-radio text-blue-600"
           />
-          <span className="ml-2">直式</span>
+          <span className="ml-2 text-sm text-gray-700">直式</span>
         </label>
       </div>
     </div>

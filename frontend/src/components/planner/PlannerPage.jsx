@@ -5,13 +5,16 @@ import { useScale } from "../../hooks/useScale";
 import { useDateRange } from "../../hooks/useDateRange";
 import { usePageNavigator } from "../../hooks/usePageNavigator";
 import { useOrientation } from "../../hooks/useOrientation";
+import { useLanguage } from "../../hooks/useLanguage";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerControls from "./PlannerControls/PlannerControls";
 
 const PlannerPage = () => {
   const { orientation, handleOrientationChange } = useOrientation();
+  const { language, handleLanguageChange } = useLanguage();
 
   const {
+    contents,
     layouts,
     selectedLayouts,
     loading: layoutsLoading,
@@ -115,12 +118,13 @@ const PlannerPage = () => {
         ref={scrollContainerRef}
       >
         <PlannerPreviews
+          contents={contents}
           layouts={layouts}
           previewPages={previewPages}
           currentTheme={currentTheme}
           scale={scale}
           currentPage={currentPage}
-          orientation={orientation}
+          language={language}
         />
       </div>
 
@@ -150,6 +154,8 @@ const PlannerPage = () => {
           onDownload={handleDownload}
           orientation={orientation}
           onOrientationChange={handleOrientationChange}
+          language={language}
+          onLanguageChange={handleLanguageChange}
         />
       </div>
     </div>

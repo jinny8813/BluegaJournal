@@ -30,6 +30,15 @@ def get_configs(request):
             folder,
             'layouts.json'
         )
+        contents_path = os.path.join(
+            settings.BASE_DIR,
+            '..',
+            'apps',
+            'planner',
+            'configs',
+            folder,
+            'contents.json'
+        )
         themes_path = os.path.join(
             settings.BASE_DIR,
             '..',
@@ -42,11 +51,14 @@ def get_configs(request):
         # 讀取配置文件
         with open(layouts_path, 'r', encoding='utf-8') as f:
             layouts = json.load(f)
+        with open(contents_path, 'r', encoding='utf-8') as f:
+            contents = json.load(f)
         with open(themes_path, 'r', encoding='utf-8') as f:
             themes = json.load(f)
 
         configs = {
             'layouts': layouts,
+            'contents': contents,
             'themes': themes
         }
         return Response(configs)

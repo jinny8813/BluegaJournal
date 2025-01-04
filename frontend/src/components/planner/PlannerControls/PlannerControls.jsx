@@ -5,6 +5,7 @@ import ThemeSelector from "./controls/ThemeSelector";
 import ScaleControl from "./controls/ScaleControl";
 import PageNavigator from "./controls/PageNavigator";
 import OrientationControl from "./controls/OrientationControl";
+import LanguageControl from "./controls/LanguageControl";
 
 const PlannerControls = ({
   startDate,
@@ -29,18 +30,25 @@ const PlannerControls = ({
   onInputConfirm,
   orientation,
   onOrientationChange,
+  language,
+  onLanguageChange,
 }) => {
   return (
     <div className="space-y-4">
       {/* 版面方向選擇 */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
-          版面方向選擇
+          版面方向和語言選擇
         </h2>
         <div className="space-y-6">
           <OrientationControl
             orientation={orientation}
             onOrientationChange={onOrientationChange}
+          />
+
+          <LanguageControl
+            language={language}
+            onLanguageChange={onLanguageChange}
           />
         </div>
       </div>
