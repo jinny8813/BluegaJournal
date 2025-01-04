@@ -4,10 +4,22 @@ import { useLayouts } from "../../hooks/useLayouts";
 import { useScale } from "../../hooks/useScale";
 import { useDateRange } from "../../hooks/useDateRange";
 import { usePageNavigator } from "../../hooks/usePageNavigator";
+import { useOrientation } from "../../hooks/useOrientation";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerControls from "./PlannerControls/PlannerControls";
 
 const PlannerPage = () => {
+  const { orientation, handleOrientationChange } = useOrientation();
+
+  const {
+    layouts,
+    selectedLayouts,
+    loading: layoutsLoading,
+    error: layoutsError,
+    handleLayoutChange,
+    getOrderedLayouts,
+  } = useLayouts(orientation); // 傳入 orientation
+
   const {
     themes,
     currentTheme,
@@ -15,15 +27,6 @@ const PlannerPage = () => {
     error: themesError,
     handleThemeChange,
   } = useThemes();
-
-  const {
-    layouts,
-    selectedLayouts,
-    getOrderedLayouts,
-    loading: layoutsLoading,
-    error: layoutsError,
-    handleLayoutChange,
-  } = useLayouts();
 
   const { scale, handleScaleChange } = useScale();
 
@@ -117,12 +120,12 @@ const PlannerPage = () => {
           currentTheme={currentTheme}
           scale={scale}
           currentPage={currentPage}
-          scrollContainerRef={scrollContainerRef}
+          orientation={orientation}
         />
       </div>
 
       <div
-        className="w-1/4 p-4 overflow-auto pb-24"
+        className="w-1/4 p-4 overflow-auto"
         style={{ backgroundColor: "#E5E5E5" }}
       >
         <PlannerControls
@@ -145,6 +148,8 @@ const PlannerPage = () => {
           onInputChange={handleInputChange}
           onInputConfirm={handleInputConfirm}
           onDownload={handleDownload}
+          orientation={orientation}
+          onOrientationChange={handleOrientationChange}
         />
       </div>
     </div>

@@ -4,6 +4,7 @@ import LayoutSelector from "./controls/LayoutSelector";
 import ThemeSelector from "./controls/ThemeSelector";
 import ScaleControl from "./controls/ScaleControl";
 import PageNavigator from "./controls/PageNavigator";
+import OrientationControl from "./controls/OrientationControl";
 
 const PlannerControls = ({
   startDate,
@@ -26,9 +27,24 @@ const PlannerControls = ({
   onPageChange,
   onInputChange,
   onInputConfirm,
+  orientation,
+  onOrientationChange,
 }) => {
   return (
     <div className="space-y-4">
+      {/* 版面方向選擇 */}
+      <div className="bg-white rounded-lg shadow-md p-4">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          版面方向選擇
+        </h2>
+        <div className="space-y-6">
+          <OrientationControl
+            orientation={orientation}
+            onOrientationChange={onOrientationChange}
+          />
+        </div>
+      </div>
+
       {/* 手帳配置設定 Card */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">

@@ -6,8 +6,20 @@ from django.conf import settings
 
 @api_view(['GET'])
 def get_configs(request):
-    """獲取所有布局配置"""
+    orientation = request.GET.get('orientation', 'horizontal')
+    
     try:
+        # 根據方向選擇不同的配置文件夾
+        if orientation == "horizontal":
+            folder = "size_w3h2"    
+        elif orientation == "vertical":
+            folder = "size_w2h3"
+        else:
+            return Response(
+                {"error": f"Invalid orientation: {orientation}"},
+                status=400
+            )
+
         # 使用 os.path.join 確保路徑正確
         layouts_path = os.path.join(
             settings.BASE_DIR,
@@ -15,7 +27,7 @@ def get_configs(request):
             'apps',
             'planner',
             'configs',
-            'size_w3h2',
+            folder,
             'layouts.json'
         )
         themes_path = os.path.join(

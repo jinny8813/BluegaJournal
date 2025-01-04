@@ -7,7 +7,7 @@ const PlannerPreviews = ({
   previewPages,
   currentTheme,
   scale = 0.75,
-  scrollContainerRef,
+  orientation,
 }) => {
   if (!currentTheme || !layouts || previewPages.length === 0) return null;
 
@@ -16,8 +16,8 @@ const PlannerPreviews = ({
   const scaledHeight = layouts.page_config.height * scale;
 
   return (
-    <div className="flex flex-col items-center gap-8">
-      {previewPages.map((page, index) => (
+    <div className="flex flex-col items-center gap-4">
+      {previewPages.map((page) => (
         <div
           className="relative"
           key={`${page.id}-${page.pageNumber}`}

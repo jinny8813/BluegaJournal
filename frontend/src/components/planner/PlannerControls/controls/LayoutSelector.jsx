@@ -21,7 +21,7 @@ const LayoutSelector = ({ layouts, selectedLayouts, onLayoutChange }) => {
               月記事布局
             </label>
             {monthlyLayouts.map((layout) => {
-              const isSelected = selectedLayouts.horizontal.includes(layout.id);
+              const isSelected = selectedLayouts.myLayouts.includes(layout.id);
               const isMonthlyCalender = layout.id === "monthly_calender";
 
               return (
@@ -58,7 +58,7 @@ const LayoutSelector = ({ layouts, selectedLayouts, onLayoutChange }) => {
               <label key={layout.id} className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={selectedLayouts.horizontal.includes(layout.id)}
+                  checked={selectedLayouts.myLayouts.includes(layout.id)}
                   onChange={() => onLayoutChange(layout.id)}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />

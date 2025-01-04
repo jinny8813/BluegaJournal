@@ -12,7 +12,7 @@
             "width": "0.25px"
           },
           "large": {
-            "color": "#000000",
+            "color": "rgba(0, 0, 0, 0.6)",
             "width": "0.5px"
           }
         }
@@ -30,7 +30,7 @@
             "width": "0.25px"
           },
           "large": {
-            "color": "#000000",
+            "color": "rgba(0, 0, 0, 0.6)",
             "width": "0.5px"
           }
         }
@@ -48,7 +48,7 @@
             "width": "0.25px"
           },
           "large": {
-            "color": "#000000",
+            "color": "rgba(0, 0, 0, 0.6)",
             "width": "0.5px"
           }
         }
@@ -66,7 +66,7 @@
             "width": "0.25px"
           },
           "large": {
-            "color": "#000000",
+            "color": "rgba(0, 0, 0, 0.6)",
             "width": "0.5px"
           }
         }
@@ -84,7 +84,7 @@
             "width": "0.25px"
           },
           "large": {
-            "color": "rgba(255, 255, 255, 0.4)",
+            "color": "rgba(255, 255, 255, 0.6)",
             "width": "0.5px"
           }
         }
