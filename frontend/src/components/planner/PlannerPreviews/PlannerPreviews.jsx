@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import BaseGrid from "./elements/BaseGrid";
 import TableGrid from "./elements/TableGrid";
 import Text from "./elements/Text";
@@ -44,19 +44,13 @@ const PlannerPreviews = ({
             <BaseGrid config={layouts.base_grid} theme={currentTheme} />
             {/* 表格網格 */}
             <TableGrid config={page.table_grid} theme={currentTheme} />
-            {/* 頁面標題 */}
-            <div
-              className="absolute top-4 left-4 text-lg font-medium"
-              style={{ color: currentTheme.styles.text.page_titles }}
-            >
-              {page.title}
-            </div>
+            {/* 頁面標題及內容 */}
             <Text
               language={language}
               pageId={page.id}
               config={contents}
               scale={scale}
-              theme={currentTheme.styles.text.page_contents}
+              theme={currentTheme.styles.text}
             />
             {/* 頁碼 */}
             <div

@@ -3,7 +3,167 @@
     "zh": {
       "monthly_calendar": {
         "title": {
-          "text": "月主行事曆"
+          "text": "月主行事曆",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_project": {
+        "title": {
+          "text": "月專案管理",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_habitTracker": {
+        "title": {
+          "text": "月習慣追蹤",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_gallery": {
+        "title": {
+          "text": "月相片畫廊",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_timeline": {
+        "title": {
+          "text": "週時間主軸",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_listTodo": {
+        "title": {
+          "text": "週待辦清單",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_classicalLog": {
+        "title": {
+          "text": "週經典橫式",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_recordBoard": {
+        "title": {
+          "text": "週記事看板",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
         },
         "content": [
           {
@@ -21,11 +181,171 @@
     "en": {
       "monthly_calendar": {
         "title": {
-          "text": "Monthly Calendar"
+          "text": "Monthly Calendar",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
         },
         "content": [
           {
             "text": "Weekly To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_project": {
+        "title": {
+          "text": "Monthly Project",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_habitTracker": {
+        "title": {
+          "text": "Monthly Habit Tracker",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_gallery": {
+        "title": {
+          "text": "Monthly Gallery",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_timeline": {
+        "title": {
+          "text": "Weekly Timeline",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_listTodo": {
+        "title": {
+          "text": "Weekly ListTodo",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_classicalLog": {
+        "title": {
+          "text": "Weekly ClassicalLog",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_recordBoard": {
+        "title": {
+          "text": "Weekly RecordBoard",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
             "style": {
               "top": "45px",
               "left": "36px",

@@ -690,11 +690,11 @@
         ]
       }
     },
-    "weekly_classicLog": {
-      "id": "weekly_classicLog",
+    "weekly_classicalLog": {
+      "id": "weekly_classicalLog",
       "type": "weekly",
-      "label": "ClassicLog",
-      "coverTitle": "Weekly ClassicLog",
+      "label": "ClassicalLog",
+      "coverTitle": "Weekly ClassicalLog",
       "table_grid": {
         "horizontal": [
           [36, 45, 1044, 45],
@@ -716,11 +716,11 @@
         ]
       }
     },
-    "weekly_recordBroad": {
-      "id": "weekly_recordBroad",
+    "weekly_recordBoard": {
+      "id": "weekly_recordBoard",
       "type": "weekly",
-      "label": "RecordBroad",
-      "coverTitle": "Weekly RecordBroad",
+      "label": "RecordBoard",
+      "coverTitle": "Weekly RecordBoard",
       "table_grid": {
         "horizontal": [
           [36, 45, 1044, 45],
