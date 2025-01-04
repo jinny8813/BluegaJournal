@@ -2,8 +2,8 @@ import React from "react";
 
 const OrientationControl = ({ orientation, onOrientationChange }) => {
   return (
-    <div className="space-y-2 mb-4">
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="flex items-center space-x-4">
+      <label className="text-sm font-medium text-gray-700 min-w-[5rem]">
         版面方向
       </label>
       <div className="flex gap-4">

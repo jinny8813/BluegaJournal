@@ -93,7 +93,7 @@ const PlannerControls = ({
         <button
           onClick={onDownload}
           disabled={isLoading}
-          className={`w-full px-4 py-2 rounded-md flex items-center justify-center gap-2 transition-colors
+          className={`w-full px-4 py-2 rounded-md flex items-center justify-center gap-2 transition-colors my-4
               ${
                 isLoading
                   ? "bg-gray-400 cursor-not-allowed"
