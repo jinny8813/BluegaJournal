@@ -12,7 +12,7 @@ const PageNavigator = ({
   const safeTotalPages = Math.max(1, totalPages || 1);
 
   return (
-    <div className="space-y-4 my-4">
+    <div className="space-y-4">
       <div className="flex items-center space-x-4">
         <label className="text-sm font-medium text-gray-700 min-w-[5rem]">
           預覽頁面
