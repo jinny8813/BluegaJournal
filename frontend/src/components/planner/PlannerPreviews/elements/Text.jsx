@@ -5,7 +5,7 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
   const getTitle = () => {
     if (language === "bilingual") {
       const enTitle = `${pageTitle.en} ${contents.contents.en[pageId].title.text}`;
-      const zhTitle = `${pageTitle.tw} ${contents.contents.zh[pageId].title.text}`;
+      const zhTitle = `${contents.contents.zh[pageId].title.text}`;
 
       return (
         <div

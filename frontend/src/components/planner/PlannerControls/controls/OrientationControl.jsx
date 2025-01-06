@@ -24,6 +24,7 @@ const OrientationControl = ({ orientation, onOrientationChange }) => {
             checked={orientation === "vertical"}
             onChange={(e) => onOrientationChange(e.target.value)}
             className="form-radio text-blue-600"
+            disabled
           />
           <span className="ml-2 text-sm text-gray-700">直式</span>
         </label>
