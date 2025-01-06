@@ -153,7 +153,7 @@ const PlannerPage = () => {
           />
         </div>
         <div
-          className="overflow-auto bg-gray-400 p-4 h-[calc(100vh-6rem)]"
+          className="overflow-auto bg-gray-400 p-4 h-[calc(50vh-6rem)]"
           style={{ scrollBehavior: "smooth" }}
           ref={scrollContainerRef}
         >
