@@ -12,6 +12,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
+    networks:
+      - bluega_network_dev
 
   backend:
     build:
@@ -31,6 +33,8 @@ services:
       - DB_PORT=5432
     depends_on:
       - db
+    networks:
+      - bluega_network_dev
 
   frontend:
     build:
@@ -42,12 +46,18 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.local
+      - CHOKIDAR_USEPOLLING=true # 啟用輪詢以改善檔案監控
       - NODE_ENV=development
       - VITE_ENV=local
       - VITE_API_BASE_URL=http://localhost:8000
     depends_on:
       - backend
+    networks:
+      - bluega_network_dev
 
 volumes:
   postgres_data:
+
+networks:
+  bluega_network_dev:
+    name: bluega_network_dev

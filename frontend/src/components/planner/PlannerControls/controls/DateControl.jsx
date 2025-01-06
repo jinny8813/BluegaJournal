@@ -1,10 +1,15 @@
-import React from 'react';
+import React from "react";
 
-const DateControl = ({ startDate, duration, onDateChange, onDurationChange }) => {
+const DateControl = ({
+  startDate,
+  duration,
+  onDateChange,
+  onDurationChange,
+}) => {
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+      <div className="flex items-center space-x-4">
+        <label className="text-sm font-medium text-gray-700 min-w-[5rem]">
           起始日期
         </label>
         <input
@@ -14,10 +19,9 @@ const DateControl = ({ startDate, duration, onDateChange, onDurationChange }) =>
           className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          月數 ({duration} 個月)
+      <div className="flex items-center space-x-4">
+        <label className="text-sm font-medium text-gray-700 min-w-[5rem]">
+          持續月數
         </label>
         <select
           value={duration}

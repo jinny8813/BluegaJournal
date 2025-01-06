@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { plannerService } from "../services/api/plannerService";
 
-export const useLayouts = () => {
+export const useLayouts = (orientation = "horizontal") => {
   const [layouts, setLayouts] = useState(null);
+  const [contents, setContents] = useState(null);
   const [selectedLayouts, setSelectedLayouts] = useState({
-    monthly: [],
-    weekly: [],
+    myLayouts: [], // 改用單一陣列儲存所有選中的布局
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,17 +15,23 @@ export const useLayouts = () => {
     const fetchLayouts = async () => {
       try {
         setLoading(true);
-        const response = await plannerService.getConfigs();
+        const response = await plannerService.getConfigs(orientation);
         setLayouts(response.layouts);
-        // 設置默認選擇
-        if (response.layouts?.layouts?.monthly_calender) {
-          setSelectedLayouts((prev) => ({
-            ...prev,
-            monthly: ["monthly_calender"],
-          }));
+        setContents(response.contents);
+
+        // 重置選中的布局
+        const firstMonthlyLayout = Object.values(
+          response?.layouts.layouts || {}
+        ).find((layout) => layout.type === "monthly");
+
+        if (firstMonthlyLayout) {
+          setSelectedLayouts({
+            myLayouts: [firstMonthlyLayout.id],
+          });
         }
         setError(null);
       } catch (error) {
+        console.error("Error loading layouts:", error);
         setError(error.message);
       } finally {
         setLoading(false);
@@ -33,43 +39,48 @@ export const useLayouts = () => {
     };
 
     fetchLayouts();
-  }, []);
+  }, [orientation]);
 
   // 處理布局變化
   const handleLayoutChange = useCallback(
     (layoutId) => {
-      const layoutType = layouts.layouts[layoutId].type;
+      if (!layouts?.layouts?.[layoutId]) return;
+
+      const isMonthlyCalendar = layoutId === "monthly_calendar";
 
       setSelectedLayouts((prev) => {
-        const newLayouts = { ...prev };
-
-        // 處理月記事布局
-        if (layoutType === "monthly") {
-          if (prev.monthly.includes(layoutId)) {
-            // 如果是最後一個月記事布局，不允許取消
-            if (prev.monthly.length === 1) return prev;
-            newLayouts.monthly = prev.monthly.filter((id) => id !== layoutId);
-          } else {
-            newLayouts.monthly = [...prev.monthly, layoutId];
-          }
+        // 如果是 monthly_calendar 且已選中，不允許取消
+        if (isMonthlyCalendar && prev.myLayouts.includes(layoutId)) {
+          return prev;
         }
 
-        // 處理週記事布局
-        if (layoutType === "weekly") {
-          if (prev.weekly.includes(layoutId)) {
-            newLayouts.weekly = prev.weekly.filter((id) => id !== layoutId);
-          } else {
-            newLayouts.weekly = [...prev.weekly, layoutId];
-          }
+        let newSelected = [...prev.myLayouts];
+
+        if (prev.myLayouts.includes(layoutId)) {
+          // 取消選擇
+          newSelected = newSelected.filter((id) => id !== layoutId);
+        } else {
+          // 新增選擇
+          newSelected.push(layoutId);
         }
 
-        return newLayouts;
+        // 按照 layouts 排序選中的布局
+        const sortedLayouts = newSelected.sort((a, b) => {
+          const indexA = Object.keys(layouts.layouts).indexOf(a);
+          const indexB = Object.keys(layouts.layouts).indexOf(b);
+          return indexA - indexB;
+        });
+
+        return {
+          myLayouts: sortedLayouts,
+        };
       });
     },
     [layouts]
   );
 
   return {
+    contents,
     layouts,
     selectedLayouts,
     loading,

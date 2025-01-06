@@ -1,0 +1,86 @@
+{
+  "contents": {
+    "monthly_calendar": {
+      "zh": {
+        "title": {
+          "text": "月主行事曆"
+        },
+        "content": [
+          {
+            "text": "每週待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          },
+          {
+            "text": "每週待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "en": {
+        "title": {
+          "text": "Monthly Calendar"
+        },
+        "content": [
+          {
+            "text": "Weekly To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          },
+          {
+            "text": "Weekly To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      }
+    },
+    "monthly_project": {
+      "zh": {
+        "title": {
+          "text": "月專案管理"
+        },
+        "content": {
+          "text": "每週待辦事項",
+          "style": {
+            "top": "45px",
+            "left": "36px",
+            "width": "126px",
+            "height": "18px"
+          }
+        }
+      },
+      "en": {
+        "title": {
+          "text": "Monthly Calendar"
+        },
+        "content": {
+          "text": "Weekly To-Do",
+          "style": {
+            "top": "45px",
+            "left": "36px",
+            "width": "126px",
+            "height": "18px"
+          }
+        }
+      }
+    }
+  }
+}

@@ -4,9 +4,9 @@ const ThemeSelector = ({ currentTheme, themes, onThemeChange }) => {
   if (!themes?.themes) return null;
 
   return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
-        背景主題
+    <div className="flex items-center space-x-4">
+      <label className="text-sm font-medium text-gray-700 min-w-[5rem]">
+        主題選擇
       </label>
       <div className="flex gap-2">
         {Object.values(themes.themes).map((theme) => (
@@ -20,8 +20,8 @@ const ThemeSelector = ({ currentTheme, themes, onThemeChange }) => {
             }`}
             style={{
               backgroundColor: theme.styles.background,
-              width: "40px",
-              height: "40px",
+              width: "32px",
+              height: "32px",
               border: "1px solid rgba(0,0,0,0.1)",
             }}
             title={theme.label}

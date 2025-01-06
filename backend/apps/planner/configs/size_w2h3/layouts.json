@@ -1,0 +1,248 @@
+{
+  "page_config": {
+    "width": 720,
+    "height": 1080
+  },
+  "base_grid": {
+    "horizontal": {
+      "count": 113,
+      "gap": 9,
+      "start_top": 63,
+      "end_top": 1071
+    },
+    "vertical": {
+      "count": 79,
+      "gap": 9,
+      "start_left": 9,
+      "end_left": 711
+    }
+  },
+  "layouts": {
+    "monthly_calender": {
+      "id": "monthly_calender",
+      "type": "monthly",
+      "label": "Calender",
+      "coverTitle": "Monthly Calender",
+      "table_grid": {
+        "horizontal": [
+          [9, 63, 711, 63],
+          [9, 1071, 711, 1071]
+        ],
+        "vertical": [
+          [9, 63, 9, 1071],
+          [711, 63, 711, 1071]
+        ]
+      }
+    },
+    "monthly_project": {
+      "id": "monthly_project",
+      "type": "monthly",
+      "label": "Project",
+      "coverTitle": "Monthly Project",
+      "table_grid": {
+        "horizontal": [
+          [18, 63, 702, 63],
+          [18, 1079, 702, 1079]
+        ],
+        "vertical": [
+          [63, 18, 1079, 702],
+          [36, 18, 1079, 702]
+        ]
+      }
+    },
+    "monthly_gallery": {
+      "id": "monthly_gallery",
+      "type": "monthly",
+      "label": "Gallery",
+      "coverTitle": "Monthly Gallery",
+      "table_grid": {
+        "horizontal": [
+          [18, 63, 702, 63],
+          [18, 1079, 702, 1079]
+        ],
+        "vertical": [
+          [63, 18, 1079, 702],
+          [36, 18, 1079, 702]
+        ]
+      }
+    },
+    "monthly_finance": {
+      "id": "monthly_finance",
+      "type": "monthly",
+      "label": "Finance",
+      "coverTitle": "Monthly Finance",
+      "table_grid": {
+        "horizontal": [
+          [18, 63, 702, 63],
+          [18, 1079, 702, 1079]
+        ],
+        "vertical": [
+          [63, 18, 1079, 702],
+          [36, 18, 1079, 702]
+        ]
+      }
+    },
+    "monthly_wellness": {
+      "id": "monthly_wellness",
+      "type": "monthly",
+      "label": "Wellness",
+      "coverTitle": "Monthly Wellness",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "monthly_review": {
+      "id": "monthly_review",
+      "type": "monthly",
+      "label": "Review",
+      "coverTitle": "Monthly Review",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "weekly_timeline": {
+      "id": "weekly_timeline",
+      "type": "weekly",
+      "label": "Timeline",
+      "coverTitle": "Weekly Timeline",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "weekly_listTodo": {
+      "id": "weekly_listTodo",
+      "type": "weekly",
+      "label": "ListTodo",
+      "coverTitle": "Weekly ListTodo",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "weekly_budget": {
+      "id": "weekly_budget",
+      "type": "weekly",
+      "label": "Budget",
+      "coverTitle": "Weekly Budget",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    }
+  },
+  "defaults": {
+    "index": {
+      "id": "index",
+      "type": "index",
+      "label": "Index",
+      "coverTitle": "Index",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "yearly_glance": {
+      "id": "yearly_glance",
+      "type": "yearly",
+      "label": "Yearly Glance",
+      "coverTitle": "Yearly Glance",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "yearly_overview": {
+      "id": "yearly_overview",
+      "type": "yearly",
+      "label": "Yearly Overview",
+      "coverTitle": "Yearly Overview",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "yearly_intro": {
+      "id": "yearly_intro",
+      "type": "yearly",
+      "label": "Yearly Intro",
+      "coverTitle": "Yearly Intro",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    },
+    "yearly_outro": {
+      "id": "yearly_outro",
+      "type": "yearly",
+      "label": "Yearly Outro",
+      "coverTitle": "Yearly Outro",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 657, 1044, 657]
+        ],
+        "vertical": [
+          [36, 45, 36, 657],
+          [1044, 45, 1044, 657]
+        ]
+      }
+    }
+  }
+}

@@ -24,6 +24,7 @@ const BaseGrid = ({ config, theme }) => {
           y2={horizontal.end_top}
           stroke={theme.styles.gridLines.small.color}
           strokeWidth={theme.styles.gridLines.small.width}
+          strokeDasharray="1 1"
         />
       ))}
 
@@ -37,6 +38,7 @@ const BaseGrid = ({ config, theme }) => {
           y2={horizontal.start_top + i * horizontal.gap}
           stroke={theme.styles.gridLines.small.color}
           strokeWidth={theme.styles.gridLines.small.width}
+          strokeDasharray="1 1"
         />
       ))}
     </svg>
