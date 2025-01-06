@@ -102,23 +102,10 @@ export const usePageConfiguration = ({
   }, [layouts, selectedLayouts, startDate, duration]);
 
   // 頁面導航輔助方法
-  const pageHelpers = useMemo(
-    () => ({
-      // 創建頁面連結
-      // createPageLink: (type, value) => {
-      //   const key = `${type}-${value}`;
-      //   const pageNumber = pageMapping.get(key);
-      //   return pageNumber ? `#page-${pageNumber}` : null;
-      // },
-
-      // 獲取總頁數
-      getTotalPages: () => pages.length,
-    }),
-    [pages]
-  );
+  const getTotalPages = pages.length;
 
   return {
     pages,
-    ...pageHelpers,
+    getTotalPages,
   };
 };
