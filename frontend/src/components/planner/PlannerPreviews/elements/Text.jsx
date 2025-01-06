@@ -1,44 +1,49 @@
 import React from "react";
 
-const Text = ({ config, language, pageId, theme }) => {
+const Text = ({ language, pageId, pageTitle, contents, theme }) => {
   // 取得頁面標題
   const getTitle = () => {
-    if (language === "both") {
-      const enTitle = config.contents.en[pageId].title;
-      const zhTitle = config.contents.zh[pageId].title;
+    if (language === "bilingual") {
+      const enTitle = `${pageTitle.monthsEN} ${contents.contents.en[pageId].title.text}`;
+      const zhTitle = `${pageTitle.monthsTW} ${contents.contents.zh[pageId].title.text}`;
 
       return (
         <div
           style={{
             position: "absolute",
             color: theme.page_titles,
-            top: enTitle.style.top,
-            left: enTitle.style.left,
-            width: enTitle.style.width,
-            height: enTitle.style.height,
+            top: contents.contents.en[pageId].title.style.top,
+            left: contents.contents.en[pageId].title.style.left,
+            width: contents.contents.en[pageId].title.style.width,
+            height: contents.contents.en[pageId].title.style.height,
           }}
         >
           <span>
-            <span style={{ fontSize: "20px" }}>{enTitle.text} </span>
-            <span style={{ fontSize: "16px" }}>{zhTitle.text}</span>
+            <span style={{ fontSize: "20px" }}>{enTitle} </span>
+            <span style={{ fontSize: "16px" }}>{zhTitle}</span>
           </span>
         </div>
       );
     } else {
-      const title = config.contents[language][pageId].title;
+      let title;
+      if (language == "en") {
+        title = `${pageTitle.monthsEN} ${contents.contents.en[pageId].title.text}`;
+      } else {
+        title = `${pageTitle.monthsTW} ${contents.contents.zh[pageId].title.text}`;
+      }
       return (
         <div
           style={{
             position: "absolute",
             color: theme.page_titles,
-            top: title.style.top,
-            left: title.style.left,
-            width: title.style.width,
-            height: title.style.height,
+            top: contents.contents.en[pageId].title.style.top,
+            left: contents.contents.en[pageId].title.style.left,
+            width: contents.contents.en[pageId].title.style.width,
+            height: contents.contents.en[pageId].title.style.height,
           }}
         >
           <span>
-            <span style={{ fontSize: "20px" }}>{title.text}</span>
+            <span style={{ fontSize: "20px" }}>{title}</span>
           </span>
         </div>
       );
@@ -46,15 +51,15 @@ const Text = ({ config, language, pageId, theme }) => {
   };
   // 根據語言選擇內容
   const getContent = () => {
-    if (language === "both") {
-      const allEN = config.contents.en[pageId].content;
-      const allZH = config.contents.zh[pageId].content;
+    if (language === "bilingual") {
+      const allEN = contents.contents.en[pageId].content;
+      const allZH = contents.contents.zh[pageId].content;
 
       return allEN.map((enContent, i) => {
         const zhContent = allZH[i]; // 對應的中文內容
         return (
           <div
-            key={`both-${i}`}
+            key={`bilingual-${i}`}
             className="flex flex-col items-center"
             style={{
               position: "absolute",
@@ -74,7 +79,7 @@ const Text = ({ config, language, pageId, theme }) => {
         );
       });
     } else {
-      const allContents = config.contents[language][pageId].content;
+      const allContents = contents.contents[language][pageId].content;
 
       return allContents.map((content, i) => (
         <div

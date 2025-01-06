@@ -6,6 +6,7 @@ import { useDateRange } from "../../hooks/useDateRange";
 import { usePageNavigator } from "../../hooks/usePageNavigator";
 import { useOrientation } from "../../hooks/useOrientation";
 import { useLanguage } from "../../hooks/useLanguage";
+import { usePageConfiguration } from "../../hooks/usePageConfig";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerControls from "./PlannerControls/PlannerControls";
 
@@ -20,7 +21,6 @@ const PlannerPage = () => {
     loading: layoutsLoading,
     error: layoutsError,
     handleLayoutChange,
-    getOrderedLayouts,
   } = useLayouts(orientation); // 傳入 orientation
 
   const {
@@ -33,59 +33,16 @@ const PlannerPage = () => {
 
   const { scale, handleScaleChange } = useScale();
 
-  const {
-    startDate,
-    duration,
-    handleDateChange,
-    handleDurationChange,
-    getMonthlyTitle,
-    getWeeklyTitle,
-    getMonthlyDates,
-    getWeeklyDates,
-  } = useDateRange();
+  const { startDate, duration, handleDateChange, handleDurationChange } =
+    useDateRange();
 
   // 生成預覽頁面配置
-  const previewPages = useMemo(() => {
-    if (!layouts?.layouts) return [];
-
-    const pages = [];
-    const orderedLayouts = getOrderedLayouts();
-
-    // 處理月記事布局
-    orderedLayouts.forEach((layout) => {
-      if (layout.type === "monthly") {
-        const monthlyDates = getMonthlyDates();
-        monthlyDates.forEach((date) => {
-          pages.push({
-            ...layout,
-            pageNumber: pages.length + 1,
-            title: getMonthlyTitle(date, layout.coverTitle),
-          });
-        });
-      } else if (layout.type === "weekly") {
-        const weeklyDates = getWeeklyDates();
-        weeklyDates.forEach((date) => {
-          pages.push({
-            ...layout,
-            pageNumber: pages.length + 1,
-            title: getWeeklyTitle(date, layout.coverTitle),
-          });
-        });
-      }
-    });
-
-    return pages;
-  }, [
+  const { pages, getTotalPages } = usePageConfiguration({
     layouts,
-    getOrderedLayouts,
-    getMonthlyDates,
-    getWeeklyDates,
-    getMonthlyTitle,
-    getWeeklyTitle,
-  ]);
-
-  // 計算總頁數
-  const totalPages = previewPages.length;
+    selectedLayouts,
+    startDate,
+    duration,
+  });
 
   const {
     scrollContainerRef,
@@ -94,7 +51,7 @@ const PlannerPage = () => {
     handlePageChange,
     handleInputChange,
     handleInputConfirm,
-  } = usePageNavigator(totalPages);
+  } = usePageNavigator(getTotalPages);
 
   // 處理加載狀態
   if (layoutsLoading || themesLoading) {
@@ -120,11 +77,13 @@ const PlannerPage = () => {
         <PlannerPreviews
           contents={contents}
           layouts={layouts}
-          previewPages={previewPages}
+          allPages={pages}
           currentTheme={currentTheme}
           scale={scale}
-          currentPage={currentPage}
           language={language}
+          startDate={startDate}
+          duration={duration}
+          orientation={orientation}
         />
       </div>
 
@@ -146,7 +105,7 @@ const PlannerPage = () => {
           onDateChange={handleDateChange}
           onDurationChange={handleDurationChange}
           currentPage={currentPage}
-          totalPages={totalPages}
+          totalPages={getTotalPages}
           inputValue={inputValue}
           onPageChange={handlePageChange}
           onInputChange={handleInputChange}

@@ -30,8 +30,8 @@ const LanguageControl = ({ language, onLanguageChange }) => {
         <label className="inline-flex items-center">
           <input
             type="radio"
-            value="both"
-            checked={language === "both"}
+            value="bilingual"
+            checked={language === "bilingual"}
             onChange={(e) => onLanguageChange(e.target.value)}
             className="form-radio text-blue-600"
           />
