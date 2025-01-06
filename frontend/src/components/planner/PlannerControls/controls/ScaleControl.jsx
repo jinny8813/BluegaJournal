@@ -1,6 +1,6 @@
 import React from "react";
 
-const ScaleControl = ({ scale = 0.75, onScaleChange }) => {
+const ScaleControl = ({ scale = 0.3, onScaleChange }) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-4">

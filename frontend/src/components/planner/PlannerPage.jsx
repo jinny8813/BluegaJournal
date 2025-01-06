@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useThemes } from "../../hooks/useThemes";
 import { useLayouts } from "../../hooks/useLayouts";
 import { useScale } from "../../hooks/useScale";
@@ -8,6 +8,7 @@ import { useOrientation } from "../../hooks/useOrientation";
 import { useLanguage } from "../../hooks/useLanguage";
 import { usePageConfiguration } from "../../hooks/usePageConfig";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
+import PlannerSettings from "./PlannerSettings/PlannerSettings";
 import PlannerControls from "./PlannerControls/PlannerControls";
 
 const PlannerPage = () => {
@@ -68,56 +69,124 @@ const PlannerPage = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-7.25rem)]">
-      <div
-        className="w-3/4 p-8 overflow-auto"
-        style={{ backgroundColor: "#C5C5C5", scrollBehavior: "smooth" }}
-        ref={scrollContainerRef}
-      >
-        <PlannerPreviews
-          contents={contents}
-          layouts={layouts}
-          allPages={pages}
-          currentTheme={currentTheme}
-          scale={scale}
-          language={language}
-          startDate={startDate}
-          duration={duration}
-          orientation={orientation}
-        />
+    <>
+      <div className="hidden lg:flex lg:flex-row lg:h-[calc(100vh-6rem)]">
+        <div
+          className="overflow-auto bg-gray-400 lg:w-3/4 lg:h-auto lg:p-8"
+          style={{ scrollBehavior: "smooth" }}
+          ref={scrollContainerRef}
+        >
+          <PlannerPreviews
+            contents={contents}
+            layouts={layouts}
+            allPages={pages}
+            currentTheme={currentTheme}
+            scale={scale}
+            language={language}
+            startDate={startDate}
+            duration={duration}
+            orientation={orientation}
+          />
+        </div>
+
+        <div className="lg:w-1/4 lg:h-auto lg:flex lg:flex-col">
+          <div
+            className="overflow-auto bg-gray-200 lg:p-4 h-3/5"
+            style={{ scrollBehavior: "smooth" }}
+          >
+            <PlannerSettings
+              themes={themes}
+              currentTheme={currentTheme}
+              onThemeChange={handleThemeChange}
+              layouts={layouts}
+              selectedLayouts={selectedLayouts}
+              onLayoutChange={handleLayoutChange}
+              startDate={startDate}
+              duration={duration}
+              onDateChange={handleDateChange}
+              onDurationChange={handleDurationChange}
+              orientation={orientation}
+              onOrientationChange={handleOrientationChange}
+              language={language}
+              onLanguageChange={handleLanguageChange}
+            />
+          </div>
+          <div
+            className="overflow-auto bg-gray-300 lg:p-4 h-2/5"
+            style={{ scrollBehavior: "smooth" }}
+          >
+            <PlannerControls
+              scale={scale}
+              onScaleChange={handleScaleChange}
+              currentPage={currentPage}
+              totalPages={getTotalPages}
+              inputValue={inputValue}
+              onPageChange={handlePageChange}
+              onInputChange={handleInputChange}
+              onInputConfirm={handleInputConfirm}
+              onDownload={handleDownload}
+            />
+          </div>
+        </div>
       </div>
 
-      <div
-        className="w-1/4 p-4 overflow-auto"
-        style={{ backgroundColor: "#E5E5E5" }}
-      >
-        <PlannerControls
-          themes={themes}
-          currentTheme={currentTheme}
-          onThemeChange={handleThemeChange}
-          layouts={layouts}
-          selectedLayouts={selectedLayouts}
-          onLayoutChange={handleLayoutChange}
-          scale={scale}
-          onScaleChange={handleScaleChange}
-          startDate={startDate}
-          duration={duration}
-          onDateChange={handleDateChange}
-          onDurationChange={handleDurationChange}
-          currentPage={currentPage}
-          totalPages={getTotalPages}
-          inputValue={inputValue}
-          onPageChange={handlePageChange}
-          onInputChange={handleInputChange}
-          onInputConfirm={handleInputConfirm}
-          onDownload={handleDownload}
-          orientation={orientation}
-          onOrientationChange={handleOrientationChange}
-          language={language}
-          onLanguageChange={handleLanguageChange}
-        />
+      <div className="flex flex-col h-[calc(100vh-6rem)] lg:hidden">
+        <div
+          className="overflow-auto bg-gray-200 p-2 h-[calc(30vh)]"
+          style={{ scrollBehavior: "smooth" }}
+        >
+          <PlannerSettings
+            themes={themes}
+            currentTheme={currentTheme}
+            onThemeChange={handleThemeChange}
+            layouts={layouts}
+            selectedLayouts={selectedLayouts}
+            onLayoutChange={handleLayoutChange}
+            startDate={startDate}
+            duration={duration}
+            onDateChange={handleDateChange}
+            onDurationChange={handleDurationChange}
+            orientation={orientation}
+            onOrientationChange={handleOrientationChange}
+            language={language}
+            onLanguageChange={handleLanguageChange}
+          />
+        </div>
+        <div
+          className="overflow-auto bg-gray-400 p-4 h-[calc(100vh-6rem)]"
+          style={{ scrollBehavior: "smooth" }}
+          ref={scrollContainerRef}
+        >
+          <PlannerPreviews
+            contents={contents}
+            layouts={layouts}
+            allPages={pages}
+            currentTheme={currentTheme}
+            scale={scale}
+            language={language}
+            startDate={startDate}
+            duration={duration}
+            orientation={orientation}
+          />
+        </div>
+        <div
+          className="overflow-auto bg-gray-300 p-2 h-[calc(20vh)]"
+          style={{ scrollBehavior: "smooth" }}
+        >
+          <PlannerControls
+            scale={scale}
+            onScaleChange={handleScaleChange}
+            currentPage={currentPage}
+            totalPages={getTotalPages}
+            inputValue={inputValue}
+            onPageChange={handlePageChange}
+            onInputChange={handleInputChange}
+            onInputConfirm={handleInputConfirm}
+            onDownload={handleDownload}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
