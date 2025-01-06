@@ -12,7 +12,6 @@ export const useLayouts = (orientation = "horizontal") => {
 
   // 加載布局配置
   useEffect(() => {
-    console.log("Loading layouts for orientation:", orientation); // 添加日誌
     const fetchLayouts = async () => {
       try {
         setLoading(true);
@@ -55,32 +54,30 @@ export const useLayouts = (orientation = "horizontal") => {
           return prev;
         }
 
-        const newSelected = { ...prev };
+        let newSelected = [...prev.myLayouts];
 
         if (prev.myLayouts.includes(layoutId)) {
           // 取消選擇
-          newSelected.myLayouts = prev.myLayouts.filter(
-            (id) => id !== layoutId
-          );
+          newSelected = newSelected.filter((id) => id !== layoutId);
         } else {
           // 新增選擇
-          newSelected.myLayouts = [...prev.myLayouts, layoutId];
+          newSelected.push(layoutId);
         }
 
-        return newSelected;
+        // 按照 layouts 排序選中的布局
+        const sortedLayouts = newSelected.sort((a, b) => {
+          const indexA = Object.keys(layouts.layouts).indexOf(a);
+          const indexB = Object.keys(layouts.layouts).indexOf(b);
+          return indexA - indexB;
+        });
+
+        return {
+          myLayouts: sortedLayouts,
+        };
       });
     },
     [layouts]
   );
-
-  // 獲取已排序的布局列表
-  const getOrderedLayouts = useCallback(() => {
-    if (!layouts?.layouts || !selectedLayouts.myLayouts.length) return [];
-
-    return selectedLayouts.myLayouts
-      .map((id) => layouts.layouts[id])
-      .filter(Boolean);
-  }, [layouts, selectedLayouts]);
 
   return {
     contents,
@@ -89,6 +86,5 @@ export const useLayouts = (orientation = "horizontal") => {
     loading,
     error,
     handleLayoutChange,
-    getOrderedLayouts,
   };
 };
