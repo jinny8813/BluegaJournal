@@ -8,9 +8,9 @@ const PlannerPreviews = ({
   layouts,
   allPages,
   currentTheme,
-  scale = 0.75,
+  scale,
   contents,
-  language = "en",
+  language,
   startDate,
   duration,
   orientation,
@@ -23,10 +23,10 @@ const PlannerPreviews = ({
   const scaledHeight = layouts.page_config.height * scale;
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col gap-4 py-8 px-auto">
       {allPages.map((page) => (
         <div
-          className="relative"
+          className="inline-block relative mx-auto"
           key={`${page.layoutId}-${page.pageNumber}`}
           data-page={page.pageNumber}
           style={{
@@ -36,7 +36,7 @@ const PlannerPreviews = ({
         >
           {/* 紙張容器 */}
           <div
-            className="absolute top-0 left-0 bg-white shadow-xl overflow-hidden origin-top-left"
+            className="absolute bg-white shadow-xl origin-top-left"
             style={{
               width: layouts.page_config.width,
               height: layouts.page_config.height,
