@@ -1,24 +1,9 @@
 import React from "react";
-import DateControl from "./controls/DateControl";
-import LayoutSelector from "./controls/LayoutSelector";
-import ThemeSelector from "./controls/ThemeSelector";
 import ScaleControl from "./controls/ScaleControl";
 import PageNavigator from "./controls/PageNavigator";
-import OrientationControl from "./controls/OrientationControl";
-import LanguageControl from "./controls/LanguageControl";
 
 const PlannerControls = ({
-  startDate,
-  duration,
-  selectedLayouts,
-  layouts,
-  currentTheme,
-  themes,
   scale,
-  onDateChange,
-  onDurationChange,
-  onLayoutChange,
-  onThemeChange,
   onScaleChange,
   onDownload,
   isLoading,
@@ -28,64 +13,9 @@ const PlannerControls = ({
   onPageChange,
   onInputChange,
   onInputConfirm,
-  orientation,
-  onOrientationChange,
-  language,
-  onLanguageChange,
 }) => {
   return (
     <div className="space-y-4">
-      {/* 手帳配置設置 */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
-          手帳配置設置
-        </h2>
-        <div className="space-y-6">
-          <ThemeSelector
-            currentTheme={currentTheme}
-            themes={themes}
-            onThemeChange={onThemeChange}
-          />
-          <LanguageControl
-            language={language}
-            onLanguageChange={onLanguageChange}
-          />
-        </div>
-      </div>
-
-      {/* 日期區間設置 Card */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
-          日期區間設置
-        </h2>
-        <div className="space-y-6">
-          <DateControl
-            startDate={startDate}
-            duration={duration}
-            onDateChange={onDateChange}
-            onDurationChange={onDurationChange}
-          />
-        </div>
-      </div>
-
-      {/* 手帳版面設置 */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
-          手帳版面設置
-        </h2>
-        <div className="space-y-6">
-          <OrientationControl
-            orientation={orientation}
-            onOrientationChange={onOrientationChange}
-          />
-          <LayoutSelector
-            selectedLayouts={selectedLayouts}
-            onLayoutChange={onLayoutChange}
-            layouts={layouts}
-          />
-        </div>
-      </div>
-
       {/* 畫面預覽和下載 Card */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
