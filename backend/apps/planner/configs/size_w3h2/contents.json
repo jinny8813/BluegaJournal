@@ -25,7 +25,7 @@
       },
       "monthly_project": {
         "title": {
-          "text": "專案管理",
+          "text": "專案規劃",
           "style": {
             "top": "15px",
             "left": "48px",
@@ -70,6 +70,94 @@
       "monthly_gallery": {
         "title": {
           "text": "相片畫廊",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_finance": {
+        "title": {
+          "text": "財務管理",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_wellness": {
+        "title": {
+          "text": "身心健康",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_reflection": {
+        "title": {
+          "text": "反思回顧",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_memoryMap": {
+        "title": {
+          "text": "回憶地圖",
           "style": {
             "top": "15px",
             "left": "48px",
@@ -158,6 +246,94 @@
       "weekly_recordBoard": {
         "title": {
           "text": "記事看板",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_budget": {
+        "title": {
+          "text": "記帳金流",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_health": {
+        "title": {
+          "text": "健康生活",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_journey": {
+        "title": {
+          "text": "八分週記",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_anyNote": {
+        "title": {
+          "text": "大格隨筆",
           "style": {
             "top": "15px",
             "left": "48px",
@@ -267,6 +443,94 @@
           }
         ]
       },
+      "monthly_finance": {
+        "title": {
+          "text": "Finance",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_wellness": {
+        "title": {
+          "text": "Wellness",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_reflection": {
+        "title": {
+          "text": "Reflection",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "monthly_memoryMap": {
+        "title": {
+          "text": "Memory Map",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
       "weekly_timeline": {
         "title": {
           "text": "Timeline",
@@ -336,6 +600,94 @@
       "weekly_recordBoard": {
         "title": {
           "text": "RecordBoard",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_budget": {
+        "title": {
+          "text": "Budget",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_health": {
+        "title": {
+          "text": "Health",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_journey": {
+        "title": {
+          "text": "Journey",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "weekly_anyNote": {
+        "title": {
+          "text": "AnyNote",
           "style": {
             "top": "15px",
             "left": "48px",

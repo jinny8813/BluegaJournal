@@ -2,38 +2,73 @@
 
 export const generateMonths = (startDate, duration) => {
   const months = [];
-  const currentDate = new Date(startDate);
+  const monthFirstDate = new Date(
+    startDate.getFullYear(),
+    startDate.getMonth(),
+    1
+  );
 
   for (let i = 0; i < duration; i++) {
-    const year = currentDate.getFullYear();
-    const monthTW = currentDate.toLocaleString("zh-TW", { month: "long" });
-    const monthEN = currentDate.toLocaleString("en-US", { month: "long" });
-    const monthNumber = currentDate.getMonth() + 1;
+    const year = monthFirstDate.getFullYear();
+    const monthTW = monthFirstDate.toLocaleString("zh-TW", { month: "long" });
+    const monthEN = monthFirstDate.toLocaleString("en-US", { month: "long" });
+    const monthNumber = monthFirstDate.getMonth() + 1;
     months.push({
-      monthsTW: `${year} ${monthTW}`,
-      monthsEN: `${year} ${monthEN}`,
-      monthsNumber: `${year}${monthNumber}`,
+      tw: `${year} ${monthTW}`,
+      en: `${year} ${monthEN}`,
+      number: `${year}${monthNumber}`,
     });
 
-    currentDate.setMonth(currentDate.getMonth() + 1);
+    monthFirstDate.setMonth(monthFirstDate.getMonth() + 1);
   }
   return months;
 };
 export const generateWeeks = (startDate, duration) => {
   const weeks = [];
-  const currentDate = new Date(startDate);
+  const monthFirstDate = new Date(
+    startDate.getFullYear(),
+    startDate.getMonth(),
+    1
+  );
 
-  for (let i = 0; i < duration; i++) {
-    const year = currentDate.getFullYear();
-    const weekNumber = getISOWeekNumber(currentDate);
+  const nextMonthFirstDate = new Date(
+    monthFirstDate.getFullYear(),
+    monthFirstDate.getMonth() + duration,
+    1
+  );
+
+  const monthLastDate = new Date(
+    nextMonthFirstDate.setDate(nextMonthFirstDate.getDate() - 1)
+  );
+
+  const day = monthFirstDate.getDay(); // 取得星期幾 (0: 星期日, 1: 星期一, ..., 6: 星期六)
+  // ISO 週以星期一為一週的開始
+  const weekFirstDate = new Date(
+    monthFirstDate.setDate(monthFirstDate.getDate() - day + 1 - 7)
+  );
+
+  const weekLastDate = new Date(
+    weekFirstDate.setDate(weekFirstDate.getDate() + 6)
+  );
+
+  console.log(weekFirstDate);
+
+  while (weekFirstDate <= monthLastDate) {
+    let year = weekFirstDate.getFullYear();
+    let weekNumber = parseInt(getISOWeekNumber(weekFirstDate)) + 1;
+
+    if (weekNumber === 53) {
+      year = year - 1;
+      weekNumber = 1;
+    }
 
     weeks.push({
-      weeksTW: `${year} 第${weekNumber}週`,
-      weeksEN: `${year} Week ${weekNumber}`,
-      weeksNumber: `${year}${weekNumber}`,
+      tw: `${year} 第${weekNumber}週`,
+      en: `${year} Week ${weekNumber}`,
+      number: `${year}${weekNumber}`,
     });
 
-    currentDate.setDate(currentDate.getDate() + 7);
+    weekFirstDate.setDate(weekFirstDate.getDate() + 7);
   }
 
   return weeks;

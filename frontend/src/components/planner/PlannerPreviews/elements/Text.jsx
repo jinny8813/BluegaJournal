@@ -4,8 +4,8 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
   // 取得頁面標題
   const getTitle = () => {
     if (language === "bilingual") {
-      const enTitle = `${pageTitle.monthsEN} ${contents.contents.en[pageId].title.text}`;
-      const zhTitle = `${pageTitle.monthsTW} ${contents.contents.zh[pageId].title.text}`;
+      const enTitle = `${pageTitle.en} ${contents.contents.en[pageId].title.text}`;
+      const zhTitle = `${pageTitle.tw} ${contents.contents.zh[pageId].title.text}`;
 
       return (
         <div
@@ -27,9 +27,9 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
     } else {
       let title;
       if (language == "en") {
-        title = `${pageTitle.monthsEN} ${contents.contents.en[pageId].title.text}`;
+        title = `${pageTitle.en} ${contents.contents.en[pageId].title.text}`;
       } else {
-        title = `${pageTitle.monthsTW} ${contents.contents.zh[pageId].title.text}`;
+        title = `${pageTitle.tw} ${contents.contents.zh[pageId].title.text}`;
       }
       return (
         <div
