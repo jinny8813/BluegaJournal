@@ -47,6 +47,7 @@ export const useLayouts = (orientation = "horizontal") => {
       if (!layouts?.layouts?.[layoutId]) return;
 
       const isMonthlyCalendar = layoutId === "monthly_calendar";
+      const isDailyLayout = layouts.layouts[layoutId].type === "daily";
 
       setSelectedLayouts((prev) => {
         // 如果是 monthly_calendar 且已選中，不允許取消
@@ -55,6 +56,12 @@ export const useLayouts = (orientation = "horizontal") => {
         }
 
         let newSelected = [...prev.myLayouts];
+
+        if (isDailyLayout && !prev.myLayouts.includes(layoutId)) {
+          newSelected = newSelected.filter(
+            (id) => layouts.layouts[id]?.type !== "daily"
+          );
+        }
 
         if (prev.myLayouts.includes(layoutId)) {
           // 取消選擇
