@@ -6,6 +6,7 @@ import { useDateRange } from "../../hooks/useDateRange";
 import { usePageNavigator } from "../../hooks/usePageNavigator";
 import { useOrientation } from "../../hooks/useOrientation";
 import { useLanguage } from "../../hooks/useLanguage";
+import { useWeekStart } from "../../hooks/useWeekStart";
 import { usePageConfiguration } from "../../hooks/usePageConfig";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerSettings from "./PlannerSettings/PlannerSettings";
@@ -14,6 +15,7 @@ import PlannerControls from "./PlannerControls/PlannerControls";
 const PlannerPage = () => {
   const { orientation, handleOrientationChange } = useOrientation();
   const { language, handleLanguageChange } = useLanguage();
+  const { weekStart, handleWeekStartChange } = useWeekStart();
 
   const {
     contents,
@@ -43,6 +45,7 @@ const PlannerPage = () => {
     selectedLayouts,
     startDate,
     duration,
+    weekStart,
   });
 
   const {
@@ -91,6 +94,8 @@ const PlannerPage = () => {
               onOrientationChange={handleOrientationChange}
               language={language}
               onLanguageChange={handleLanguageChange}
+              weekStart={weekStart}
+              onWeekStartChange={handleWeekStartChange}
             />
           </div>
           <div
@@ -123,6 +128,7 @@ const PlannerPage = () => {
             scale={scale}
             language={language}
             orientation={orientation}
+            weekStart={weekStart}
           />
         </div>
       </div>
@@ -147,6 +153,8 @@ const PlannerPage = () => {
             onOrientationChange={handleOrientationChange}
             language={language}
             onLanguageChange={handleLanguageChange}
+            weekStart={weekStart}
+            onWeekStartChange={handleWeekStartChange}
           />
         </div>
         <div
@@ -162,6 +170,7 @@ const PlannerPage = () => {
             scale={scale}
             language={language}
             orientation={orientation}
+            weekStart={weekStart}
           />
         </div>
         <div

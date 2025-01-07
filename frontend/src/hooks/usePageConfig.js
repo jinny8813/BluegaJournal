@@ -15,6 +15,7 @@ export const usePageConfiguration = ({
   selectedLayouts,
   startDate,
   duration,
+  weekStart,
 }) => {
   // 生成所有頁面配置
   const pages = useMemo(() => {

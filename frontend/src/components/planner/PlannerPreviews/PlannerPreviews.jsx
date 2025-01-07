@@ -12,6 +12,7 @@ const PlannerPreviews = ({
   contents,
   language,
   orientation,
+  weekStart,
 }) => {
   if (!currentTheme || !layouts || !contents || allPages.length === 0)
     return null;

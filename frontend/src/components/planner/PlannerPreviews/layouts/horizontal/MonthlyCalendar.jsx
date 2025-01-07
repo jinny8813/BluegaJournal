@@ -43,6 +43,12 @@ const MonthlyCalendar = ({ dateRange, language, theme }) => {
     ));
   };
 
+  const generateCalendar = () => {
+    const firstWeekDay = new Date(dateRange.start).getDay();
+
+    return firstWeekDay;
+  };
+
   return (
     <>
       <div className="text-red-500">
