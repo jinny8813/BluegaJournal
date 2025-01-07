@@ -1104,11 +1104,11 @@
         ]
       }
     },
-    "daily_1": {
-      "id": "daily_1",
+    "daily_conciseVer": {
+      "id": "daily_conciseVer",
       "type": "daily",
-      "label": "Daily 1",
-      "coverTitle": "Daily 1",
+      "label": "Daily ConciseVer",
+      "coverTitle": "Daily ConciseVer",
       "table_grid": {
         "horizontal": [
           [36, 45, 1044, 45],
@@ -1124,11 +1124,11 @@
         ]
       }
     },
-    "daily_2": {
-      "id": "daily_2",
+    "daily_abundantVer": {
+      "id": "daily_abundantVer",
       "type": "daily",
-      "label": "Daily 2",
-      "coverTitle": "Daily 2",
+      "label": "Daily AbundantVer",
+      "coverTitle": "Daily AbundantVer",
       "table_grid": {
         "horizontal": [
           [36, 45, 1044, 45],

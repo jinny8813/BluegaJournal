@@ -40,13 +40,28 @@ const PlannerPage = () => {
     useDateRange();
 
   // 生成預覽頁面配置
-  const { pages, getTotalPages } = usePageConfiguration({
+  const {
+    pages,
+    getPageByNumber,
+    getPagesByDate,
+    getPagesByLayoutType,
+    getPagesByType,
+    getFirstContentPage,
+    getMonthlyPages,
+    getWeeklyPages,
+    createPageLink,
+    getTableOfContents,
+    getAdjacentPages,
+    getTotalPages,
+  } = usePageConfiguration({
     layouts,
     selectedLayouts,
     startDate,
     duration,
     weekStart,
   });
+
+  const totalPages = getTotalPages();
 
   const {
     scrollContainerRef,
@@ -55,7 +70,7 @@ const PlannerPage = () => {
     handlePageChange,
     handleInputChange,
     handleInputConfirm,
-  } = usePageNavigator(getTotalPages);
+  } = usePageNavigator(totalPages);
 
   // 處理加載狀態
   if (layoutsLoading || themesLoading) {
@@ -106,7 +121,7 @@ const PlannerPage = () => {
               scale={scale}
               onScaleChange={handleScaleChange}
               currentPage={currentPage}
-              totalPages={getTotalPages}
+              totalPages={totalPages}
               inputValue={inputValue}
               onPageChange={handlePageChange}
               onInputChange={handleInputChange}
@@ -181,7 +196,7 @@ const PlannerPage = () => {
             scale={scale}
             onScaleChange={handleScaleChange}
             currentPage={currentPage}
-            totalPages={getTotalPages}
+            totalPages={totalPages}
             inputValue={inputValue}
             onPageChange={handlePageChange}
             onInputChange={handleInputChange}

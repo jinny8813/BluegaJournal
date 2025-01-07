@@ -333,7 +333,7 @@
       },
       "weekly_anyNote": {
         "title": {
-          "text": "大格隨筆",
+          "text": "大格札記",
           "style": {
             "top": "15px",
             "left": "48px",
@@ -353,9 +353,9 @@
           }
         ]
       },
-      "daily_1": {
+      "daily_conciseVer": {
         "title": {
-          "text": "每日一頁",
+          "text": "日記-竹版",
           "style": {
             "top": "15px",
             "left": "48px",
@@ -375,9 +375,9 @@
           }
         ]
       },
-      "daily_2": {
+      "daily_abundantVer": {
         "title": {
-          "text": "每日兩頁",
+          "text": "日記-糸版",
           "style": {
             "top": "15px",
             "left": "48px",
@@ -751,9 +751,9 @@
           }
         ]
       },
-      "daily_1": {
+      "daily_conciseVer": {
         "title": {
-          "text": "Daily 1",
+          "text": "Daily ConciseVer",
           "style": {
             "top": "15px",
             "left": "48px",
@@ -773,9 +773,9 @@
           }
         ]
       },
-      "daily_2": {
+      "daily_abundantVer": {
         "title": {
-          "text": "Daily 2",
+          "text": "Daily AbundantVer",
           "style": {
             "top": "15px",
             "left": "48px",

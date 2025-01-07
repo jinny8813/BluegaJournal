@@ -1,11 +1,13 @@
 import React from "react";
 import MonthlyCalendar from "./horizontal/MonthlyCalendar";
 import WeeklyTimeline from "./horizontal/WeeklyTimeline";
+import DailyConciseVer from "./horizontal/DailyConciseVer";
 
 const layoutComponents = {
   horizontal: {
     MonthlyCalendar,
     WeeklyTimeline,
+    DailyConciseVer,
   },
   vertical: {
     MonthlyCalendar,

@@ -136,7 +136,6 @@ export const generateDays = (startDate, duration) => {
       day: "2-digit",
     });
 
-    console.log(date);
     days.push({
       title: {
         tw: `${date} ${currentDate.toLocaleString("zh-TW", {
@@ -148,8 +147,8 @@ export const generateDays = (startDate, duration) => {
         number: `${date}`,
       },
       dateRange: {
-        start: currentDate,
-        end: currentDate,
+        start: new Date(currentDate),
+        end: new Date(currentDate),
       },
     });
 
