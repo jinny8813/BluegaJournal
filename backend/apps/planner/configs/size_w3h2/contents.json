@@ -333,7 +333,51 @@
       },
       "weekly_anyNote": {
         "title": {
-          "text": "大格隨筆",
+          "text": "大格札記",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "daily_conciseVer": {
+        "title": {
+          "text": "日記-竹版",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "daily_abundantVer": {
+        "title": {
+          "text": "日記-糸版",
           "style": {
             "top": "15px",
             "left": "48px",
@@ -688,6 +732,50 @@
       "weekly_anyNote": {
         "title": {
           "text": "AnyNote",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "daily_conciseVer": {
+        "title": {
+          "text": "Daily ConciseVer",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "daily_abundantVer": {
+        "title": {
+          "text": "Daily AbundantVer",
           "style": {
             "top": "15px",
             "left": "48px",

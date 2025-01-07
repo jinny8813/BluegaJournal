@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 
-export const usePageNavigator = (totalPages) => {
+export const usePageNavigator = (totalPages, isDesktop) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [inputValue, setInputValue] = useState("1");
-  const scrollContainerRef = useRef(null);
+  const desktopRef = useRef(null);
+  const mobileRef = useRef(null);
+  const isScrollingRef = useRef(false);
+
+  const scrollContainerRef = isDesktop ? desktopRef : mobileRef;
 
   // 監控滾動和更新當前頁面
   useEffect(() => {
@@ -11,10 +15,12 @@ export const usePageNavigator = (totalPages) => {
     if (!container) return;
 
     const calculateCurrentPage = () => {
+      // 如果是程式觸發的滾動，不更新頁碼
+      if (isScrollingRef.current) return currentPage;
+
       const pageElements = Array.from(
         container.querySelectorAll("[data-page]")
       );
-      const containerRect = container.getBoundingClientRect();
       const containerTop = container.scrollTop;
       const containerHeight = container.clientHeight;
       const triggerPoint = containerTop + containerHeight / 3; // 使用容器高度的 1/3 作為觸發點
@@ -37,6 +43,9 @@ export const usePageNavigator = (totalPages) => {
     };
 
     const handleScroll = () => {
+      // 如果是程式觸發的滾動，不處理
+      if (isScrollingRef.current) return;
+
       const newPage = calculateCurrentPage();
       if (newPage !== currentPage) {
         setCurrentPage(newPage);
@@ -50,7 +59,12 @@ export const usePageNavigator = (totalPages) => {
       if (scrollRAF) {
         cancelAnimationFrame(scrollRAF);
       }
-      scrollRAF = requestAnimationFrame(handleScroll);
+      scrollRAF = requestAnimationFrame(() => {
+        // 只有在不是程式觸發的滾動時才處理
+        if (!isScrollingRef.current) {
+          handleScroll();
+        }
+      });
     };
 
     container.addEventListener("scroll", debouncedScroll);
@@ -76,8 +90,11 @@ export const usePageNavigator = (totalPages) => {
     const targetElement = container.querySelector(`[data-page="${newPage}"]`);
     if (!targetElement) return;
 
+    // 設置程式滾動標記
+    isScrollingRef.current = true;
+
     // 計算目標元素的位置並考慮 padding
-    const containerPadding = 32; // 8 * 4 = 32px (p-8)
+    const containerPadding = isDesktop ? 64 : container.clientHeight * 0.75;
     const scrollTop = targetElement.offsetTop - containerPadding;
 
     container.scrollTo({
@@ -87,6 +104,11 @@ export const usePageNavigator = (totalPages) => {
 
     setCurrentPage(newPage);
     setInputValue(newPage.toString());
+
+    // 在滾動動畫完成後重置程式滾動標記
+    setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 1000); // 假設滾動動畫時間為 1 秒
   };
 
   // 處理輸入框變更
@@ -110,7 +132,8 @@ export const usePageNavigator = (totalPages) => {
   };
 
   return {
-    scrollContainerRef,
+    desktopRef,
+    mobileRef,
     currentPage,
     inputValue,
     handlePageChange,

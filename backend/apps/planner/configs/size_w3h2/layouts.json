@@ -1103,6 +1103,46 @@
           [1044, 45, 1044, 711]
         ]
       }
+    },
+    "daily_conciseVer": {
+      "id": "daily_conciseVer",
+      "type": "daily",
+      "label": "Daily ConciseVer",
+      "coverTitle": "Daily ConciseVer",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 378, 1044, 378],
+          [36, 711, 1044, 711]
+        ],
+        "vertical": [
+          [36, 45, 36, 711],
+          [288, 45, 288, 711],
+          [540, 45, 540, 711],
+          [792, 45, 792, 711],
+          [1044, 45, 1044, 711]
+        ]
+      }
+    },
+    "daily_abundantVer": {
+      "id": "daily_abundantVer",
+      "type": "daily",
+      "label": "Daily AbundantVer",
+      "coverTitle": "Daily AbundantVer",
+      "table_grid": {
+        "horizontal": [
+          [36, 45, 1044, 45],
+          [36, 378, 1044, 378],
+          [36, 711, 1044, 711]
+        ],
+        "vertical": [
+          [36, 45, 36, 711],
+          [288, 45, 288, 711],
+          [540, 45, 540, 711],
+          [792, 45, 792, 711],
+          [1044, 45, 1044, 711]
+        ]
+      }
     }
   },
   "defaults": {

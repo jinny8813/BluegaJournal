@@ -13,6 +13,8 @@ import PlannerSettings from "./PlannerSettings/PlannerSettings";
 import PlannerControls from "./PlannerControls/PlannerControls";
 
 const PlannerPage = () => {
+  const isDesktop = window.innerWidth >= 1024; // 根據視窗大小判斷模式
+
   const { orientation, handleOrientationChange } = useOrientation();
   const { language, handleLanguageChange } = useLanguage();
   const { weekStart, handleWeekStartChange } = useWeekStart();
@@ -24,7 +26,7 @@ const PlannerPage = () => {
     loading: layoutsLoading,
     error: layoutsError,
     handleLayoutChange,
-  } = useLayouts(orientation); // 傳入 orientation
+  } = useLayouts(orientation);
 
   const {
     themes,
@@ -40,7 +42,21 @@ const PlannerPage = () => {
     useDateRange();
 
   // 生成預覽頁面配置
-  const { pages, getTotalPages } = usePageConfiguration({
+  const {
+    pages,
+    getPageByNumber,
+    getPagesByDate,
+    getPagesByLayoutType,
+    getPagesByType,
+    getFirstContentPage,
+    getMonthlyPages,
+    getWeeklyPages,
+    createPageLink,
+    getTableOfContents,
+    getAdjacentPages,
+    getPagesByLayoutIdandDate,
+    getTotalPages,
+  } = usePageConfiguration({
     layouts,
     selectedLayouts,
     startDate,
@@ -48,14 +64,17 @@ const PlannerPage = () => {
     weekStart,
   });
 
+  const totalPages = getTotalPages();
+
   const {
-    scrollContainerRef,
+    desktopRef,
+    mobileRef,
     currentPage,
     inputValue,
     handlePageChange,
     handleInputChange,
     handleInputConfirm,
-  } = usePageNavigator(getTotalPages);
+  } = usePageNavigator(totalPages, isDesktop);
 
   // 處理加載狀態
   if (layoutsLoading || themesLoading) {
@@ -106,7 +125,7 @@ const PlannerPage = () => {
               scale={scale}
               onScaleChange={handleScaleChange}
               currentPage={currentPage}
-              totalPages={getTotalPages}
+              totalPages={totalPages}
               inputValue={inputValue}
               onPageChange={handlePageChange}
               onInputChange={handleInputChange}
@@ -116,9 +135,9 @@ const PlannerPage = () => {
           </div>
         </div>
         <div
-          className="overflow-auto bg-gray-300 lg:w-2/3 lg:h-auto"
+          className="overflow-auto bg-gray-300 lg:w-2/3 lg:h-full"
           style={{ scrollBehavior: "smooth" }}
-          ref={scrollContainerRef}
+          ref={desktopRef}
         >
           <PlannerPreviews
             contents={contents}
@@ -129,6 +148,8 @@ const PlannerPage = () => {
             language={language}
             orientation={orientation}
             weekStart={weekStart}
+            getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
+            onPageChange={handlePageChange}
           />
         </div>
       </div>
@@ -160,7 +181,7 @@ const PlannerPage = () => {
         <div
           className="overflow-auto bg-gray-300 h-[calc(48dvh)]"
           style={{ scrollBehavior: "smooth" }}
-          ref={scrollContainerRef}
+          ref={mobileRef}
         >
           <PlannerPreviews
             contents={contents}
@@ -171,6 +192,8 @@ const PlannerPage = () => {
             language={language}
             orientation={orientation}
             weekStart={weekStart}
+            getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
+            onPageChange={handlePageChange}
           />
         </div>
         <div
@@ -181,7 +204,7 @@ const PlannerPage = () => {
             scale={scale}
             onScaleChange={handleScaleChange}
             currentPage={currentPage}
-            totalPages={getTotalPages}
+            totalPages={totalPages}
             inputValue={inputValue}
             onPageChange={handlePageChange}
             onInputChange={handleInputChange}
