@@ -1,56 +1,43 @@
 import React from "react";
 
 // 月份標題元素
-export const MonthTitle = React.memo(({ date, language, pageMapping }) => {
-  const monthLink = createPageLink("monthly", date.getMonth() + 1, pageMapping);
+export const generateBasicCalendar = (dateRange, weekStart, theme) => {
+  let top = 63;
+  let left = 162;
+  let width = 18;
+  let height = 18;
 
-  if (language === "bilingual") {
-    return (
-      <a href={monthLink} className="month-title">
-        <span className="text-lg">
-          {format(date, "MMMM", { locale: enUS })}
-        </span>
-        <span className="text-sm">{format(date, "M月", { locale: zhTW })}</span>
-      </a>
-    );
-  }
-  // ... 其他語言處理
-});
+  let date = new Date(dateRange.start);
 
-// 週次元素
-export const WeekNumber = React.memo(({ date, language, pageMapping }) => {
-  const weekNum = getWeek(date);
-  const weekLink = createPageLink("weekly", weekNum, pageMapping);
+  left =
+    weekStart === "monday"
+      ? 162 + width * 6 * (date.getDay() - 1)
+      : 162 + width * 6 * date.getDay();
 
-  return (
-    <a href={weekLink} className="week-number">
-      {formatters.weekNumber(date, language)}
-    </a>
-  );
-});
-
-// 日期單元格
-export const DateCell = React.memo(
-  ({ date, language, isToday, isSelected, onClick }) => {
-    const dateFormat = formatters.bilingual(date);
-
-    return (
+  const basic = [];
+  while (date <= dateRange.end) {
+    if (left > 162 + width * 6 * 6) {
+      top += height * 6;
+      left = 162;
+    }
+    basic.push(
       <div
-        className={`date-cell ${isToday ? "today" : ""} ${
-          isSelected ? "selected" : ""
-        }`}
-        onClick={() => onClick?.(date)}
+        key={date.getDate()}
+        className="flex flex-col items-center"
+        style={{
+          position: "absolute",
+          color: theme.page_dynamic_elements,
+          top: `${top}px`,
+          left: `${left}px`,
+          width: `${width}px`,
+          height: `${height}px`,
+        }}
       >
-        {language === "bilingual" ? (
-          <>
-            <span className="text-base">{dateFormat.main}</span>
-            <span className="text-xs">{dateFormat.sub}</span>
-          </>
-        ) : (
-          // ... 其他語言處理
-          <span className="text-base">{dateFormat.main}</span>
-        )}
+        <span style={{ fontSize: "10px" }}>{date.getDate()}</span>
       </div>
     );
+    left += width * 6;
+    date.setDate(date.getDate() + 1);
   }
-);
+  return basic;
+};
