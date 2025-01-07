@@ -1,5 +1,9 @@
 import { useMemo } from "react";
-import { generateMonths, generateWeeks } from "../utils/dateGenerator";
+import {
+  generateMonths,
+  generateWeeks,
+  generateDays,
+} from "../utils/dateGenerator";
 
 // 頁面類型枚舉
 export const PAGE_TYPES = {
@@ -64,7 +68,7 @@ export const usePageConfiguration = ({
       });
 
       if (layout.type === "monthly") {
-        const monthlyData = generateMonths(weekStart, startDate, duration);
+        const monthlyData = generateMonths(startDate, duration);
         monthlyData.forEach((monthData) => {
           pageConfigs.push({
             id: `${PAGE_TYPES.CONTENT}-${layoutId}-${monthData.monthsNumber}`,
@@ -86,6 +90,19 @@ export const usePageConfiguration = ({
             layoutId: layoutId,
             title: weekData.title,
             dateRange: weekData.dateRange,
+            layout: layout,
+          });
+        });
+      } else if (layout.type === "daily") {
+        const dailyData = generateDays(startDate, duration);
+        dailyData.forEach((dayData) => {
+          pageConfigs.push({
+            id: `${PAGE_TYPES.CONTENT}-${layoutId}-${dayData.daysNumber}`,
+            pageNumber: pageNumber++,
+            type: PAGE_TYPES.CONTENT,
+            layoutId: layoutId,
+            title: dayData.title,
+            dateRange: dayData.dateRange,
             layout: layout,
           });
         });

@@ -352,6 +352,50 @@
             }
           }
         ]
+      },
+      "daily_1": {
+        "title": {
+          "text": "每日一頁",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "daily_2": {
+        "title": {
+          "text": "每日兩頁",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "待辦事項",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
       }
     },
     "en": {
@@ -688,6 +732,50 @@
       "weekly_anyNote": {
         "title": {
           "text": "AnyNote",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "daily_1": {
+        "title": {
+          "text": "Daily 1",
+          "style": {
+            "top": "15px",
+            "left": "48px",
+            "width": "540px",
+            "height": "30px"
+          }
+        },
+        "content": [
+          {
+            "text": "To-Do",
+            "style": {
+              "top": "45px",
+              "left": "36px",
+              "width": "126px",
+              "height": "18px"
+            }
+          }
+        ]
+      },
+      "daily_2": {
+        "title": {
+          "text": "Daily 2",
           "style": {
             "top": "15px",
             "left": "48px",

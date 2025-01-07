@@ -1,6 +1,6 @@
 // 日期生成器工廠
 
-export const generateMonths = (weekStart, startDate, duration) => {
+export const generateMonths = (startDate, duration) => {
   const months = [];
   const monthFirstDate = new Date(
     startDate.getFullYear(),
@@ -44,6 +44,7 @@ export const generateMonths = (weekStart, startDate, duration) => {
   }
   return months;
 };
+
 export const generateWeeks = (weekStart, startDate, duration) => {
   const weeks = [];
   const monthFirstDate = new Date(
@@ -107,6 +108,54 @@ export const generateWeeks = (weekStart, startDate, duration) => {
   }
 
   return weeks;
+};
+
+export const generateDays = (startDate, duration) => {
+  const days = [];
+  const monthFirstDate = new Date(
+    startDate.getFullYear(),
+    startDate.getMonth(),
+    1
+  );
+  const nextMonthFirstDate = new Date(
+    monthFirstDate.getFullYear(),
+    monthFirstDate.getMonth() + duration,
+    1
+  );
+
+  const monthLastDate = new Date(
+    nextMonthFirstDate.setDate(nextMonthFirstDate.getDate() - 1)
+  );
+
+  let currentDate = new Date(monthFirstDate);
+
+  while (currentDate <= monthLastDate) {
+    const date = currentDate.toLocaleDateString("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+
+    console.log(date);
+    days.push({
+      title: {
+        tw: `${date} ${currentDate.toLocaleString("zh-TW", {
+          weekday: "long",
+        })}`,
+        en: `${date} ${currentDate.toLocaleString("en-US", {
+          weekday: "short",
+        })}`,
+        number: `${date}`,
+      },
+      dateRange: {
+        start: currentDate,
+        end: currentDate,
+      },
+    });
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  return days;
 };
 
 function getISOWeekNumber(date) {
