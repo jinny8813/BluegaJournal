@@ -22,10 +22,14 @@ const PlannerPreviews = ({
 
   const getLayoutComponent = (page, orientation) => {
     const LayoutComponent = createItems(page.layoutId, orientation);
-
     if (!LayoutComponent) return null;
-
-    return <LayoutComponent language={language} dateRange={page.dateRange} />;
+    return (
+      <LayoutComponent
+        language={language}
+        dateRange={page.dateRange}
+        theme={currentTheme.styles.text}
+      />
+    );
   };
 
   return (

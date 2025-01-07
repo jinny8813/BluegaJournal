@@ -18,10 +18,10 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
             height: contents.contents.en[pageId].title.style.height,
           }}
         >
-          <span>
+          <>
             <span style={{ fontSize: "20px" }}>{enTitle} </span>
             <span style={{ fontSize: "16px" }}>{zhTitle}</span>
-          </span>
+          </>
         </div>
       );
     } else {
@@ -42,9 +42,7 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
             height: contents.contents.en[pageId].title.style.height,
           }}
         >
-          <span>
-            <span style={{ fontSize: "20px" }}>{title}</span>
-          </span>
+          <span style={{ fontSize: "20px" }}>{title}</span>
         </div>
       );
     }
@@ -71,10 +69,10 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
               justifyContent: "center",
             }}
           >
-            <span>
+            <>
               <span style={{ fontSize: "10px" }}>{enContent.text} </span>
               <span style={{ fontSize: "8px" }}>{zhContent.text}</span>
-            </span>
+            </>
           </div>
         );
       });
@@ -95,9 +93,7 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
             justifyContent: "center",
           }}
         >
-          <span>
-            <span style={{ fontSize: "10px" }}>{content.text}</span>
-          </span>
+          <span style={{ fontSize: "10px" }}>{content.text}</span>
         </div>
       ));
     }
