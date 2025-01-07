@@ -6,12 +6,9 @@ const WeeklyTimeline = ({ dateRange, language }) => {
   //   const generator = createDateGenerator("monthlyCalendar", orientation);
   //   return generator(dateRange, language);
   // }, [dateRange, language, orientation]);
-  console.log(dateRange);
-
   return (
     <>
       <div className="text-red-500">
-        12333-
         {dateRange.start.toLocaleDateString()}-
         {dateRange.end.toLocaleDateString()}
       </div>

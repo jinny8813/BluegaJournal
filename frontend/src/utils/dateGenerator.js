@@ -1,6 +1,6 @@
 // 日期生成器工廠
 
-export const generateMonths = (startDate, duration) => {
+export const generateMonths = (weekStart, startDate, duration) => {
   const months = [];
   const monthFirstDate = new Date(
     startDate.getFullYear(),
@@ -44,7 +44,7 @@ export const generateMonths = (startDate, duration) => {
   }
   return months;
 };
-export const generateWeeks = (startDate, duration) => {
+export const generateWeeks = (weekStart, startDate, duration) => {
   const weeks = [];
   const monthFirstDate = new Date(
     startDate.getFullYear(),
@@ -64,9 +64,17 @@ export const generateWeeks = (startDate, duration) => {
 
   const day = monthFirstDate.getDay(); // 取得星期幾 (0: 星期日, 1: 星期一, ..., 6: 星期六)
   // ISO 週以星期一為一週的開始
-  const weekFirstDate = new Date(
-    monthFirstDate.setDate(monthFirstDate.getDate() - day + 1)
-  );
+  const getWeekFirstDate = () => {
+    if (weekStart === "monday") {
+      return new Date(
+        monthFirstDate.setDate(monthFirstDate.getDate() - day + 1)
+      );
+    } else {
+      return new Date(monthFirstDate.setDate(monthFirstDate.getDate() - day));
+    }
+  };
+
+  const weekFirstDate = getWeekFirstDate();
 
   while (weekFirstDate <= monthLastDate) {
     let year = weekFirstDate.getFullYear();

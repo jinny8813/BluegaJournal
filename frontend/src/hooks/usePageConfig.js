@@ -64,7 +64,7 @@ export const usePageConfiguration = ({
       });
 
       if (layout.type === "monthly") {
-        const monthlyData = generateMonths(startDate, duration);
+        const monthlyData = generateMonths(weekStart, startDate, duration);
         monthlyData.forEach((monthData) => {
           pageConfigs.push({
             id: `${PAGE_TYPES.CONTENT}-${layoutId}-${monthData.monthsNumber}`,
@@ -77,7 +77,7 @@ export const usePageConfiguration = ({
           });
         });
       } else if (layout.type === "weekly") {
-        const weeklyData = generateWeeks(startDate, duration);
+        const weeklyData = generateWeeks(weekStart, startDate, duration);
         weeklyData.forEach((weekData) => {
           pageConfigs.push({
             id: `${PAGE_TYPES.CONTENT}-${layoutId}-${weekData.weeksNumber}`,

@@ -29,6 +29,7 @@ const PlannerPreviews = ({
         language={language}
         dateRange={page.dateRange}
         theme={currentTheme.styles.text}
+        weekStart={weekStart}
       />
     );
   };
