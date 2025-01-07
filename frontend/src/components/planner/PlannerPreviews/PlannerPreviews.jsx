@@ -2,6 +2,7 @@ import React from "react";
 import BaseGrid from "./elements/BaseGrid";
 import TableGrid from "./elements/TableGrid";
 import Text from "./elements/Text";
+import SubNav from "./elements/SubNav";
 import { createItems } from "./layouts/LayoutFactory";
 
 const PlannerPreviews = ({
@@ -70,6 +71,14 @@ const PlannerPreviews = ({
                   language={language}
                   pageId={page.layoutId}
                   pageTitle={page.title}
+                  contents={contents}
+                  theme={currentTheme.styles.text}
+                />
+                {/* 子導航 */}
+                <SubNav
+                  language={language}
+                  page={page}
+                  allPages={allPages}
                   contents={contents}
                   theme={currentTheme.styles.text}
                 />

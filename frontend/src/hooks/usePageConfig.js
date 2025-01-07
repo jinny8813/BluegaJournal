@@ -65,6 +65,7 @@ export const usePageConfiguration = ({
         type: PAGE_TYPES.CHAPTER,
         layoutId: layoutId,
         title: "章節",
+        layout_type: layout.type,
       });
 
       if (layout.type === "monthly") {

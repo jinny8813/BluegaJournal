@@ -24,7 +24,7 @@ const PlannerPage = () => {
     loading: layoutsLoading,
     error: layoutsError,
     handleLayoutChange,
-  } = useLayouts(orientation); // 傳入 orientation
+  } = useLayouts(orientation);
 
   const {
     themes,

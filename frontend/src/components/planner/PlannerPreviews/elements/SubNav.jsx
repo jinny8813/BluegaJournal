@@ -1,23 +1,53 @@
 import React from "react";
 
-const SubNav = ({ theme }) => {
-  const generateMonthSubNav = () => {
-    
+const SubNav = ({ theme, allPages, page, contents, language }) => {
+  const generateSubNav = () => {
+    if (language === "bilingual") {
+      language = "en";
+    }
+    const layoutTypes = allPages.filter(
+      (p) => p.type === "chapter" && p.layout_type === `${page.layout.type}`
+    );
+    return layoutTypes.map((layoutType, i) => {
+      const label = contents.contents[language][layoutType.layoutId].title.text;
+      const isCurrentLayout = page.layoutId === layoutType.layoutId;
+      return (
+        <>
+          <span
+            key={`${i}`}
+            style={{
+              fontSize: "8px",
+              fontWeight: `${isCurrentLayout ? "bold" : "normal"}`,
+              color: `${
+                isCurrentLayout
+                  ? theme.page_dynamic_elements
+                  : theme.page_contents
+              }`,
+            }}
+          >
+            &nbsp;{label}
+          </span>
+          {layoutTypes.length - 1 !== i ? (
+            <span style={{ fontSize: "8px", color: theme.page_contents }}>
+              &nbsp;·
+            </span>
+          ) : (
+            <></>
+          )}
+        </>
+      );
+    });
   };
   return (
     <div
-      className="flex flex-col items-center"
+      className="flex flex-row items-center"
       style={{
         position: "absolute",
-        color: theme.page_dynamic_elements,
-        top: "45px",
-        left: `${162 + 108 * i}px`,
-        width: "108px",
-        height: "18px",
-        justifyContent: "center",
+        top: "32px",
+        right: "48px",
       }}
     >
-      <span style={{ fontSize: "10px" }}>{elements[i + count]}</span>
+      {generateSubNav()}
     </div>
   );
 };
