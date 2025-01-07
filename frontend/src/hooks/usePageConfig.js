@@ -70,7 +70,8 @@ export const usePageConfiguration = ({
             pageNumber: pageNumber++,
             type: PAGE_TYPES.CONTENT,
             layoutId: layoutId,
-            title: monthData,
+            title: monthData.title,
+            dateRange: monthData.dateRange,
             layout: layout,
           });
         });
@@ -82,7 +83,8 @@ export const usePageConfiguration = ({
             pageNumber: pageNumber++,
             type: PAGE_TYPES.CONTENT,
             layoutId: layoutId,
-            title: weekData,
+            title: weekData.title,
+            dateRange: weekData.dateRange,
             layout: layout,
           });
         });

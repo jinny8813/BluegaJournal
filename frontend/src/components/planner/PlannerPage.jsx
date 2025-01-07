@@ -122,8 +122,6 @@ const PlannerPage = () => {
             currentTheme={currentTheme}
             scale={scale}
             language={language}
-            startDate={startDate}
-            duration={duration}
             orientation={orientation}
           />
         </div>
@@ -163,8 +161,6 @@ const PlannerPage = () => {
             currentTheme={currentTheme}
             scale={scale}
             language={language}
-            startDate={startDate}
-            duration={duration}
             orientation={orientation}
           />
         </div>

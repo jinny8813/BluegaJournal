@@ -1,9 +1,11 @@
 import React from "react";
 import MonthlyCalendar from "./horizontal/MonthlyCalendar";
+import WeeklyTimeline from "./horizontal/WeeklyTimeline";
 
 const layoutComponents = {
   horizontal: {
     MonthlyCalendar,
+    WeeklyTimeline,
   },
   vertical: {
     MonthlyCalendar,

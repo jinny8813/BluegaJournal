@@ -11,8 +11,6 @@ const PlannerPreviews = ({
   scale,
   contents,
   language,
-  startDate,
-  duration,
   orientation,
 }) => {
   if (!currentTheme || !layouts || !contents || allPages.length === 0)
@@ -22,18 +20,12 @@ const PlannerPreviews = ({
   const scaledWidth = layouts.page_config.width * scale;
   const scaledHeight = layouts.page_config.height * scale;
 
-  const getLayoutComponent = (layoutId, orientation) => {
-    const LayoutComponent = createItems(layoutId, orientation);
+  const getLayoutComponent = (page, orientation) => {
+    const LayoutComponent = createItems(page.layoutId, orientation);
 
     if (!LayoutComponent) return null;
 
-    return (
-      <LayoutComponent
-        key={layoutId}
-        language={language}
-        orientation={orientation}
-      />
-    );
+    return <LayoutComponent language={language} dateRange={page.dateRange} />;
   };
 
   return (
@@ -76,7 +68,7 @@ const PlannerPreviews = ({
                   theme={currentTheme.styles.text}
                 />
                 {/* 選中的布局 */}
-                {getLayoutComponent(page.layoutId, orientation)}
+                {getLayoutComponent(page, orientation)}
               </>
             ) : (
               <div>{page.id}</div>
