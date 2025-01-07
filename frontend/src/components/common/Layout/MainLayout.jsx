@@ -101,9 +101,7 @@ const MainLayout = ({ children }) => {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-grow bg-gray-50">
-        <div className="w-full">{children}</div>
-      </main>
+      <main className="flex-grow w-full bg-gray-100">{children}</main>
 
       {/* Footer */}
       <footer className="sticky bottom-0 z-10 w-full h-12 bg-blue-950 text-white flex items-center justify-center">

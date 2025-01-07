@@ -1,6 +1,6 @@
 // 日期生成器工廠
 
-export const generateMonths = (startDate, duration) => {
+export const generateMonths = (weekStart, startDate, duration) => {
   const months = [];
   const monthFirstDate = new Date(
     startDate.getFullYear(),
@@ -13,17 +13,38 @@ export const generateMonths = (startDate, duration) => {
     const monthTW = monthFirstDate.toLocaleString("zh-TW", { month: "long" });
     const monthEN = monthFirstDate.toLocaleString("en-US", { month: "long" });
     const monthNumber = monthFirstDate.getMonth() + 1;
+
+    const nextMonthFirstDate = new Date(
+      monthFirstDate.getFullYear(),
+      monthFirstDate.getMonth() + 1,
+      1
+    );
+
+    const monthLastDate = new Date(
+      nextMonthFirstDate.setDate(nextMonthFirstDate.getDate() - 1)
+    );
+
     months.push({
-      tw: `${year} ${monthTW}`,
-      en: `${year} ${monthEN}`,
-      number: `${year}${monthNumber}`,
+      title: {
+        tw: `${year} ${monthTW}`,
+        en: `${year} ${monthEN}`,
+        number: `${year}${monthNumber}`,
+      },
+      dateRange: {
+        start: new Date(
+          monthLastDate.getFullYear(),
+          monthLastDate.getMonth(),
+          1
+        ),
+        end: monthLastDate,
+      },
     });
 
     monthFirstDate.setMonth(monthFirstDate.getMonth() + 1);
   }
   return months;
 };
-export const generateWeeks = (startDate, duration) => {
+export const generateWeeks = (weekStart, startDate, duration) => {
   const weeks = [];
   const monthFirstDate = new Date(
     startDate.getFullYear(),
@@ -43,29 +64,43 @@ export const generateWeeks = (startDate, duration) => {
 
   const day = monthFirstDate.getDay(); // 取得星期幾 (0: 星期日, 1: 星期一, ..., 6: 星期六)
   // ISO 週以星期一為一週的開始
-  const weekFirstDate = new Date(
-    monthFirstDate.setDate(monthFirstDate.getDate() - day + 1 - 7)
-  );
+  const getWeekFirstDate = () => {
+    if (weekStart === "monday") {
+      return new Date(
+        monthFirstDate.setDate(monthFirstDate.getDate() - day + 1)
+      );
+    } else {
+      return new Date(monthFirstDate.setDate(monthFirstDate.getDate() - day));
+    }
+  };
 
-  const weekLastDate = new Date(
-    weekFirstDate.setDate(weekFirstDate.getDate() + 6)
-  );
-
-  console.log(weekFirstDate);
+  const weekFirstDate = getWeekFirstDate();
 
   while (weekFirstDate <= monthLastDate) {
     let year = weekFirstDate.getFullYear();
-    let weekNumber = parseInt(getISOWeekNumber(weekFirstDate)) + 1;
+    let weekNumber = parseInt(getISOWeekNumber(weekFirstDate));
 
     if (weekNumber === 53) {
       year = year - 1;
       weekNumber = 1;
     }
 
+    let tempDate = new Date(weekFirstDate);
+    let currentFirstDate = new Date(tempDate.setDate(weekFirstDate.getDate()));
+    let currentLastDate = new Date(
+      tempDate.setDate(currentFirstDate.getDate() + 6)
+    );
+
     weeks.push({
-      tw: `${year} 第${weekNumber}週`,
-      en: `${year} Week ${weekNumber}`,
-      number: `${year}${weekNumber}`,
+      title: {
+        tw: `${year} 第${weekNumber}週`,
+        en: `${year} Week ${weekNumber}`,
+        number: `${year}${weekNumber}`,
+      },
+      dateRange: {
+        start: currentFirstDate,
+        end: currentLastDate,
+      },
     });
 
     weekFirstDate.setDate(weekFirstDate.getDate() + 7);

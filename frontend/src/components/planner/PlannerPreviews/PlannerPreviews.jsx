@@ -8,12 +8,11 @@ const PlannerPreviews = ({
   layouts,
   allPages,
   currentTheme,
-  scale = 0.75,
+  scale,
   contents,
-  language = "en",
-  startDate,
-  duration,
+  language,
   orientation,
+  weekStart,
 }) => {
   if (!currentTheme || !layouts || !contents || allPages.length === 0)
     return null;
@@ -22,11 +21,24 @@ const PlannerPreviews = ({
   const scaledWidth = layouts.page_config.width * scale;
   const scaledHeight = layouts.page_config.height * scale;
 
+  const getLayoutComponent = (page, orientation) => {
+    const LayoutComponent = createItems(page.layoutId, orientation);
+    if (!LayoutComponent) return null;
+    return (
+      <LayoutComponent
+        language={language}
+        dateRange={page.dateRange}
+        theme={currentTheme.styles.text}
+        weekStart={weekStart}
+      />
+    );
+  };
+
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col gap-4 py-8 px-auto">
       {allPages.map((page) => (
         <div
-          className="relative"
+          className="inline-block relative mx-auto"
           key={`${page.layoutId}-${page.pageNumber}`}
           data-page={page.pageNumber}
           style={{
@@ -36,7 +48,7 @@ const PlannerPreviews = ({
         >
           {/* 紙張容器 */}
           <div
-            className="absolute top-0 left-0 bg-white shadow-xl overflow-hidden origin-top-left"
+            className="absolute bg-white shadow-xl origin-top-left"
             style={{
               width: layouts.page_config.width,
               height: layouts.page_config.height,
@@ -61,27 +73,12 @@ const PlannerPreviews = ({
                   contents={contents}
                   theme={currentTheme.styles.text}
                 />
+                {/* 選中的布局 */}
+                {getLayoutComponent(page, orientation)}
               </>
             ) : (
               <div>{page.id}</div>
             )}
-            {/* 選中的布局 */}
-            {/* {selectedLayouts.myLayouts.map((layoutId) => {
-              const LayoutComponent = createItems(layoutId, orientation);
-
-              if (!LayoutComponent) return null;
-
-              return (
-                <LayoutComponent
-                  key={layoutId}
-                  dateRange={dateRange}
-                  language={language}
-                  pageMapping={pageMapping}
-                  orientation={orientation}
-                  onDateClick={onDateClick}
-                />
-              );
-            })} */}
             {/* 頁碼 */}
             <div
               className="absolute bottom-4 right-4 text-sm"

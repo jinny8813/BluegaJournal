@@ -15,6 +15,7 @@ export const usePageConfiguration = ({
   selectedLayouts,
   startDate,
   duration,
+  weekStart,
 }) => {
   // 生成所有頁面配置
   const pages = useMemo(() => {
@@ -63,26 +64,28 @@ export const usePageConfiguration = ({
       });
 
       if (layout.type === "monthly") {
-        const monthlyData = generateMonths(startDate, duration);
+        const monthlyData = generateMonths(weekStart, startDate, duration);
         monthlyData.forEach((monthData) => {
           pageConfigs.push({
             id: `${PAGE_TYPES.CONTENT}-${layoutId}-${monthData.monthsNumber}`,
             pageNumber: pageNumber++,
             type: PAGE_TYPES.CONTENT,
             layoutId: layoutId,
-            title: monthData,
+            title: monthData.title,
+            dateRange: monthData.dateRange,
             layout: layout,
           });
         });
       } else if (layout.type === "weekly") {
-        const weeklyData = generateWeeks(startDate, duration);
+        const weeklyData = generateWeeks(weekStart, startDate, duration);
         weeklyData.forEach((weekData) => {
           pageConfigs.push({
             id: `${PAGE_TYPES.CONTENT}-${layoutId}-${weekData.weeksNumber}`,
             pageNumber: pageNumber++,
             type: PAGE_TYPES.CONTENT,
             layoutId: layoutId,
-            title: weekData,
+            title: weekData.title,
+            dateRange: weekData.dateRange,
             layout: layout,
           });
         });

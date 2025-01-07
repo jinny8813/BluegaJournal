@@ -4,6 +4,7 @@ import LayoutSelector from "./settings/LayoutSelector";
 import ThemeSelector from "./settings/ThemeSelector";
 import OrientationControl from "./settings/OrientationControl";
 import LanguageControl from "./settings/LanguageControl";
+import WeekStartControl from "./settings/WeekStartControl";
 
 const PlannerControls = ({
   startDate,
@@ -20,6 +21,8 @@ const PlannerControls = ({
   onOrientationChange,
   language,
   onLanguageChange,
+  weekStart,
+  onWeekStartChange,
 }) => {
   return (
     <div className="space-y-4">
@@ -29,14 +32,14 @@ const PlannerControls = ({
           手帳配置設置
         </h2>
         <div className="space-y-6">
+          <LanguageControl
+            language={language}
+            onLanguageChange={onLanguageChange}
+          />
           <ThemeSelector
             currentTheme={currentTheme}
             themes={themes}
             onThemeChange={onThemeChange}
-          />
-          <LanguageControl
-            language={language}
-            onLanguageChange={onLanguageChange}
           />
         </div>
       </div>
@@ -47,6 +50,10 @@ const PlannerControls = ({
           日期區間設置
         </h2>
         <div className="space-y-6">
+          <WeekStartControl
+            weekStart={weekStart}
+            onWeekStartChange={onWeekStartChange}
+          />
           <DateControl
             startDate={startDate}
             duration={duration}

@@ -6,6 +6,7 @@ import { useDateRange } from "../../hooks/useDateRange";
 import { usePageNavigator } from "../../hooks/usePageNavigator";
 import { useOrientation } from "../../hooks/useOrientation";
 import { useLanguage } from "../../hooks/useLanguage";
+import { useWeekStart } from "../../hooks/useWeekStart";
 import { usePageConfiguration } from "../../hooks/usePageConfig";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerSettings from "./PlannerSettings/PlannerSettings";
@@ -14,6 +15,7 @@ import PlannerControls from "./PlannerControls/PlannerControls";
 const PlannerPage = () => {
   const { orientation, handleOrientationChange } = useOrientation();
   const { language, handleLanguageChange } = useLanguage();
+  const { weekStart, handleWeekStartChange } = useWeekStart();
 
   const {
     contents,
@@ -43,6 +45,7 @@ const PlannerPage = () => {
     selectedLayouts,
     startDate,
     duration,
+    weekStart,
   });
 
   const {
@@ -70,28 +73,10 @@ const PlannerPage = () => {
 
   return (
     <>
-      <div className="hidden lg:flex lg:flex-row lg:h-[calc(100vh-6rem)]">
-        <div
-          className="overflow-auto bg-gray-400 lg:w-3/4 lg:h-auto lg:p-8"
-          style={{ scrollBehavior: "smooth" }}
-          ref={scrollContainerRef}
-        >
-          <PlannerPreviews
-            contents={contents}
-            layouts={layouts}
-            allPages={pages}
-            currentTheme={currentTheme}
-            scale={scale}
-            language={language}
-            startDate={startDate}
-            duration={duration}
-            orientation={orientation}
-          />
-        </div>
-
-        <div className="lg:w-1/4 lg:h-auto lg:flex lg:flex-col">
+      <div className="hidden lg:flex lg:flex-row lg:h-[calc(100dvh-6rem)]">
+        <div className="lg:w-1/3 lg:h-auto lg:flex lg:flex-col">
           <div
-            className="overflow-auto bg-gray-200 lg:p-4 h-3/5"
+            className="overflow-auto bg-gray-200 lg:p-4"
             style={{ scrollBehavior: "smooth" }}
           >
             <PlannerSettings
@@ -109,10 +94,12 @@ const PlannerPage = () => {
               onOrientationChange={handleOrientationChange}
               language={language}
               onLanguageChange={handleLanguageChange}
+              weekStart={weekStart}
+              onWeekStartChange={handleWeekStartChange}
             />
           </div>
           <div
-            className="overflow-auto bg-gray-300 lg:p-4 h-2/5"
+            className="overflow-auto bg-gray-100 lg:p-4 min-h-[calc(32dvh-4rem)]"
             style={{ scrollBehavior: "smooth" }}
           >
             <PlannerControls
@@ -128,11 +115,27 @@ const PlannerPage = () => {
             />
           </div>
         </div>
+        <div
+          className="overflow-auto bg-gray-300 lg:w-2/3 lg:h-auto"
+          style={{ scrollBehavior: "smooth" }}
+          ref={scrollContainerRef}
+        >
+          <PlannerPreviews
+            contents={contents}
+            layouts={layouts}
+            allPages={pages}
+            currentTheme={currentTheme}
+            scale={scale}
+            language={language}
+            orientation={orientation}
+            weekStart={weekStart}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-col h-[calc(100vh-6rem)] lg:hidden">
+      <div className="flex flex-col h-[calc(100dvh-6rem)] lg:hidden">
         <div
-          className="overflow-auto bg-gray-200 p-2 h-[calc(30vh)]"
+          className="overflow-auto bg-gray-100 p-2 h-[calc(36dvh-4rem)]"
           style={{ scrollBehavior: "smooth" }}
         >
           <PlannerSettings
@@ -150,10 +153,12 @@ const PlannerPage = () => {
             onOrientationChange={handleOrientationChange}
             language={language}
             onLanguageChange={handleLanguageChange}
+            weekStart={weekStart}
+            onWeekStartChange={handleWeekStartChange}
           />
         </div>
         <div
-          className="overflow-auto bg-gray-400 p-4 h-[calc(50vh-6rem)]"
+          className="overflow-auto bg-gray-300 h-[calc(48dvh)]"
           style={{ scrollBehavior: "smooth" }}
           ref={scrollContainerRef}
         >
@@ -164,13 +169,12 @@ const PlannerPage = () => {
             currentTheme={currentTheme}
             scale={scale}
             language={language}
-            startDate={startDate}
-            duration={duration}
             orientation={orientation}
+            weekStart={weekStart}
           />
         </div>
         <div
-          className="overflow-auto bg-gray-300 p-2 h-[calc(20vh)]"
+          className="overflow-auto bg-gray-200 p-2 h-[calc(16dvh-2rem)]"
           style={{ scrollBehavior: "smooth" }}
         >
           <PlannerControls
