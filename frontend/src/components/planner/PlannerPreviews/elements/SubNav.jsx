@@ -1,6 +1,14 @@
 import React from "react";
 
-const SubNav = ({ theme, allPages, page, contents, language }) => {
+const SubNav = ({
+  theme,
+  allPages,
+  page,
+  contents,
+  language,
+  getPagesByLayoutIdandDate,
+  onPageChange,
+}) => {
   const generateSubNav = () => {
     if (language === "bilingual") {
       language = "en";
@@ -11,6 +19,11 @@ const SubNav = ({ theme, allPages, page, contents, language }) => {
     return layoutTypes.map((layoutType, i) => {
       const label = contents.contents[language][layoutType.layoutId].title.text;
       const isCurrentLayout = page.layoutId === layoutType.layoutId;
+      const targetPage = getPagesByLayoutIdandDate(
+        layoutType.layoutId,
+        page.dateRange
+      );
+
       return (
         <>
           <span
@@ -23,7 +36,9 @@ const SubNav = ({ theme, allPages, page, contents, language }) => {
                   ? theme.page_dynamic_elements
                   : theme.page_contents
               }`,
+              cursor: "pointer",
             }}
+            onClick={() => onPageChange(targetPage[0].pageNumber)}
           >
             &nbsp;{label}
           </span>

@@ -14,6 +14,8 @@ const PlannerPreviews = ({
   language,
   orientation,
   weekStart,
+  getPagesByLayoutIdandDate,
+  onPageChange,
 }) => {
   if (!currentTheme || !layouts || !contents || allPages.length === 0)
     return null;
@@ -81,6 +83,8 @@ const PlannerPreviews = ({
                   allPages={allPages}
                   contents={contents}
                   theme={currentTheme.styles.text}
+                  getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
+                  onPageChange={onPageChange}
                 />
                 {/* 選中的布局 */}
                 {getLayoutComponent(page, orientation)}
@@ -89,10 +93,7 @@ const PlannerPreviews = ({
               <div>{page.id}</div>
             )}
             {/* 頁碼 */}
-            <div
-              className="absolute bottom-4 right-4 text-sm"
-              style={{ color: currentTheme.styles.text.page_numbers }}
-            >
+            <div className="absolute bottom-4 right-4 text-sm">
               {page.pageNumber}
             </div>
           </div>
