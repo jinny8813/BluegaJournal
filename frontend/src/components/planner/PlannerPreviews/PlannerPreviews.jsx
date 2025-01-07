@@ -22,6 +22,20 @@ const PlannerPreviews = ({
   const scaledWidth = layouts.page_config.width * scale;
   const scaledHeight = layouts.page_config.height * scale;
 
+  const getLayoutComponent = (layoutId, orientation) => {
+    const LayoutComponent = createItems(layoutId, orientation);
+
+    if (!LayoutComponent) return null;
+
+    return (
+      <LayoutComponent
+        key={layoutId}
+        language={language}
+        orientation={orientation}
+      />
+    );
+  };
+
   return (
     <div className="flex flex-col gap-4 py-8 px-auto">
       {allPages.map((page) => (
@@ -61,27 +75,12 @@ const PlannerPreviews = ({
                   contents={contents}
                   theme={currentTheme.styles.text}
                 />
+                {/* 選中的布局 */}
+                {getLayoutComponent(page.layoutId, orientation)}
               </>
             ) : (
               <div>{page.id}</div>
             )}
-            {/* 選中的布局 */}
-            {/* {selectedLayouts.myLayouts.map((layoutId) => {
-              const LayoutComponent = createItems(layoutId, orientation);
-
-              if (!LayoutComponent) return null;
-
-              return (
-                <LayoutComponent
-                  key={layoutId}
-                  dateRange={dateRange}
-                  language={language}
-                  pageMapping={pageMapping}
-                  orientation={orientation}
-                  onDateClick={onDateClick}
-                />
-              );
-            })} */}
             {/* 頁碼 */}
             <div
               className="absolute bottom-4 right-4 text-sm"

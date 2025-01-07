@@ -4,18 +4,20 @@ const MonthlyCalendar = ({
   dateRange,
   language,
   pageMapping,
-  variant,
+  orientation,
   onDateClick,
 }) => {
+  console.log(orientation);
   // 生成所有月份的日期數據
-  const monthlyData = useMemo(() => {
-    const generator = createDateGenerator("monthlyCalendar", variant);
-    return generator(dateRange, language);
-  }, [dateRange, language, variant]);
+  // const monthlyData = useMemo(() => {
+  //   const generator = createDateGenerator("monthlyCalendar", orientation);
+  //   return generator(dateRange, language);
+  // }, [dateRange, language, orientation]);
 
   return (
     <>
-      {monthlyData.map((monthData, index) => (
+      <div className="text-red-500">123</div>
+      {/* {monthlyData.map((monthData, index) => (
         <div
           key={monthData.date.getTime()}
           className="monthly-calendar horizontal"
@@ -53,7 +55,7 @@ const MonthlyCalendar = ({
             ))}
           </div>
         </div>
-      ))}
+      ))} */}
     </>
   );
 };
