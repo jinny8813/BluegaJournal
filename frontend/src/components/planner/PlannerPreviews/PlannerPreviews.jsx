@@ -16,6 +16,8 @@ const PlannerPreviews = ({
   weekStart,
   getPagesByLayoutIdandDate,
   onPageChange,
+  holidays,
+  lunarDate,
 }) => {
   if (!currentTheme || !layouts || !contents || allPages.length === 0)
     return null;
@@ -75,6 +77,8 @@ const PlannerPreviews = ({
                   pageTitle={page.title}
                   contents={contents}
                   theme={currentTheme.styles.text}
+                  lunarDate={lunarDate}
+                  dateRange={page.dateRange}
                 />
                 {/* 子導航 */}
                 <SubNav
