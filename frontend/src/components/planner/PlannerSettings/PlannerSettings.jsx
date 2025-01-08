@@ -6,6 +6,7 @@ import OrientationControl from "./settings/OrientationControl";
 import LanguageControl from "./settings/LanguageControl";
 import WeekStartControl from "./settings/WeekStartControl";
 import LunarDateControl from "./settings/LunarDateControl";
+import HolidaysControl from "./settings/HolidaysControl";
 
 const PlannerControls = ({
   startDate,
@@ -26,6 +27,8 @@ const PlannerControls = ({
   onWeekStartChange,
   lunarDate,
   onLunarDateChange,
+  holidays,
+  onHolidaysChange,
 }) => {
   return (
     <div className="space-y-4">
@@ -91,6 +94,10 @@ const PlannerControls = ({
           <LunarDateControl
             lunarDate={lunarDate}
             onLunarDateChange={onLunarDateChange}
+          />
+          <HolidaysControl
+            holidays={holidays}
+            onHolidaysChange={onHolidaysChange}
           />
         </div>
       </div>

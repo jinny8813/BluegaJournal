@@ -9,6 +9,7 @@ import { useLanguage } from "../../hooks/useLanguage";
 import { useWeekStart } from "../../hooks/useWeekStart";
 import { usePageConfiguration } from "../../hooks/usePageConfig";
 import { useLunarDate } from "../../hooks/useLunarDate";
+import { useHolidays } from "../../hooks/useHolidays";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerSettings from "./PlannerSettings/PlannerSettings";
 import PlannerControls from "./PlannerControls/PlannerControls";
@@ -20,6 +21,7 @@ const PlannerPage = () => {
   const { language, handleLanguageChange } = useLanguage();
   const { weekStart, handleWeekStartChange } = useWeekStart();
   const { lunarDate, handleLunarDateChange } = useLunarDate();
+  const { holidays, handleHolidaysChange } = useHolidays();
 
   const {
     contents,
@@ -119,6 +121,8 @@ const PlannerPage = () => {
               onWeekStartChange={handleWeekStartChange}
               lunarDate={lunarDate}
               onLunarDateChange={handleLunarDateChange}
+              holidays={holidays}
+              onHolidaysChange={handleHolidaysChange}
             />
           </div>
           <div
@@ -155,6 +159,7 @@ const PlannerPage = () => {
             getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
             onPageChange={handlePageChange}
             lunarDate={lunarDate}
+            holidays={holidays}
           />
         </div>
       </div>
@@ -183,6 +188,8 @@ const PlannerPage = () => {
             onWeekStartChange={handleWeekStartChange}
             lunarDate={lunarDate}
             onLunarDateChange={handleLunarDateChange}
+            holidays={holidays}
+            onHolidaysChange={handleHolidaysChange}
           />
         </div>
         <div
@@ -202,6 +209,7 @@ const PlannerPage = () => {
             getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
             onPageChange={handlePageChange}
             lunarDate={lunarDate}
+            holidays={holidays}
           />
         </div>
         <div
