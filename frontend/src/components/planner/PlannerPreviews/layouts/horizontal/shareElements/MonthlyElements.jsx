@@ -12,7 +12,7 @@ export const generateBasicCalendar = (dateRange, weekStart, theme) => {
   left =
     weekStart === "monday"
       ? 162 + width * 6 * (date.getDay() - 1)
-      : 162 + width * 6 * date.getDay();
+      : 162 + width * 6 * (date.getDay() - 6);
 
   const basic = [];
   while (date <= dateRange.end) {
