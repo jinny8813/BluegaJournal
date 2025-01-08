@@ -32,11 +32,9 @@ const PlannerControls = ({
 }) => {
   return (
     <div className="space-y-4">
-      {/* 整體配置設置 */}
+      {/* 整體配置 */}
       <div className="bg-white rounded-lg shadow-md p-4">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
-          整體配置設置
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">整體配置</h2>
         <div className="space-y-4">
           <OrientationControl
             orientation={orientation}
@@ -50,11 +48,9 @@ const PlannerControls = ({
         </div>
       </div>
 
-      {/* 日期區間設置 */}
+      {/* 日期區間 */}
       <div className="bg-white rounded-lg shadow-md p-4">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
-          日期區間設置
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">日期區間</h2>
         <div className="space-y-4">
           <WeekStartControl
             weekStart={weekStart}
@@ -69,9 +65,9 @@ const PlannerControls = ({
         </div>
       </div>
 
-      {/* 版面設置 */}
+      {/* 版面選擇 */}
       <div className="bg-white rounded-lg shadow-md p-4">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">版面設置</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">版面選擇</h2>
         <div className="space-y-4">
           <LayoutSelector
             selectedLayouts={selectedLayouts}
@@ -81,10 +77,10 @@ const PlannerControls = ({
         </div>
       </div>
 
-      {/* 語言及附加功能設置 */}
+      {/* 語言及附加功能 */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
-          語言及附加功能設置
+          語言及附加功能
         </h2>
         <div className="space-y-4">
           <LanguageControl

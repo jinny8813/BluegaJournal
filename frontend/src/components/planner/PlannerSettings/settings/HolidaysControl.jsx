@@ -25,7 +25,7 @@ const HolidaysControl = ({ holidays, onHolidaysChange }) => {
             onChange={(e) => onHolidaysChange(e.target.value)}
             className="form-radio text-blue-600"
           />
-          <span className="ml-2 text-sm text-gray-700">標示節日假日</span>
+          <span className="ml-2 text-sm text-gray-700">標示顏色</span>
         </label>
       </div>
     </div>
