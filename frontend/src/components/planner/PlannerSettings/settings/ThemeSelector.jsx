@@ -5,7 +5,7 @@ const ThemeSelector = ({ currentTheme, themes, onThemeChange }) => {
 
   return (
     <div className="flex items-center space-x-4">
-      <label className="text-sm font-medium text-gray-700 min-w-[5rem]">
+      <label className="text-sm font-medium text-gray-700 min-w-[4rem]">
         主題選擇
       </label>
       <div className="flex gap-2">

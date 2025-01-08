@@ -9,7 +9,7 @@ const DateControl = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-4">
-        <label className="text-sm font-medium text-gray-700 min-w-[5rem]">
+        <label className="text-sm font-medium text-gray-700 min-w-[4rem]">
           起始日期
         </label>
         <input
@@ -20,7 +20,7 @@ const DateControl = ({
         />
       </div>
       <div className="flex items-center space-x-4">
-        <label className="text-sm font-medium text-gray-700 min-w-[5rem]">
+        <label className="text-sm font-medium text-gray-700 min-w-[4rem]">
           持續月數
         </label>
         <select

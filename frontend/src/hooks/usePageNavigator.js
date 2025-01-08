@@ -11,6 +11,61 @@ export const usePageNavigator = (totalPages, isDesktop) => {
 
   // 監控滾動和更新當前頁面
   useEffect(() => {
+    initialScroll();
+  });
+
+  // 處理頁面變更
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const targetElement = container.querySelector(`[data-page="${newPage}"]`);
+    if (!targetElement) return;
+
+    // 設置程式滾動標記
+    isScrollingRef.current = true;
+
+    // 計算目標元素的位置並考慮 padding
+    const containerPadding = isDesktop ? 64 : container.clientHeight * 0.75;
+    const scrollTop = targetElement.offsetTop - containerPadding;
+
+    container.scrollTo({
+      top: scrollTop,
+      behavior: "smooth",
+    });
+
+    setCurrentPage(newPage);
+    setInputValue(newPage.toString());
+
+    // 在滾動動畫完成後重置程式滾動標記
+    setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 1000); // 假設滾動動畫時間為 1 秒
+  };
+
+  // 處理輸入框變更
+  const handleInputChange = (value) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setInputValue(numericValue);
+  };
+
+  // 處理輸入確認
+  const handleInputConfirm = () => {
+    const numericValue = parseInt(inputValue);
+    if (
+      !isNaN(numericValue) &&
+      numericValue >= 1 &&
+      numericValue <= totalPages
+    ) {
+      handlePageChange(numericValue);
+    } else {
+      setInputValue(currentPage.toString());
+    }
+  };
+
+  const initialScroll = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
@@ -78,57 +133,6 @@ export const usePageNavigator = (totalPages, isDesktop) => {
         cancelAnimationFrame(scrollRAF);
       }
     };
-  }, [currentPage]); // 添加 currentPage 作為依賴
-
-  // 處理頁面變更
-  const handlePageChange = (newPage) => {
-    if (newPage < 1 || newPage > totalPages) return;
-
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const targetElement = container.querySelector(`[data-page="${newPage}"]`);
-    if (!targetElement) return;
-
-    // 設置程式滾動標記
-    isScrollingRef.current = true;
-
-    // 計算目標元素的位置並考慮 padding
-    const containerPadding = isDesktop ? 64 : container.clientHeight * 0.75;
-    const scrollTop = targetElement.offsetTop - containerPadding;
-
-    container.scrollTo({
-      top: scrollTop,
-      behavior: "smooth",
-    });
-
-    setCurrentPage(newPage);
-    setInputValue(newPage.toString());
-
-    // 在滾動動畫完成後重置程式滾動標記
-    setTimeout(() => {
-      isScrollingRef.current = false;
-    }, 1000); // 假設滾動動畫時間為 1 秒
-  };
-
-  // 處理輸入框變更
-  const handleInputChange = (value) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    setInputValue(numericValue);
-  };
-
-  // 處理輸入確認
-  const handleInputConfirm = () => {
-    const numericValue = parseInt(inputValue);
-    if (
-      !isNaN(numericValue) &&
-      numericValue >= 1 &&
-      numericValue <= totalPages
-    ) {
-      handlePageChange(numericValue);
-    } else {
-      setInputValue(currentPage.toString());
-    }
   };
 
   return {
