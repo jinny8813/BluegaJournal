@@ -58,7 +58,7 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
         return (
           <div
             key={`bilingual-${i}`}
-            className="flex flex-col items-center"
+            className="flex items-center"
             style={{
               position: "absolute",
               color: theme.page_contents,
@@ -71,6 +71,7 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
           >
             <>
               <span style={{ fontSize: "10px" }}>{enContent.text} </span>
+              &nbsp;
               <span style={{ fontSize: "8px" }}>{zhContent.text}</span>
             </>
           </div>

@@ -31,6 +31,7 @@ export const generateBasicCalendar = (dateRange, weekStart, theme) => {
           left: `${left}px`,
           width: `${width}px`,
           height: `${height}px`,
+          justifyContent: "center",
         }}
       >
         <span style={{ fontSize: "10px" }}>{date.getDate()}</span>
