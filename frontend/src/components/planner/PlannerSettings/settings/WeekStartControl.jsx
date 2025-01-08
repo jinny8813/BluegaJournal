@@ -3,7 +3,7 @@ import React from "react";
 const WeekStartControl = ({ weekStart, onWeekStartChange }) => {
   return (
     <div className="flex items-center space-x-4">
-      <label className="text-sm font-medium text-gray-700 min-w-[5rem]">
+      <label className="text-sm font-medium text-gray-700 min-w-[4rem]">
         週起始日
       </label>
       <div className="flex gap-4">

@@ -1107,7 +1107,7 @@
     "daily_conciseVer": {
       "id": "daily_conciseVer",
       "type": "daily",
-      "label": "Daily ConciseVer",
+      "label": "ConciseVer",
       "coverTitle": "Daily ConciseVer",
       "table_grid": {
         "horizontal": [
@@ -1127,7 +1127,7 @@
     "daily_abundantVer": {
       "id": "daily_abundantVer",
       "type": "daily",
-      "label": "Daily AbundantVer",
+      "label": "AbundantVer",
       "coverTitle": "Daily AbundantVer",
       "table_grid": {
         "horizontal": [
