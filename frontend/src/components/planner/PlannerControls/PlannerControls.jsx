@@ -21,7 +21,7 @@ const PlannerControls = ({
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
           畫面預覽和下載
         </h2>
-        <div className="space-y-6">
+        <div className="space-y-4">
           <ScaleControl scale={scale} onScaleChange={onScaleChange} />
           <PageNavigator
             currentPage={currentPage}

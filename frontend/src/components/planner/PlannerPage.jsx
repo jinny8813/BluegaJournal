@@ -8,6 +8,7 @@ import { useOrientation } from "../../hooks/useOrientation";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useWeekStart } from "../../hooks/useWeekStart";
 import { usePageConfiguration } from "../../hooks/usePageConfig";
+import { useLunarDate } from "../../hooks/useLunarDate";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerSettings from "./PlannerSettings/PlannerSettings";
 import PlannerControls from "./PlannerControls/PlannerControls";
@@ -18,6 +19,7 @@ const PlannerPage = () => {
   const { orientation, handleOrientationChange } = useOrientation();
   const { language, handleLanguageChange } = useLanguage();
   const { weekStart, handleWeekStartChange } = useWeekStart();
+  const { lunarDate, handleLunarDateChange } = useLunarDate();
 
   const {
     contents,
@@ -115,10 +117,12 @@ const PlannerPage = () => {
               onLanguageChange={handleLanguageChange}
               weekStart={weekStart}
               onWeekStartChange={handleWeekStartChange}
+              lunarDate={lunarDate}
+              onLunarDateChange={handleLunarDateChange}
             />
           </div>
           <div
-            className="overflow-auto bg-gray-100 lg:p-4 min-h-[calc(32dvh-4rem)]"
+            className="overflow-auto bg-gray-100 lg:p-4 min-h-[calc(28dvh-3rem)]"
             style={{ scrollBehavior: "smooth" }}
           >
             <PlannerControls
@@ -150,6 +154,7 @@ const PlannerPage = () => {
             weekStart={weekStart}
             getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
             onPageChange={handlePageChange}
+            lunarDate={lunarDate}
           />
         </div>
       </div>
@@ -176,6 +181,8 @@ const PlannerPage = () => {
             onLanguageChange={handleLanguageChange}
             weekStart={weekStart}
             onWeekStartChange={handleWeekStartChange}
+            lunarDate={lunarDate}
+            onLunarDateChange={handleLunarDateChange}
           />
         </div>
         <div
@@ -194,6 +201,7 @@ const PlannerPage = () => {
             weekStart={weekStart}
             getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
             onPageChange={handlePageChange}
+            lunarDate={lunarDate}
           />
         </div>
         <div
