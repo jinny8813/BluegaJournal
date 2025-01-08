@@ -23,7 +23,7 @@ export const usePageNavigator = (totalPages, isDesktop) => {
       );
       const containerTop = container.scrollTop;
       const containerHeight = container.clientHeight;
-      const triggerPoint = containerTop + containerHeight / 3; // 使用容器高度的 1/3 作為觸發點
+      const triggerPoint = containerTop + containerHeight / 4; // 使用容器高度的 1/4 作為觸發點
 
       // 找到最接近觸發點的頁面
       let closestPage = 1;

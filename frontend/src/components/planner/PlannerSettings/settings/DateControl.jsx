@@ -28,7 +28,7 @@ const DateControl = ({
           onChange={(e) => onDurationChange(Number(e.target.value))}
           className="w-full px-3 py-2 border rounded-md"
         >
-          {[3, 6, 9, 12, 15, 18].map((months) => (
+          {[3, 6, 9, 12].map((months) => (
             <option key={months} value={months}>
               {months} 個月
             </option>
