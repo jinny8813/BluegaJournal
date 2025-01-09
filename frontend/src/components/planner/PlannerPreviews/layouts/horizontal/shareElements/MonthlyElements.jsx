@@ -16,13 +16,16 @@ export const generateBasicCalendar = (
 
   let today = new Date(dateRange.start);
 
-  left =
-    weekStart === "monday"
-      ? 162 + width * 6 * (today.getDay() - 1)
-      : 162 + width * 6 * (today.getDay() - 6);
-
-  if (left <= 162) {
-    left += width * 6 * 6;
+  if (weekStart === "monday") {
+    left = 162 + width * 6 * (today.getDay() - 1);
+    if (today.getDay() === 0) {
+      left += width * 6 * 7;
+    }
+  } else {
+    left = 162 + width * 6 * (today.getDay() - 6);
+    if (left <= 162) {
+      left += width * 6 * 6;
+    }
   }
 
   const basic = [];
@@ -76,13 +79,16 @@ export const generateBasicHolidays = (dateRange, weekStart, theme) => {
 
   let today = new Date(dateRange.start);
 
-  left =
-    weekStart === "monday"
-      ? 180 + width * 6 * (today.getDay() - 1)
-      : 180 + width * 6 * (today.getDay() - 6);
-
-  if (left <= 180) {
-    left += width * 6 * 6;
+  if (weekStart === "monday") {
+    left = 180 + width * 6 * (today.getDay() - 1);
+    if (today.getDay() === 0) {
+      left += width * 6 * 7;
+    }
+  } else {
+    left = 180 + width * 6 * (today.getDay() - 6);
+    if (left <= 180) {
+      left += width * 6 * 6;
+    }
   }
 
   const basic = [];
@@ -142,13 +148,16 @@ export const generateBasicLunarDates = (
 
   let today = new Date(dateRange.start);
 
-  left =
-    weekStart === "monday"
-      ? 180 + width * 6 * (today.getDay() - 1)
-      : 180 + width * 6 * (today.getDay() - 6);
-
-  if (left <= 180) {
-    left += width * 6 * 6;
+  if (weekStart === "monday") {
+    left = 180 + width * 6 * (today.getDay() - 1);
+    if (today.getDay() === 0) {
+      left += width * 6 * 7;
+    }
+  } else {
+    left = 180 + width * 6 * (today.getDay() - 6);
+    if (left <= 180) {
+      left += width * 6 * 6;
+    }
   }
 
   const basic = [];
