@@ -35,6 +35,7 @@ const PlannerPreviews = ({
         dateRange={page.dateRange}
         theme={currentTheme.styles.text}
         weekStart={weekStart}
+        holidays={holidays}
       />
     );
   };

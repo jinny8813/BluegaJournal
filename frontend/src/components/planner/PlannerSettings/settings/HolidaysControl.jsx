@@ -10,8 +10,8 @@ const HolidaysControl = ({ holidays, onHolidaysChange }) => {
         <label className="inline-flex items-center">
           <input
             type="radio"
-            value="false"
-            checked={holidays === "false"}
+            value="off"
+            checked={holidays === "off"}
             onChange={(e) => onHolidaysChange(e.target.value)}
             className="form-radio text-blue-600"
           />
@@ -20,8 +20,8 @@ const HolidaysControl = ({ holidays, onHolidaysChange }) => {
         <label className="inline-flex items-center">
           <input
             type="radio"
-            value="true"
-            checked={holidays === "true"}
+            value="on"
+            checked={holidays === "on"}
             onChange={(e) => onHolidaysChange(e.target.value)}
             className="form-radio text-blue-600"
           />
