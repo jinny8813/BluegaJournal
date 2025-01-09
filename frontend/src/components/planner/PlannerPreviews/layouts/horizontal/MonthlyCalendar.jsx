@@ -1,8 +1,17 @@
 import React from "react";
-import { generateBasicCalendar } from "./shareElements/MonthlyElements";
+import {
+  generateBasicCalendar,
+  generateBasicHolidays,
+} from "./shareElements/MonthlyElements";
 import { generateWeekDay } from "./shareElements/WeeklyElements";
 
-const MonthlyCalendar = ({ dateRange, language, theme, weekStart, holidays }) => {
+const MonthlyCalendar = ({
+  dateRange,
+  language,
+  theme,
+  weekStart,
+  holidays,
+}) => {
   return (
     <>
       <div className="text-red-500">
@@ -11,6 +20,7 @@ const MonthlyCalendar = ({ dateRange, language, theme, weekStart, holidays }) =>
       </div>
       {generateWeekDay(language, weekStart, theme)}
       {generateBasicCalendar(dateRange, weekStart, theme, holidays)}
+      {holidays === "on" && generateBasicHolidays(dateRange, weekStart, theme)}
     </>
   );
 };
