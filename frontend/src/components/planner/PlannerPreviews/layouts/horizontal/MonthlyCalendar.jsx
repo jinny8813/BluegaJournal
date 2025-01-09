@@ -2,6 +2,7 @@ import React from "react";
 import {
   generateBasicCalendar,
   generateBasicHolidays,
+  generateBasicLunarDates,
 } from "./shareElements/MonthlyElements";
 import { generateWeekDay } from "./shareElements/WeeklyElements";
 
@@ -11,6 +12,7 @@ const MonthlyCalendar = ({
   theme,
   weekStart,
   holidays,
+  lunarDate,
 }) => {
   return (
     <>
@@ -21,6 +23,8 @@ const MonthlyCalendar = ({
       {generateWeekDay(language, weekStart, theme)}
       {generateBasicCalendar(dateRange, weekStart, theme, holidays)}
       {holidays === "on" && generateBasicHolidays(dateRange, weekStart, theme)}
+      {lunarDate === "on" &&
+        generateBasicLunarDates(dateRange, weekStart, theme, holidays)}
     </>
   );
 };

@@ -13,7 +13,7 @@ const Text = ({
   const isSingleDay =
     dateRange.start.toDateString() === dateRange.end.toDateString();
   const getLunarTerm = () => {
-    if (lunarDate === "true" && isSingleDay) {
+    if (lunarDate === "on" && isSingleDay) {
       const lunarTerm = getLunarOrSolarTerm(new Date(dateRange.start));
       return lunarTerm;
     }

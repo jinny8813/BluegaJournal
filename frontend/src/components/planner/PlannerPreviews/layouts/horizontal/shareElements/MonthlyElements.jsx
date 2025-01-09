@@ -1,5 +1,6 @@
 import React from "react";
 import { getHolidaysSetting } from "../../../../../../utils/holidaysGenerator";
+import { getLunarOrSolarTerm } from "../../../../../../utils/lunarGenerator";
 
 // 月份標題元素
 export const generateBasicCalendar = (
@@ -117,6 +118,72 @@ export const generateBasicHolidays = (dateRange, weekStart, theme) => {
         }}
       >
         <span style={{ fontSize: "6px" }}>&nbsp;{holidayInfo.name}</span>
+      </div>
+    );
+
+    // 更新日期
+    left += width * 6;
+    today.setDate(today.getDate() + 1);
+  }
+  return basic;
+};
+
+// 月份元素
+export const generateBasicLunarDates = (
+  dateRange,
+  weekStart,
+  theme,
+  holidays
+) => {
+  let top = 72;
+  let left = 180;
+  let width = 18;
+  let height = 9;
+
+  let today = new Date(dateRange.start);
+
+  left =
+    weekStart === "monday"
+      ? 180 + width * 6 * (today.getDay() - 1)
+      : 180 + width * 6 * (today.getDay() - 6);
+
+  if (left <= 180) {
+    left += width * 6 * 6;
+  }
+
+  const basic = [];
+  while (today <= dateRange.end) {
+    // 計算元素位置
+    if (left > 180 + width * 6 * 6) {
+      top += height * 12;
+      left = 180;
+    }
+
+    const holidayInfo = holidays === "on" ? getHolidaysSetting(today) : null;
+    const lunarInfo = getLunarOrSolarTerm(today);
+
+    const fontColor =
+      holidayInfo?.fontColor && holidayInfo.fontColor !== "normal"
+        ? holidayInfo.fontColor
+        : theme.page_dynamic_elements;
+
+    // 創建日曆元素
+    basic.push(
+      <div
+        key={`${today.getTime()}-${lunarInfo}`}
+        className="flex items-center"
+        style={{
+          position: "absolute",
+          color: fontColor,
+          top: `${top}px`,
+          left: `${left}px`,
+          width: `${width}px`,
+          height: `${height}px`,
+          overflow: "visible",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <span style={{ fontSize: "6px" }}>&nbsp;{lunarInfo}</span>
       </div>
     );
 

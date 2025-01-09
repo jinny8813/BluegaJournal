@@ -10,8 +10,8 @@ const LunarDateControl = ({ lunarDate, onLunarDateChange }) => {
         <label className="inline-flex items-center">
           <input
             type="radio"
-            value="false"
-            checked={lunarDate === "false"}
+            value="off"
+            checked={lunarDate === "off"}
             onChange={(e) => onLunarDateChange(e.target.value)}
             className="form-radio text-blue-600"
           />
@@ -20,8 +20,8 @@ const LunarDateControl = ({ lunarDate, onLunarDateChange }) => {
         <label className="inline-flex items-center">
           <input
             type="radio"
-            value="true"
-            checked={lunarDate === "true"}
+            value="on"
+            checked={lunarDate === "on"}
             onChange={(e) => onLunarDateChange(e.target.value)}
             className="form-radio text-blue-600"
           />

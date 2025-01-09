@@ -36,6 +36,7 @@ const PlannerPreviews = ({
         theme={currentTheme.styles.text}
         weekStart={weekStart}
         holidays={holidays}
+        lunarDate={lunarDate}
       />
     );
   };
