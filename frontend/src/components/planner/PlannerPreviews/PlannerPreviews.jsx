@@ -37,6 +37,9 @@ const PlannerPreviews = ({
         weekStart={weekStart}
         holidays={holidays}
         lunarDate={lunarDate}
+        allPages={allPages}
+        getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
+        onPageChange={onPageChange}
       />
     );
   };

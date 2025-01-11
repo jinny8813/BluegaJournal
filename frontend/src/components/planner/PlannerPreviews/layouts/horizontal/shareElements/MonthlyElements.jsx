@@ -2,203 +2,201 @@ import React from "react";
 import { getHolidaysSetting } from "../../../../../../utils/holidaysGenerator";
 import { getLunarOrSolarTerm } from "../../../../../../utils/lunarGenerator";
 
+const BASE_CONFIG = {
+  calendar: { top: 63, left: 162, width: 18, height: 18 },
+  holidays: { top: 63, left: 180, width: 18, height: 9 },
+  lunar: { top: 72, left: 180, width: 18, height: 9 },
+};
+
+const calculateStartPosition = (date, baseLeft, width, weekStart) => {
+  let left = baseLeft;
+  const dayOfWeek = date.getDay();
+
+  if (weekStart === "monday") {
+    left += width * 6 * (dayOfWeek - 1);
+    if (dayOfWeek === 0) left += width * 6 * 7;
+  } else {
+    left += width * 6 * (dayOfWeek - 6);
+    if (left <= baseLeft) left += width * 6 * 6;
+  }
+
+  return left;
+};
+
+// 獲取字體顏色
+const getFontColor = (date, theme, holidays) => {
+  if (holidays !== "on") return theme.page_dynamic_elements;
+
+  const holidayInfo = getHolidaysSetting(date);
+  return holidayInfo?.fontColor && holidayInfo.fontColor !== "normal"
+    ? holidayInfo.fontColor
+    : theme.page_dynamic_elements;
+};
+
+const generateElements = (
+  dateRange,
+  weekStart,
+  theme,
+  config,
+  renderElement,
+  holidays = "off"
+) => {
+  const elements = [];
+  let { top, left: baseLeft, width, height } = config;
+  let currentDate = new Date(dateRange.start);
+  let left = calculateStartPosition(currentDate, baseLeft, width, weekStart);
+  const maxLeft = baseLeft + width * 6 * 6;
+
+  while (currentDate <= dateRange.end) {
+    if (left > maxLeft) {
+      top += height * (config === BASE_CONFIG.calendar ? 6 : 12);
+      left = baseLeft;
+    }
+
+    const fontColor = getFontColor(currentDate, theme, holidays);
+    elements.push(
+      renderElement(currentDate, { top, left, width, height, fontColor })
+    );
+
+    left += width * 6;
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return elements;
+};
+
+// 獲取日記頁面
+const getDailyPage = (date, allPages, getPagesByLayoutIdandDate) => {
+  if (!allPages || !getPagesByLayoutIdandDate) return null;
+
+  const dailyLayout = allPages.find(
+    (p) => p.type === "chapter" && p.layout_type === "daily"
+  );
+
+  if (!dailyLayout) return null;
+
+  const targetPages = getPagesByLayoutIdandDate(dailyLayout.layoutId, {
+    start: date,
+    end: date,
+  });
+
+  return targetPages?.[0] || null;
+};
+
+// 生成日期元素樣式
+const getDateElementStyle = (style, hasDaily) => ({
+  position: "absolute",
+  color: style.fontColor,
+  ...style,
+  justifyContent: "center",
+  cursor: hasDaily ? "pointer" : "default",
+});
+
 // 月份標題元素
 export const generateBasicCalendar = (
   dateRange,
   weekStart,
   theme,
-  holidays
+  holidays,
+  allPages = null,
+  getPagesByLayoutIdandDate = null,
+  onPageChange = null
 ) => {
-  let top = 63;
-  let left = 162;
-  let width = 18;
-  let height = 18;
+  return generateElements(
+    dateRange,
+    weekStart,
+    theme,
+    BASE_CONFIG.calendar,
+    (date, style) => {
+      const dailyPage = getDailyPage(date, allPages, getPagesByLayoutIdandDate);
+      const hasDaily = Boolean(dailyPage);
 
-  let today = new Date(dateRange.start);
-
-  if (weekStart === "monday") {
-    left = 162 + width * 6 * (today.getDay() - 1);
-    if (today.getDay() === 0) {
-      left += width * 6 * 7;
-    }
-  } else {
-    left = 162 + width * 6 * (today.getDay() - 6);
-    if (left <= 162) {
-      left += width * 6 * 6;
-    }
-  }
-
-  const basic = [];
-  while (today <= dateRange.end) {
-    // 計算元素位置
-    if (left > 162 + width * 6 * 6) {
-      top += height * 6;
-      left = 162;
-    }
-
-    // 處理節日邏輯
-    const holidayInfo = holidays === "on" ? getHolidaysSetting(today) : null;
-
-    const fontColor =
-      holidayInfo?.fontColor && holidayInfo.fontColor !== "normal"
-        ? holidayInfo.fontColor
-        : theme.page_dynamic_elements;
-
-    // 創建日曆元素
-    basic.push(
-      <div
-        key={today.getDate()}
-        className="flex items-center"
-        style={{
-          position: "absolute",
-          color: fontColor,
-          top: `${top}px`,
-          left: `${left}px`,
-          width: `${width}px`,
-          height: `${height}px`,
-          justifyContent: "center",
-        }}
-      >
-        <span style={{ fontSize: "10px" }}>{today.getDate()}</span>
-      </div>
-    );
-
-    // 更新日期
-    left += width * 6;
-    today.setDate(today.getDate() + 1);
-  }
-  return basic;
+      return (
+        <div
+          key={date.getDate()}
+          className="flex items-center"
+          style={getDateElementStyle(style, hasDaily)}
+          onClick={() => {
+            if (hasDaily && onPageChange) {
+              onPageChange(dailyPage.pageNumber);
+            }
+          }}
+          title={hasDaily ? "點擊查看日記" : ""}
+        >
+          <span style={{ fontSize: "10px" }}>{date.getDate()}</span>
+        </div>
+      );
+    },
+    holidays
+  );
 };
 
 // 月份節日元素
-export const generateBasicHolidays = (dateRange, weekStart, theme) => {
-  let top = 63;
-  let left = 180;
-  let width = 18;
-  let height = 9;
+export const generateBasicHolidays = (
+  dateRange,
+  weekStart,
+  theme,
+  holidays
+) => {
+  if (holidays !== "on") return []; // 如果 holidays 關閉，不渲染節日
 
-  let today = new Date(dateRange.start);
-
-  if (weekStart === "monday") {
-    left = 180 + width * 6 * (today.getDay() - 1);
-    if (today.getDay() === 0) {
-      left += width * 6 * 7;
-    }
-  } else {
-    left = 180 + width * 6 * (today.getDay() - 6);
-    if (left <= 180) {
-      left += width * 6 * 6;
-    }
-  }
-
-  const basic = [];
-  while (today <= dateRange.end) {
-    // 計算元素位置
-    if (left > 180 + width * 6 * 6) {
-      top += height * 12;
-      left = 180;
-    }
-
-    // 處理節日邏輯
-    const holidayInfo = getHolidaysSetting(today);
-
-    const fontColor =
-      holidayInfo?.fontColor && holidayInfo.fontColor !== "normal"
-        ? holidayInfo.fontColor
-        : theme.page_dynamic_elements;
-
-    // 創建日曆元素
-    basic.push(
-      <div
-        key={`${today.getTime()}-${holidayInfo.name}`}
-        className="flex items-center"
-        style={{
-          position: "absolute",
-          color: fontColor,
-          top: `${top}px`,
-          left: `${left}px`,
-          width: `${width}px`,
-          height: `${height}px`,
-          overflow: "visible",
-          whiteSpace: "nowrap",
-        }}
-      >
-        <span style={{ fontSize: "6px" }}>&nbsp;{holidayInfo.name}</span>
-      </div>
-    );
-
-    // 更新日期
-    left += width * 6;
-    today.setDate(today.getDate() + 1);
-  }
-  return basic;
+  return generateElements(
+    dateRange,
+    weekStart,
+    theme,
+    BASE_CONFIG.holidays,
+    (date, style) => {
+      const holidayInfo = getHolidaysSetting(date);
+      return (
+        <div
+          key={`${date.getTime()}-${holidayInfo.name}`}
+          className="flex items-center"
+          style={{
+            position: "absolute",
+            color: style.fontColor,
+            ...style,
+            overflow: "visible",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span style={{ fontSize: "6px" }}>&nbsp;{holidayInfo.name}</span>
+        </div>
+      );
+    },
+    holidays
+  );
 };
 
-// 月份元素
+// 月份農曆元素
 export const generateBasicLunarDates = (
   dateRange,
   weekStart,
   theme,
   holidays
 ) => {
-  let top = 72;
-  let left = 180;
-  let width = 18;
-  let height = 9;
-
-  let today = new Date(dateRange.start);
-
-  if (weekStart === "monday") {
-    left = 180 + width * 6 * (today.getDay() - 1);
-    if (today.getDay() === 0) {
-      left += width * 6 * 7;
-    }
-  } else {
-    left = 180 + width * 6 * (today.getDay() - 6);
-    if (left <= 180) {
-      left += width * 6 * 6;
-    }
-  }
-
-  const basic = [];
-  while (today <= dateRange.end) {
-    // 計算元素位置
-    if (left > 180 + width * 6 * 6) {
-      top += height * 12;
-      left = 180;
-    }
-
-    const holidayInfo = holidays === "on" ? getHolidaysSetting(today) : null;
-    const lunarInfo = getLunarOrSolarTerm(today);
-
-    const fontColor =
-      holidayInfo?.fontColor && holidayInfo.fontColor !== "normal"
-        ? holidayInfo.fontColor
-        : theme.page_dynamic_elements;
-
-    // 創建日曆元素
-    basic.push(
-      <div
-        key={`${today.getTime()}-${lunarInfo}`}
-        className="flex items-center"
-        style={{
-          position: "absolute",
-          color: fontColor,
-          top: `${top}px`,
-          left: `${left}px`,
-          width: `${width}px`,
-          height: `${height}px`,
-          overflow: "visible",
-          whiteSpace: "nowrap",
-        }}
-      >
-        <span style={{ fontSize: "6px" }}>&nbsp;{lunarInfo}</span>
-      </div>
-    );
-
-    // 更新日期
-    left += width * 6;
-    today.setDate(today.getDate() + 1);
-  }
-  return basic;
+  return generateElements(
+    dateRange,
+    weekStart,
+    theme,
+    BASE_CONFIG.lunar,
+    (date, style) => {
+      const lunarInfo = getLunarOrSolarTerm(date);
+      return (
+        <div
+          key={`${date.getTime()}-${lunarInfo}`}
+          className="flex items-center"
+          style={{
+            position: "absolute",
+            color: style.fontColor,
+            ...style,
+            overflow: "visible",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span style={{ fontSize: "6px" }}>&nbsp;{lunarInfo}</span>
+        </div>
+      );
+    },
+    holidays
+  );
 };
