@@ -1,8 +1,19 @@
 import React from "react";
 import { generateWeekDay } from "./shareElements/WeeklyElements";
-import { generateBasicCalendar } from "./shareElements/MonthlyElements";
+import {
+  generateBasicCalendar,
+  generateBasicHolidays,
+  generateBasicLunarDates,
+} from "./shareElements/MonthlyElements";
 
-const WeeklyTimeline = ({ dateRange, language, theme, weekStart }) => {
+const WeeklyTimeline = ({
+  dateRange,
+  language,
+  theme,
+  weekStart,
+  holidays,
+  lunarDate,
+}) => {
   return (
     <>
       <div className="text-red-500">
@@ -10,7 +21,10 @@ const WeeklyTimeline = ({ dateRange, language, theme, weekStart }) => {
         {dateRange.end.toLocaleDateString()}
       </div>
       {generateWeekDay(language, weekStart, theme)}
-      {generateBasicCalendar(dateRange, weekStart, theme)}
+      {generateBasicCalendar(dateRange, weekStart, theme, holidays)}
+      {holidays === "on" && generateBasicHolidays(dateRange, weekStart, theme)}
+      {lunarDate === "on" &&
+        generateBasicLunarDates(dateRange, weekStart, theme, holidays)}
     </>
   );
 };
