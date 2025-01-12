@@ -78,7 +78,7 @@ def get_configs(request):
 def generate_pdf(request):
     try:
         generator = PlannerPDFGenerator()
-        pdf_buffer = generator.generate(data=request.data)
+        pdf_buffer = generator.generate(data=request.data['userSelection'])
 
         response = FileResponse(
             pdf_buffer,
@@ -88,7 +88,6 @@ def generate_pdf(request):
         )
         
         return response
-        
     except Exception as e:
         logger.error(f"PDF generation failed: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)

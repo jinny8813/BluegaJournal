@@ -14,11 +14,11 @@ export const plannerService = {
     }
   },
 
-  async generatePDF(userSelection) {
+  async generatePDF(data) {
     try {
       const response = await axiosInstance.post(
         servicePaths.planner.generatePdf,
-        userSelection,
+        data,
         {
           responseType: "blob",
         }
