@@ -99,7 +99,17 @@ const PlannerPreviews = ({
                 {getLayoutComponent(page, orientation)}
               </>
             ) : (
-              <div>{page.id}</div>
+              <div className="flex flex-row">
+                <div
+                  style={{
+                    width: "540px",
+                    height: layouts.page_config.height,
+                    background:
+                      "linear-gradient(to bottom, rgba(255, 0, 0, 0.2), rgba(255, 255, 0, 0.2))",
+                  }}
+                ></div>
+                <div>{page.id}</div>
+              </div>
             )}
             {/* 頁碼 */}
             <div className="absolute bottom-4 right-4 text-sm">

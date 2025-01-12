@@ -77,27 +77,17 @@ def get_configs(request):
 @api_view(['POST'])
 def generate_pdf(request):
     try:
-        # generator = PlannerPDFGenerator()
-        # pdf_buffer = generator.generate(
-        #     selected_theme=request.data['theme'],
-        #     selected_layouts=request.data['layouts'],
-        #     selected_start_date=request.data['startDate'],
-        #     selected_duration=request.data['duration'],
-        #     selected_orientation=request.data['orientation'],
-        #     selected_language=request.data['language'],
-        #     selected_week_start=request.data['weekStart'],
-        #     selected_lunar_date=request.data['lunarDate'],
-        #     selected_holidays=request.data['holidays'],
-        # )
+        generator = PlannerPDFGenerator()
+        pdf_buffer = generator.generate(data=request.data)
 
-        # response = FileResponse(
-        #     pdf_buffer,
-        #     content_type='application/pdf',
-        #     as_attachment=True,
-        #     filename='planner.pdf'
-        # )
+        response = FileResponse(
+            pdf_buffer,
+            content_type='application/pdf',
+            as_attachment=True,
+            filename='planner.pdf'
+        )
         
-        return Response(request.data['layouts'])
+        return response
         
     except Exception as e:
         logger.error(f"PDF generation failed: {str(e)}")

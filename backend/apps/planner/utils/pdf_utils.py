@@ -24,7 +24,7 @@ def register_fonts():
         print(f"Font registration error: {str(e)}")
         return False
 
-def draw_text(canvas, text, x, y, font_name='NotoSansTC', font_size=10, color=None):
+def draw_text(canvas, text, x, y, font_name='Helvetica', font_size=10, color=None):
     """繪製文字"""
     canvas.setFont(font_name, font_size)
     if color:

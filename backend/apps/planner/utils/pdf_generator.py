@@ -13,7 +13,8 @@ class PlannerPDFGenerator:
     def __init__(self, width=720, height=1080):
         self.width = width
         self.height = height
-        self.register_fonts()
+        # self.register_fonts()
+        self.font_name = 'Helvetica'
 
     @staticmethod
     def register_fonts():
@@ -90,65 +91,64 @@ class PlannerPDFGenerator:
             color=convert_color(theme['styles']['text'])
         )
 
-    def generate(self, selected_theme, selected_layouts, selected_start_date, selected_duration, selected_orientation,
-                selected_language, selected_week_start, selected_lunar_date, selected_holidays):
+    def generate(self, data):
         """生成完整的計劃本 PDF"""
         try:
             buffer = io.BytesIO()
-            pdf_canvas = self.create_canvas(buffer, selected_orientation)
+            pdf_canvas = self.create_canvas(buffer, data['orientation'])
 
-            if selected_orientation == "horizontal":
-                folder = "size_w3h2"    
-            elif selected_orientation == "vertical":
-                folder = "size_w2h3"
+            # if selected_orientation == "horizontal":
+            #     folder = "size_w3h2"    
+            # elif selected_orientation == "vertical":
+            #     folder = "size_w2h3"
 
-            layouts_path = os.path.join(
-                settings.BASE_DIR,
-                '..',
-                'apps',
-                'planner',
-                'configs',
-                folder,
-                'layouts.json'
-            )
-            contents_path = os.path.join(
-                settings.BASE_DIR,
-                '..',
-                'apps',
-                'planner',
-                'configs',
-                folder,
-                'contents.json'
-            )
-            themes_path = os.path.join(
-                settings.BASE_DIR,
-                '..',
-                'apps',
-                'planner',
-                'configs',
-                'themes.json'
-            )
+            # layouts_path = os.path.join(
+            #     settings.BASE_DIR,
+            #     '..',
+            #     'apps',
+            #     'planner',
+            #     'configs',
+            #     folder,
+            #     'layouts.json'
+            # )
+            # contents_path = os.path.join(
+            #     settings.BASE_DIR,
+            #     '..',
+            #     'apps',
+            #     'planner',
+            #     'configs',
+            #     folder,
+            #     'contents.json'
+            # )
+            # themes_path = os.path.join(
+            #     settings.BASE_DIR,
+            #     '..',
+            #     'apps',
+            #     'planner',
+            #     'configs',
+            #     'themes.json'
+            # )
 
-            # 讀取配置文件
-            with open(layouts_path, 'r', encoding='utf-8') as f:
-                layouts = json.load(f)
-            with open(contents_path, 'r', encoding='utf-8') as f:
-                contents = json.load(f)
-            with open(themes_path, 'r', encoding='utf-8') as f:
-                themes = json.load(f)
+            # # 讀取配置文件
+            # with open(layouts_path, 'r', encoding='utf-8') as f:
+            #     layouts = json.load(f)
+            # with open(contents_path, 'r', encoding='utf-8') as f:
+            #     contents = json.load(f)
+            # with open(themes_path, 'r', encoding='utf-8') as f:
+            #     themes = json.load(f)
 
-            layouts_config = layouts
-            contents_config = contents
-            themes_config = themes
+            # layouts_config = layouts
+            # contents_config = contents
+            # themes_config = themes
 
-            # 生成所有頁面配置
-            pages = generate_pages(
-                layouts_config=layouts_config,
-                selected_layouts=selected_layouts,
-                selected_start_date=selected_start_date,
-                selected_duration=selected_duration,
-                selected_week_start=selected_week_start
-            )
+            # # 生成所有頁面配置
+            # pages = generate_pages(
+            #     layouts_config=layouts_config,
+            #     selected_layouts=selected_layouts,
+            #     selected_start_date=selected_start_date,
+            #     selected_duration=selected_duration,
+            #     selected_week_start=selected_week_start
+            # )
 
             # # 繪製每一頁
             # for page in pages:
@@ -174,6 +174,17 @@ class PlannerPDFGenerator:
             #     # ...
 
             #     pdf_canvas.showPage()
+
+            for key, value in data.items():
+                draw_text(
+                    pdf_canvas,
+                    f"{key}: {value}",
+                    self.width/2,
+                    self.height/2,
+                    font_size=16,
+                    font_name=self.font_name
+                )
+                pdf_canvas.showPage()
 
             pdf_canvas.save()
             buffer.seek(0)

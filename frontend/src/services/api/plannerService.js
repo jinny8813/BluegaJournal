@@ -18,7 +18,10 @@ export const plannerService = {
     try {
       const response = await axiosInstance.post(
         servicePaths.planner.generatePdf,
-        userSelection
+        userSelection,
+        {
+          responseType: "blob",
+        }
       );
 
       return response;

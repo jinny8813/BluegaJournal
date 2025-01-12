@@ -109,20 +109,17 @@ const PlannerPage = () => {
       // 調用 API 生成 PDF
       const pdfBlob = await plannerService.generatePDF(userSelection);
 
-      console.log(pdfBlob);
-
-      // 創建下載連結
-      // const url = window.URL.createObjectURL(pdfBlob);
-      // const link = document.createElement("a");
-      // link.href = url;
-      // link.setAttribute(
-      //   "download",
-      //   `planner-${startDate.toISOString().split("T")[0]}.pdf`
-      // );
-      // document.body.appendChild(link);
-      // link.click();
-      // link.remove();
-      // window.URL.revokeObjectURL(url);
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `planner-${startDate.toISOString().split("T")[0]}.pdf`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("下載失敗:", error);
       // 這裡可以添加錯誤提示
