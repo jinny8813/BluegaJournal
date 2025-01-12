@@ -13,6 +13,7 @@ import { useHolidays } from "../../hooks/useHolidays";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerSettings from "./PlannerSettings/PlannerSettings";
 import PlannerControls from "./PlannerControls/PlannerControls";
+import { plannerService } from "../../services/api/plannerService";
 
 const PlannerPage = () => {
   const isDesktop = window.innerWidth >= 1024; // 根據視窗大小判斷模式
@@ -90,8 +91,42 @@ const PlannerPage = () => {
     return <div>Error: {layoutsError || themesError}</div>;
   }
 
-  const handleDownload = () => {
-    console.log("download");
+  const handleDownload = async () => {
+    try {
+      // 準備配置數據
+      const userSelection = {
+        theme: currentTheme.id,
+        layouts: selectedLayouts.myLayouts,
+        startDate: startDate,
+        duration: duration,
+        orientation: orientation,
+        language: language,
+        weekStart: weekStart,
+        lunarDate: lunarDate,
+        holidays: holidays,
+      };
+
+      // 調用 API 生成 PDF
+      const pdfBlob = await plannerService.generatePDF(userSelection);
+
+      console.log(pdfBlob);
+
+      // 創建下載連結
+      // const url = window.URL.createObjectURL(pdfBlob);
+      // const link = document.createElement("a");
+      // link.href = url;
+      // link.setAttribute(
+      //   "download",
+      //   `planner-${startDate.toISOString().split("T")[0]}.pdf`
+      // );
+      // document.body.appendChild(link);
+      // link.click();
+      // link.remove();
+      // window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("下載失敗:", error);
+      // 這裡可以添加錯誤提示
+    }
   };
 
   return (

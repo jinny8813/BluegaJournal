@@ -1,8 +1,13 @@
+import logging
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import json
 import os
 from django.conf import settings
+from django.http import FileResponse, JsonResponse
+from .utils.pdf_generator import PlannerPDFGenerator
+
+logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
 def get_configs(request):
@@ -68,3 +73,32 @@ def get_configs(request):
             {"error": f"Error loading configs: {str(e)}"},
             status=500
         )
+    
+@api_view(['POST'])
+def generate_pdf(request):
+    try:
+        # generator = PlannerPDFGenerator()
+        # pdf_buffer = generator.generate(
+        #     selected_theme=request.data['theme'],
+        #     selected_layouts=request.data['layouts'],
+        #     selected_start_date=request.data['startDate'],
+        #     selected_duration=request.data['duration'],
+        #     selected_orientation=request.data['orientation'],
+        #     selected_language=request.data['language'],
+        #     selected_week_start=request.data['weekStart'],
+        #     selected_lunar_date=request.data['lunarDate'],
+        #     selected_holidays=request.data['holidays'],
+        # )
+
+        # response = FileResponse(
+        #     pdf_buffer,
+        #     content_type='application/pdf',
+        #     as_attachment=True,
+        #     filename='planner.pdf'
+        # )
+        
+        return Response(request.data['layouts'])
+        
+    except Exception as e:
+        logger.error(f"PDF generation failed: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)

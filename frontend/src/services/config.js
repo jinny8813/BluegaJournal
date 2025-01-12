@@ -37,6 +37,7 @@ const servicePaths = {
   planner: {
     base: "/api/planner",
     configs: "/api/planner/configs",
+    generatePdf: "/api/planner/generate-pdf",
   },
 };
 
