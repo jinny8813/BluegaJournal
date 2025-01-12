@@ -101,11 +101,23 @@ const PlannerPreviews = ({
             ) : (
               <div className="flex flex-row">
                 <div
+                  className={`bg-white absolute ${
+                    currentTheme.id === "darkBrown"
+                      ? "opacity-75"
+                      : "opacity-25"
+                  }`}
+                  style={{
+                    width: "540px",
+                    height: layouts.page_config.height,
+                  }}
+                ></div>
+                <div
+                  className="absolute opacity-25"
                   style={{
                     width: "540px",
                     height: layouts.page_config.height,
                     background:
-                      "linear-gradient(to bottom, rgba(255, 0, 0, 0.2), rgba(255, 255, 0, 0.2))",
+                      "linear-gradient(to bottom, rgba(255, 0, 0, 0.8), rgba(255, 255, 0, 0.8))",
                   }}
                 ></div>
                 <div>{page.id}</div>
