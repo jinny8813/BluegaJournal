@@ -13,4 +13,21 @@ export const plannerService = {
       throw error;
     }
   },
+
+  async generatePDF(data) {
+    try {
+      const response = await axiosInstance.post(
+        servicePaths.planner.generatePdf,
+        data,
+        {
+          responseType: "blob",
+        }
+      );
+
+      return response;
+    } catch (error) {
+      console.error("PDF 生成失敗:", error);
+      throw new Error("PDF 生成失敗");
+    }
+  },
 };

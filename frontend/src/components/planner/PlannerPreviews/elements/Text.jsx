@@ -1,11 +1,34 @@
 import React from "react";
+import { getLunarOrSolarTerm } from "../../../../utils/lunarGenerator";
 
-const Text = ({ language, pageId, pageTitle, contents, theme }) => {
+const Text = ({
+  language,
+  pageId,
+  pageTitle,
+  contents,
+  theme,
+  lunarDate,
+  dateRange,
+}) => {
+  const isSingleDay =
+    dateRange.start.toDateString() === dateRange.end.toDateString();
+  const getLunarTerm = () => {
+    if (lunarDate === "on" && isSingleDay) {
+      const lunarTerm = getLunarOrSolarTerm(new Date(dateRange.start));
+      return lunarTerm;
+    }
+    return null;
+  };
+
+  const lunarTerm = getLunarTerm();
+
   // 取得頁面標題
   const getTitle = () => {
     if (language === "bilingual") {
-      const enTitle = `${pageTitle.en} ${contents.contents.en[pageId].title.text}`;
-      const zhTitle = `${contents.contents.zh[pageId].title.text}`;
+      let enTitle = `${pageTitle.en}`;
+      let enTitleText = contents.contents.en[pageId].title.text;
+      let zhTitle = `${contents.contents.zh[pageId].title.text}`;
+      let lunarTitle = lunarTerm ? `${lunarTerm}` : null;
 
       return (
         <div
@@ -20,17 +43,30 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
         >
           <>
             <span style={{ fontSize: "20px" }}>{enTitle} </span>
-            <span style={{ fontSize: "16px" }}>{zhTitle}</span>
+            {lunarTitle && (
+              <span style={{ fontSize: "16px" }}>{lunarTitle} </span>
+            )}
+            {!isSingleDay && (
+              <>
+                <span style={{ fontSize: "20px" }}>{enTitleText} </span>
+                <span style={{ fontSize: "16px" }}>{zhTitle}</span>
+              </>
+            )}
           </>
         </div>
       );
     } else {
       let title;
+      let titleText;
       if (language == "en") {
-        title = `${pageTitle.en} ${contents.contents.en[pageId].title.text}`;
+        title = `${pageTitle.en}`;
+        titleText = `${contents.contents.en[pageId].title.text}`;
       } else {
-        title = `${pageTitle.tw} ${contents.contents.zh[pageId].title.text}`;
+        title = `${pageTitle.tw}`;
+        titleText = `${contents.contents.zh[pageId].title.text}`;
       }
+      let lunarTitle = lunarTerm ? `${lunarTerm}` : null;
+
       return (
         <div
           style={{
@@ -42,7 +78,15 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
             height: contents.contents.en[pageId].title.style.height,
           }}
         >
-          <span style={{ fontSize: "20px" }}>{title}</span>
+          <>
+            <span style={{ fontSize: "20px" }}>{title} </span>
+            {lunarTitle && (
+              <span style={{ fontSize: "20px" }}>{lunarTitle} </span>
+            )}
+            {!isSingleDay && (
+              <span style={{ fontSize: "20px" }}>{titleText} </span>
+            )}
+          </>
         </div>
       );
     }
@@ -58,7 +102,7 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
         return (
           <div
             key={`bilingual-${i}`}
-            className="flex flex-col items-center"
+            className="flex items-center"
             style={{
               position: "absolute",
               color: theme.page_contents,
@@ -71,6 +115,7 @@ const Text = ({ language, pageId, pageTitle, contents, theme }) => {
           >
             <>
               <span style={{ fontSize: "10px" }}>{enContent.text} </span>
+              &nbsp;
               <span style={{ fontSize: "8px" }}>{zhContent.text}</span>
             </>
           </div>

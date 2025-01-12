@@ -16,6 +16,8 @@ const PlannerPreviews = ({
   weekStart,
   getPagesByLayoutIdandDate,
   onPageChange,
+  holidays,
+  lunarDate,
 }) => {
   if (!currentTheme || !layouts || !contents || allPages.length === 0)
     return null;
@@ -33,6 +35,11 @@ const PlannerPreviews = ({
         dateRange={page.dateRange}
         theme={currentTheme.styles.text}
         weekStart={weekStart}
+        holidays={holidays}
+        lunarDate={lunarDate}
+        allPages={allPages}
+        getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
+        onPageChange={onPageChange}
       />
     );
   };
@@ -75,6 +82,8 @@ const PlannerPreviews = ({
                   pageTitle={page.title}
                   contents={contents}
                   theme={currentTheme.styles.text}
+                  lunarDate={lunarDate}
+                  dateRange={page.dateRange}
                 />
                 {/* 子導航 */}
                 <SubNav
@@ -90,7 +99,29 @@ const PlannerPreviews = ({
                 {getLayoutComponent(page, orientation)}
               </>
             ) : (
-              <div>{page.id}</div>
+              <div className="flex flex-row">
+                <div
+                  className={`bg-white absolute ${
+                    currentTheme.id === "darkBrown"
+                      ? "opacity-75"
+                      : "opacity-25"
+                  }`}
+                  style={{
+                    width: "540px",
+                    height: layouts.page_config.height,
+                  }}
+                ></div>
+                <div
+                  className="absolute opacity-25"
+                  style={{
+                    width: "540px",
+                    height: layouts.page_config.height,
+                    background:
+                      "linear-gradient(to bottom, rgba(255, 0, 0, 0.8), rgba(255, 255, 0, 0.8))",
+                  }}
+                ></div>
+                <div>{page.id}</div>
+              </div>
             )}
             {/* 頁碼 */}
             <div className="absolute bottom-4 right-4 text-sm">

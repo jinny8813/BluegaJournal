@@ -8,6 +8,8 @@ import { useOrientation } from "../../hooks/useOrientation";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useWeekStart } from "../../hooks/useWeekStart";
 import { usePageConfiguration } from "../../hooks/usePageConfig";
+import { useLunarDate } from "../../hooks/useLunarDate";
+import { useHolidays } from "../../hooks/useHolidays";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
 import PlannerSettings from "./PlannerSettings/PlannerSettings";
 import PlannerControls from "./PlannerControls/PlannerControls";
@@ -18,6 +20,8 @@ const PlannerPage = () => {
   const { orientation, handleOrientationChange } = useOrientation();
   const { language, handleLanguageChange } = useLanguage();
   const { weekStart, handleWeekStartChange } = useWeekStart();
+  const { lunarDate, handleLunarDateChange } = useLunarDate();
+  const { holidays, handleHolidaysChange } = useHolidays();
 
   const {
     contents,
@@ -86,8 +90,16 @@ const PlannerPage = () => {
     return <div>Error: {layoutsError || themesError}</div>;
   }
 
-  const handleDownload = () => {
-    console.log("download");
+  const userSelection = {
+    theme: currentTheme.id,
+    layouts: selectedLayouts.myLayouts,
+    startDate: startDate,
+    duration: duration,
+    orientation: orientation,
+    language: language,
+    weekStart: weekStart,
+    lunarDate: lunarDate,
+    holidays: holidays,
   };
 
   return (
@@ -115,10 +127,14 @@ const PlannerPage = () => {
               onLanguageChange={handleLanguageChange}
               weekStart={weekStart}
               onWeekStartChange={handleWeekStartChange}
+              lunarDate={lunarDate}
+              onLunarDateChange={handleLunarDateChange}
+              holidays={holidays}
+              onHolidaysChange={handleHolidaysChange}
             />
           </div>
           <div
-            className="overflow-auto bg-gray-100 lg:p-4 min-h-[calc(32dvh-4rem)]"
+            className="overflow-auto bg-gray-100 lg:p-4 min-h-[calc(28dvh-3rem)]"
             style={{ scrollBehavior: "smooth" }}
           >
             <PlannerControls
@@ -130,7 +146,7 @@ const PlannerPage = () => {
               onPageChange={handlePageChange}
               onInputChange={handleInputChange}
               onInputConfirm={handleInputConfirm}
-              onDownload={handleDownload}
+              userSelection={userSelection}
             />
           </div>
         </div>
@@ -150,6 +166,8 @@ const PlannerPage = () => {
             weekStart={weekStart}
             getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
             onPageChange={handlePageChange}
+            lunarDate={lunarDate}
+            holidays={holidays}
           />
         </div>
       </div>
@@ -176,6 +194,10 @@ const PlannerPage = () => {
             onLanguageChange={handleLanguageChange}
             weekStart={weekStart}
             onWeekStartChange={handleWeekStartChange}
+            lunarDate={lunarDate}
+            onLunarDateChange={handleLunarDateChange}
+            holidays={holidays}
+            onHolidaysChange={handleHolidaysChange}
           />
         </div>
         <div
@@ -194,6 +216,8 @@ const PlannerPage = () => {
             weekStart={weekStart}
             getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
             onPageChange={handlePageChange}
+            lunarDate={lunarDate}
+            holidays={holidays}
           />
         </div>
         <div
@@ -209,7 +233,7 @@ const PlannerPage = () => {
             onPageChange={handlePageChange}
             onInputChange={handleInputChange}
             onInputConfirm={handleInputConfirm}
-            onDownload={handleDownload}
+            userSelection={userSelection}
           />
         </div>
       </div>
