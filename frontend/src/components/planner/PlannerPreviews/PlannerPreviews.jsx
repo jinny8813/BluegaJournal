@@ -55,7 +55,6 @@ const PlannerPreviews = ({
           width: `${scaledWidth}px`,
           height: `${scaledHeight}px`,
         }}
-        data-page={page.pageNumber}
       >
         {/* 紙張容器 */}
         <div

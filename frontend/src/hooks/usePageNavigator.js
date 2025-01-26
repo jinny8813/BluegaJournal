@@ -2,104 +2,108 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
-  const [currentPage, setCurrentPage] = useState(1); // 當前頁碼
-  const [inputValue, setInputValue] = useState("1"); // 輸入框的值
-  const desktopRef = useRef(null); // 桌面容器
-  const mobileRef = useRef(null); // 移動容器
-  const observerRef = useRef(null); // Intersection Observer 的參考
-  const visiblePages = useRef(new Set()); // 儲存當前可見的頁面
+  // 基本狀態
+  const [currentPage, setCurrentPage] = useState(1);
+  const [inputValue, setInputValue] = useState("1");
 
-  const scrollContainerRef = isDesktop ? desktopRef : mobileRef; // 根據設備選擇容器
+  // refs
+  const desktopRef = useRef(null);
+  const mobileRef = useRef(null);
+  const isScrollingRef = useRef(false);
 
-  // 初始化 rowVirtualizer
+  const scrollContainerRef = isDesktop ? desktopRef : mobileRef;
+
+  // 虛擬化設置
   const rowVirtualizer = useVirtualizer({
-    count: totalPages, // 總頁數
+    count: totalPages,
     getScrollElement: () => scrollContainerRef.current,
-    estimateSize: () => layouts.page_config.height * scale + 16, // 預估每個項目的高度（包括間距）
-    overscan: 5, // 額外渲染範圍
+    estimateSize: () => layouts.page_config.height * scale + 16,
+    overscan: 5,
   });
 
-  // 用於監測每個虛擬項目的 Intersection Observer
+  // 監聽滾動事件來偵測當前頁面
   useEffect(() => {
-    if (!scrollContainerRef.current) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
 
-    // 初始化 Intersection Observer
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const pageIndex = parseInt(entry.target.dataset.page, 10);
+    const detectCurrentPage = () => {
+      if (isScrollingRef.current) return;
 
-          if (entry.isIntersecting) {
-            // 如果元素進入視窗，加入可見頁面的集合
-            visiblePages.current.add(pageIndex);
-          } else {
-            // 如果元素離開視窗，從集合中移除
-            visiblePages.current.delete(pageIndex);
-          }
-        });
+      // 計算容器的 1/4 位置
+      const quarterPoint = container.scrollTop + container.clientHeight * 0.2;
 
-        // 更新當前頁碼為可見頁面的最小值
-        const visiblePagesArray = Array.from(visiblePages.current);
-        if (visiblePagesArray.length > 0) {
-          const newPage = Math.min(...visiblePagesArray) + 1;
+      // 獲取所有可見的虛擬項目
+      const virtualItems = rowVirtualizer.getVirtualItems();
+
+      // 找出在 1/4 位置的項目
+      const currentItem = virtualItems.find((item) => {
+        const itemTop = item.start;
+        const itemBottom = item.end;
+        return quarterPoint >= itemTop && quarterPoint <= itemBottom;
+      });
+
+      if (currentItem) {
+        const newPage = currentItem.index + 1;
+        if (newPage !== currentPage) {
           setCurrentPage(newPage);
           setInputValue(newPage.toString());
         }
-      },
-      {
-        root: scrollContainerRef.current, // 監測的滾動容器
-        threshold: 0.5, // 元素至少有 50% 可見時觸發
-      }
-    );
-
-    // 監測虛擬項目
-    const virtualItems = rowVirtualizer.getVirtualItems();
-    virtualItems.forEach((item) => {
-      const element = document.querySelector(`[data-page="${item.index}"]`);
-      if (element) {
-        observerRef.current.observe(element);
-      }
-    });
-
-    return () => {
-      // 清理 Intersection Observer
-      if (observerRef.current) {
-        observerRef.current.disconnect();
       }
     };
-  }, [rowVirtualizer]);
+
+    // 添加滾動事件監聽器
+    const handleScroll = () => {
+      requestAnimationFrame(detectCurrentPage);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+
+    // 初始檢測
+    detectCurrentPage();
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, [scrollContainerRef.current, rowVirtualizer]);
 
   // 處理頁面跳轉
-  const handlePageChange = (newPage) => {
-    if (newPage < 1 || newPage > totalPages) return;
+  const handlePageChange = useCallback(
+    (newPage) => {
+      if (newPage < 1 || newPage > totalPages || !scrollContainerRef.current)
+        return;
 
-    const container = scrollContainerRef.current;
-    if (!container || !rowVirtualizer) return;
+      isScrollingRef.current = true;
 
-    // 找到對應的虛擬項目
-    const virtualItem = rowVirtualizer
-      .getVirtualItems()
-      .find((item) => item.index === newPage - 1);
-    if (!virtualItem) return;
+      const virtualItem = rowVirtualizer
+        .getVirtualItems()
+        .find((item) => item.index === newPage - 1);
 
-    // 滾動到目標位置
-    container.scrollTo({
-      top: virtualItem.start,
-      behavior: "smooth",
-    });
+      if (virtualItem) {
+        scrollContainerRef.current.scrollTo({
+          top: virtualItem.start,
+          behavior: "smooth",
+        });
+      }
 
-    setCurrentPage(newPage);
-    setInputValue(newPage.toString());
-  };
+      setCurrentPage(newPage);
+      setInputValue(newPage.toString());
+
+      // 重置滾動標記
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 1000);
+    },
+    [totalPages, rowVirtualizer]
+  );
 
   // 處理輸入框變更
-  const handleInputChange = (value) => {
-    const numericValue = value.replace(/[^0-9]/g, ""); // 過濾非數字字符
+  const handleInputChange = useCallback((value) => {
+    const numericValue = value.replace(/[^0-9]/g, "");
     setInputValue(numericValue);
-  };
+  }, []);
 
-  // 處理輸入框確認
-  const handleInputConfirm = () => {
+  // 處理輸入確認
+  const handleInputConfirm = useCallback(() => {
     const numericValue = parseInt(inputValue);
     if (
       !isNaN(numericValue) &&
@@ -108,9 +112,9 @@ export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
     ) {
       handlePageChange(numericValue);
     } else {
-      setInputValue(currentPage.toString()); // 如果輸入無效，重置為當前頁碼
+      setInputValue(currentPage.toString());
     }
-  };
+  }, [inputValue, currentPage, totalPages, handlePageChange]);
 
   return {
     desktopRef,
