@@ -78,7 +78,8 @@ const PlannerPage = () => {
     handlePageChange,
     handleInputChange,
     handleInputConfirm,
-  } = usePageNavigator(totalPages, isDesktop);
+    rowVirtualizer,
+  } = usePageNavigator(totalPages, { scale, layouts }, isDesktop);
 
   // 處理加載狀態
   if (layoutsLoading || themesLoading) {
@@ -168,6 +169,7 @@ const PlannerPage = () => {
             onPageChange={handlePageChange}
             lunarDate={lunarDate}
             holidays={holidays}
+            rowVirtualizer={rowVirtualizer}
           />
         </div>
       </div>
@@ -218,6 +220,7 @@ const PlannerPage = () => {
             onPageChange={handlePageChange}
             lunarDate={lunarDate}
             holidays={holidays}
+            rowVirtualizer={rowVirtualizer}
           />
         </div>
         <div

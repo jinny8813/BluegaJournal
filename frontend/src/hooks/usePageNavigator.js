@@ -1,57 +1,104 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
-export const usePageNavigator = (totalPages, isDesktop) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [inputValue, setInputValue] = useState("1");
-  const desktopRef = useRef(null);
-  const mobileRef = useRef(null);
-  const isScrollingRef = useRef(false);
+export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
+  const [currentPage, setCurrentPage] = useState(1); // 當前頁碼
+  const [inputValue, setInputValue] = useState("1"); // 輸入框的值
+  const desktopRef = useRef(null); // 桌面容器
+  const mobileRef = useRef(null); // 移動容器
+  const observerRef = useRef(null); // Intersection Observer 的參考
+  const visiblePages = useRef(new Set()); // 儲存當前可見的頁面
 
-  const scrollContainerRef = isDesktop ? desktopRef : mobileRef;
+  const scrollContainerRef = isDesktop ? desktopRef : mobileRef; // 根據設備選擇容器
 
-  // 監控滾動和更新當前頁面
-  useEffect(() => {
-    initialScroll();
+  // 初始化 rowVirtualizer
+  const rowVirtualizer = useVirtualizer({
+    count: totalPages, // 總頁數
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => layouts.page_config.height * scale + 16, // 預估每個項目的高度（包括間距）
+    overscan: 5, // 額外渲染範圍
   });
 
-  // 處理頁面變更
+  // 用於監測每個虛擬項目的 Intersection Observer
+  useEffect(() => {
+    if (!scrollContainerRef.current) return;
+
+    // 初始化 Intersection Observer
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const pageIndex = parseInt(entry.target.dataset.page, 10);
+
+          if (entry.isIntersecting) {
+            // 如果元素進入視窗，加入可見頁面的集合
+            visiblePages.current.add(pageIndex);
+          } else {
+            // 如果元素離開視窗，從集合中移除
+            visiblePages.current.delete(pageIndex);
+          }
+        });
+
+        // 更新當前頁碼為可見頁面的最小值
+        const visiblePagesArray = Array.from(visiblePages.current);
+        if (visiblePagesArray.length > 0) {
+          const newPage = Math.min(...visiblePagesArray) + 1;
+          setCurrentPage(newPage);
+          setInputValue(newPage.toString());
+        }
+      },
+      {
+        root: scrollContainerRef.current, // 監測的滾動容器
+        threshold: 0.5, // 元素至少有 50% 可見時觸發
+      }
+    );
+
+    // 監測虛擬項目
+    const virtualItems = rowVirtualizer.getVirtualItems();
+    virtualItems.forEach((item) => {
+      const element = document.querySelector(`[data-page="${item.index}"]`);
+      if (element) {
+        observerRef.current.observe(element);
+      }
+    });
+
+    return () => {
+      // 清理 Intersection Observer
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [rowVirtualizer]);
+
+  // 處理頁面跳轉
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
 
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container || !rowVirtualizer) return;
 
-    const targetElement = container.querySelector(`[data-page="${newPage}"]`);
-    if (!targetElement) return;
+    // 找到對應的虛擬項目
+    const virtualItem = rowVirtualizer
+      .getVirtualItems()
+      .find((item) => item.index === newPage - 1);
+    if (!virtualItem) return;
 
-    // 設置程式滾動標記
-    isScrollingRef.current = true;
-
-    // 計算目標元素的位置並考慮 padding
-    const containerPadding = isDesktop ? 64 : container.clientHeight * 0.75;
-    const scrollTop = targetElement.offsetTop - containerPadding;
-
+    // 滾動到目標位置
     container.scrollTo({
-      top: scrollTop,
+      top: virtualItem.start,
       behavior: "smooth",
     });
 
     setCurrentPage(newPage);
     setInputValue(newPage.toString());
-
-    // 在滾動動畫完成後重置程式滾動標記
-    setTimeout(() => {
-      isScrollingRef.current = false;
-    }, 1000); // 假設滾動動畫時間為 1 秒
   };
 
   // 處理輸入框變更
   const handleInputChange = (value) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
+    const numericValue = value.replace(/[^0-9]/g, ""); // 過濾非數字字符
     setInputValue(numericValue);
   };
 
-  // 處理輸入確認
+  // 處理輸入框確認
   const handleInputConfirm = () => {
     const numericValue = parseInt(inputValue);
     if (
@@ -61,78 +108,8 @@ export const usePageNavigator = (totalPages, isDesktop) => {
     ) {
       handlePageChange(numericValue);
     } else {
-      setInputValue(currentPage.toString());
+      setInputValue(currentPage.toString()); // 如果輸入無效，重置為當前頁碼
     }
-  };
-
-  const initialScroll = () => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const calculateCurrentPage = () => {
-      // 如果是程式觸發的滾動，不更新頁碼
-      if (isScrollingRef.current) return currentPage;
-
-      const pageElements = Array.from(
-        container.querySelectorAll("[data-page]")
-      );
-      const containerTop = container.scrollTop;
-      const containerHeight = container.clientHeight;
-      const triggerPoint = containerTop + containerHeight / 4; // 使用容器高度的 1/4 作為觸發點
-
-      // 找到最接近觸發點的頁面
-      let closestPage = 1;
-      let minDistance = Infinity;
-
-      pageElements.forEach((element) => {
-        const elementTop = element.offsetTop;
-        const distance = Math.abs(elementTop - triggerPoint);
-
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestPage = parseInt(element.dataset.page);
-        }
-      });
-
-      return closestPage;
-    };
-
-    const handleScroll = () => {
-      // 如果是程式觸發的滾動，不處理
-      if (isScrollingRef.current) return;
-
-      const newPage = calculateCurrentPage();
-      if (newPage !== currentPage) {
-        setCurrentPage(newPage);
-        setInputValue(newPage.toString());
-      }
-    };
-
-    // 使用 requestAnimationFrame 來優化滾動效能
-    let scrollRAF;
-    const debouncedScroll = () => {
-      if (scrollRAF) {
-        cancelAnimationFrame(scrollRAF);
-      }
-      scrollRAF = requestAnimationFrame(() => {
-        // 只有在不是程式觸發的滾動時才處理
-        if (!isScrollingRef.current) {
-          handleScroll();
-        }
-      });
-    };
-
-    container.addEventListener("scroll", debouncedScroll);
-
-    // 初始計算當前頁面
-    handleScroll();
-
-    return () => {
-      container.removeEventListener("scroll", debouncedScroll);
-      if (scrollRAF) {
-        cancelAnimationFrame(scrollRAF);
-      }
-    };
   };
 
   return {
@@ -143,5 +120,6 @@ export const usePageNavigator = (totalPages, isDesktop) => {
     handlePageChange,
     handleInputChange,
     handleInputConfirm,
+    rowVirtualizer,
   };
 };
