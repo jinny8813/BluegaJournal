@@ -169,9 +169,28 @@ class PlannerPDFGenerator:
             theme = themes['themes']['white']
 
             # 繪製網格
-            for l in layouts['layouts']:
+            for index, name in enumerate(layouts['layouts']):
                 self.draw_grid(pdf_canvas, base_grid, theme)
-                # self.draw_table_grid(pdf_canvas, l['table_grid'], theme)
+                self.draw_table_grid(pdf_canvas, layouts['layouts'][name]['table_grid'], theme)
+
+                for i,n in enumerate(contents['contents'][data['language']][name]['content']):
+                    text = n['text']
+                    style = n['style']
+
+                    top = float(style['top'].replace('px', ''))
+                    left = float(style['left'].replace('px', ''))
+                    width = float(style['width'].replace('px', ''))
+                    height = float(style['height'].replace('px', ''))
+
+                    draw_text(
+                        pdf_canvas,
+                        text,
+                        left + width/2,
+                        self.height - top - height/2,
+                        font_size=10,
+                        font_name=self.font_name,
+                        color=convert_color(theme['styles']['text']['page_contents'])
+                    )
 
                 pdf_canvas.showPage()
 

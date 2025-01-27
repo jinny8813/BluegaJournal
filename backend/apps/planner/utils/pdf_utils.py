@@ -27,6 +27,14 @@ def register_fonts():
 def draw_text(canvas, text, x, y, font_name='Helvetica', font_size=10, color=None):
     """繪製文字"""
     canvas.setFont(font_name, font_size)
+
+    text_width = canvas.stringWidth(text, font_name, font_size)
+    text_height = font_size * 0.75
+
     if color:
         canvas.setFillColor(color)
-    canvas.drawString(px_to_points(x), px_to_points(y), text)
+
+    x_offset = px_to_points(x) - text_width/2
+    y_offset = px_to_points(y) - text_height/2
+
+    canvas.drawString(x_offset, y_offset, text)
