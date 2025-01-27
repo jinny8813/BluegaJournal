@@ -5,16 +5,25 @@ import logging
 from .pdf_utils import px_to_points, convert_color, register_fonts, draw_text
 from .page_generator import generate_pages, PageTypes
 import os
+from pathlib import Path
 from django.conf import settings
 import json
+    
 logger = logging.getLogger(__name__)
 
 class PlannerPDFGenerator:
-    def __init__(self, width=720, height=1080):
-        self.width = width
-        self.height = height
+    def __init__(self):
         # self.register_fonts()
         self.font_name = 'Helvetica'
+
+    def _set_dimensions(self, orientation):
+        """根據方向設置尺寸"""
+        if orientation == 'horizontal':
+            self.width = 1080  # 橫向寬度
+            self.height = 720  # 橫向高度
+        else:  # vertical
+            self.width = 720   # 直向寬度
+            self.height = 1080 # 直向高度
 
     @staticmethod
     def register_fonts():
@@ -22,11 +31,9 @@ class PlannerPDFGenerator:
         if not register_fonts():
             logger.warning("Font registration failed, falling back to default font")
 
-    def create_canvas(self, buffer, orientation='vertical'):
+    def create_canvas(self, buffer):
         """創建 PDF 畫布"""
         page_size = (px_to_points(self.width), px_to_points(self.height))
-        if orientation == 'horizontal':
-            page_size = landscape(page_size)
         return canvas.Canvas(buffer, pagesize=page_size)
 
     def draw_background(self, pdf_canvas, color):
@@ -43,16 +50,16 @@ class PlannerPDFGenerator:
     def draw_grid(self, pdf_canvas, grid_config, theme):
         """繪製網格"""
         pdf_canvas.setStrokeColor(convert_color(theme['styles']['gridLines']['small']['color']))
-        pdf_canvas.setLineWidth(px_to_points(float(theme['styles']['gridLines']['small']['width'])))
+        pdf_canvas.setLineWidth(px_to_points(float(theme['styles']['gridLines']['small']['width'].replace('px', ''))))
 
         # 垂直線
         for i in range(grid_config['vertical']['count']):
             x = grid_config['vertical']['start_left'] + i * grid_config['vertical']['gap']
             pdf_canvas.line(
                 px_to_points(x),
-                px_to_points(grid_config['horizontal']['start_top']),
+                px_to_points(self.height - grid_config['horizontal']['start_top']),
                 px_to_points(x),
-                px_to_points(grid_config['horizontal']['end_top'])
+                px_to_points(self.height - grid_config['horizontal']['end_top'])
             )
 
         # 水平線
@@ -60,24 +67,24 @@ class PlannerPDFGenerator:
             y = grid_config['horizontal']['start_top'] + i * grid_config['horizontal']['gap']
             pdf_canvas.line(
                 px_to_points(grid_config['vertical']['start_left']),
-                px_to_points(y),
+                px_to_points(self.height - y),
                 px_to_points(grid_config['vertical']['end_left']),
-                px_to_points(y)
+                px_to_points(self.height - y)
             )
 
     def draw_table_grid(self, pdf_canvas, table_config, theme):
         """繪製表格網格"""
         pdf_canvas.setStrokeColor(convert_color(theme['styles']['gridLines']['large']['color']))
-        pdf_canvas.setLineWidth(px_to_points(float(theme['styles']['gridLines']['large']['width'])))
+        pdf_canvas.setLineWidth(px_to_points(float(theme['styles']['gridLines']['large']['width'].replace('px', ''))))
 
         # 繪製所有線條
         for lines in [table_config['vertical'], table_config['horizontal']]:
             for x1, y1, x2, y2 in lines:
                 pdf_canvas.line(
                     px_to_points(x1),
-                    px_to_points(y1),
+                    px_to_points(self.height - y1),
                     px_to_points(x2),
-                    px_to_points(y2)
+                    px_to_points(self.height - y2)
                 )
 
     def draw_page_number(self, pdf_canvas, number, theme):
@@ -92,104 +99,123 @@ class PlannerPDFGenerator:
         )
 
     def generate(self, data):
-        """生成完整的計劃本 PDF"""
         try:
+            logger.info(f"Starting PDF generation with data: {json.dumps(data, ensure_ascii=False)}")
+
+            self._set_dimensions(data['orientation'])
+
             buffer = io.BytesIO()
-            pdf_canvas = self.create_canvas(buffer, data['orientation'])
+            pdf_canvas = self.create_canvas(buffer)
+            
+            # 先決定資料夾
+            folder = "size_w3h2" if data['orientation'] == "horizontal" else "size_w2h3"
+            logger.info(f"Orientation: {data['orientation']}, Using folder: {folder}")
 
-            # if selected_orientation == "horizontal":
-            #     folder = "size_w3h2"    
-            # elif selected_orientation == "vertical":
-            #     folder = "size_w2h3"
+            # 使用 Path 來構建路徑
+            layouts_path = os.path.join(
+                settings.BASE_DIR,
+                '..',
+                'apps',
+                'planner',
+                'configs',
+                folder,
+                'layouts.json'
+            )
+            contents_path = os.path.join(
+                settings.BASE_DIR,
+                '..',
+                'apps',
+                'planner',
+                'configs',
+                folder,
+                'contents.json'
+            )
+            themes_path = os.path.join(
+                settings.BASE_DIR,
+                '..',
+                'apps',
+                'planner',
+                'configs',
+                'themes.json'
+            )
 
-            # layouts_path = os.path.join(
-            #     settings.BASE_DIR,
-            #     '..',
-            #     'apps',
-            #     'planner',
-            #     'configs',
-            #     folder,
-            #     'layouts.json'
-            # )
-            # contents_path = os.path.join(
-            #     settings.BASE_DIR,
-            #     '..',
-            #     'apps',
-            #     'planner',
-            #     'configs',
-            #     folder,
-            #     'contents.json'
-            # )
-            # themes_path = os.path.join(
-            #     settings.BASE_DIR,
-            #     '..',
-            #     'apps',
-            #     'planner',
-            #     'configs',
-            #     'themes.json'
-            # )
+            # 記錄文件路徑
+            logger.info(f"Config paths:\nLayouts: {layouts_path}\nContents: {contents_path}\nThemes: {themes_path}")
 
-            # # 讀取配置文件
-            # with open(layouts_path, 'r', encoding='utf-8') as f:
-            #     layouts = json.load(f)
-            # with open(contents_path, 'r', encoding='utf-8') as f:
-            #     contents = json.load(f)
-            # with open(themes_path, 'r', encoding='utf-8') as f:
-            #     themes = json.load(f)
+            # 檢查文件是否存在
+            for path in [layouts_path, contents_path, themes_path]:
+                if not os.path.exists(path):
+                    logger.error(f"Config file not found: {path}")
+                    raise FileNotFoundError(f"Config file not found: {path}")
 
-            # layouts_config = layouts
-            # contents_config = contents
-            # themes_config = themes
+            # 讀取配置文件
+            try:
+                with open(layouts_path, 'r', encoding='utf-8') as f:
+                    layouts = json.load(f)
+                with open(contents_path, 'r', encoding='utf-8') as f:
+                    contents = json.load(f)
+                with open(themes_path, 'r', encoding='utf-8') as f:
+                    themes = json.load(f)
+                
+                logger.info("Successfully loaded all config files")
+            except json.JSONDecodeError as e:
+                logger.error(f"JSON parsing error: {str(e)}")
+                raise
+            except Exception as e:
+                logger.error(f"Error reading config files: {str(e)}")
+                raise
+
+            base_grid = layouts['base_grid']
+            theme = themes['themes']['white']
+
+            # 繪製網格
+            for l in layouts['layouts']:
+                self.draw_grid(pdf_canvas, base_grid, theme)
+                # self.draw_table_grid(pdf_canvas, l['table_grid'], theme)
+
+                pdf_canvas.showPage()
 
             # # 生成所有頁面配置
-            # pages = generate_pages(
-            #     layouts_config=layouts_config,
-            #     selected_layouts=selected_layouts,
-            #     selected_start_date=selected_start_date,
-            #     selected_duration=selected_duration,
-            #     selected_week_start=selected_week_start
-            # )
+            # try:
+            #     pages = generate_pages(
+            #         layouts=layouts,
+            #         selected_layouts=data['layouts'],
+            #         start_date=data['startDate'],
+            #         duration=data['duration'],
+            #         week_start=data['weekStart']
+            #     )
+            #     logger.info(f"Generated {len(pages)} pages")
+                
+            #     # 記錄生成的頁面資訊
+            #     for i, page in enumerate(pages):
+            #         logger.debug(f"Page {i+1}: Type={page['type']}, Layout ID={page.get('layoutId', 'N/A')}")
+            # except Exception as e:
+            #     logger.error(f"Error generating pages: {str(e)}")
+            #     raise
 
-            # # 繪製每一頁
-            # for page in pages:
-            #     # 繪製背景
-            #     self.draw_background(pdf_canvas, theme['styles']['background'])
-
-            #     if page['type'] == PageTypes.CONTENT:
-            #         # 繪製基礎網格
-            #         self.draw_grid(pdf_canvas, layouts['base_grid'], theme)
-
-            #         # 繪製表格網格
-            #         if 'table_grid' in page['layout']:
-            #             self.draw_table_grid(pdf_canvas, page['layout']['table_grid'], theme)
-
-            #         # 繪製頁碼
-            #         self.draw_page_number(pdf_canvas, page['pageNumber'], theme)
-
-            #     # TODO: 根據不同頁面類型添加其他元素
-            #     # if page['type'] == PageTypes.COVER:
-            #     #     self.draw_cover(pdf_canvas, page, theme)
-            #     # elif page['type'] == PageTypes.SECTION:
-            #     #     self.draw_section(pdf_canvas, page, theme)
-            #     # ...
-
-            #     pdf_canvas.showPage()
-
-            for key, value in data.items():
+            # 測試代碼：生成一個簡單的測試頁面
+            try:
+                # 繪製測試文字
                 draw_text(
                     pdf_canvas,
-                    f"{key}: {value}",
+                    "Test PDF Generation",
                     self.width/2,
                     self.height/2,
                     font_size=16,
                     font_name=self.font_name
                 )
                 pdf_canvas.showPage()
+                
+                logger.info("Successfully generated test page")
+            except Exception as e:
+                logger.error(f"Error drawing test page: {str(e)}")
+                raise
 
             pdf_canvas.save()
             buffer.seek(0)
+            logger.info("PDF generation completed successfully")
             return buffer
 
         except Exception as e:
-            logger.error(f"PDF generation error: {str(e)}")
+            logger.error(f"PDF generation error: {str(e)}", exc_info=True)
             raise

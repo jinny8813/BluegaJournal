@@ -91,3 +91,53 @@ def generate_pdf(request):
     except Exception as e:
         logger.error(f"PDF generation failed: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+def test_generate_pdf(request):
+    """
+    測試 PDF 生成的 GET 方法
+    """
+    try:
+        # 測試數據
+        test_data = {
+            'theme': {
+                'id': 'white',
+                'styles': {
+                    'background': '#FFFFFF',
+                    'text': '#000000',
+                    'gridLines': {
+                        'small': {'color': '#CCCCCC', 'width': '1'},
+                        'large': {'color': '#999999', 'width': '2'}
+                    }
+                }
+            },
+            'layouts': ['monthly_calendar', 'monthly_project'],
+            'startDate': '2025-01-27',
+            'duration': 3,
+            'orientation': 'horizontal',
+            'language': 'en',
+            'weekStart': 'monday',
+            'lunarDate': 'off',
+            'holidays': 'off'
+        }
+
+        # 生成 PDF
+        generator = PlannerPDFGenerator()
+        pdf_buffer = generator.generate(test_data)
+
+        # 返回 PDF 文件
+        response = FileResponse(
+            pdf_buffer,
+            content_type='application/pdf',
+            as_attachment=True,
+            filename='test_planner.pdf'
+        )
+        
+        return response
+
+    except Exception as e:
+        logger.error(f"Test PDF generation failed: {str(e)}")
+        return JsonResponse({
+            'error': str(e),
+            'message': 'PDF generation test failed'
+        }, status=500)
