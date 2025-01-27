@@ -138,6 +138,7 @@ const PlannerPreviews = ({
         const page = allPages[virtualRow.index];
         return (
           <div
+            className="flex flex-col justify-center items-center"
             key={virtualRow.key}
             data-index={virtualRow.index}
             ref={virtualRow.measureRef} // 用於測量元素高度

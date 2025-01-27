@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
@@ -13,13 +13,23 @@ export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
 
   const scrollContainerRef = isDesktop ? desktopRef : mobileRef;
 
+  // 使用 useMemo 來計算 estimateSize
+  const estimateSize = useMemo(() => {
+    return () => layouts.page_config.height * scale + 16;
+  }, [layouts, scale]);
+
   // 虛擬化設置
   const rowVirtualizer = useVirtualizer({
     count: totalPages,
     getScrollElement: () => scrollContainerRef.current,
-    estimateSize: () => layouts.page_config.height * scale + 16,
+    estimateSize,
     overscan: 5,
   });
+
+  // scale 改變時重新計算所有項目的大小
+  useEffect(() => {
+    rowVirtualizer.measure();
+  }, [scale, layouts]);
 
   // 監聽滾動事件來偵測當前頁面
   useEffect(() => {
@@ -30,7 +40,7 @@ export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
       if (isScrollingRef.current) return;
 
       // 計算容器的 1/4 位置
-      const quarterPoint = container.scrollTop + container.clientHeight * 0.2;
+      const quarterPoint = container.scrollTop + container.clientHeight * 0.25;
 
       // 獲取所有可見的虛擬項目
       const virtualItems = rowVirtualizer.getVirtualItems();
