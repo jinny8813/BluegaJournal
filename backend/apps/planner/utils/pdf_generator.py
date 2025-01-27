@@ -2,7 +2,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import landscape
 import io
 import logging
-from .pdf_utils import px_to_points, convert_color, register_fonts, draw_text
+from .pdf_utils import px_to_points, convert_color, register_fonts, draw_text_left, draw_text_center
 from .page_generator import generate_pages, PageTypes
 import os
 from pathlib import Path
@@ -51,6 +51,7 @@ class PlannerPDFGenerator:
         """繪製網格"""
         pdf_canvas.setStrokeColor(convert_color(theme['styles']['gridLines']['small']['color']))
         pdf_canvas.setLineWidth(px_to_points(float(theme['styles']['gridLines']['small']['width'].replace('px', ''))))
+        pdf_canvas.setDash([0.5, 0.5])
 
         # 垂直線
         for i in range(grid_config['vertical']['count']):
@@ -76,6 +77,7 @@ class PlannerPDFGenerator:
         """繪製表格網格"""
         pdf_canvas.setStrokeColor(convert_color(theme['styles']['gridLines']['large']['color']))
         pdf_canvas.setLineWidth(px_to_points(float(theme['styles']['gridLines']['large']['width'].replace('px', ''))))
+        pdf_canvas.setDash([])
 
         # 繪製所有線條
         for lines in [table_config['vertical'], table_config['horizontal']]:
@@ -89,7 +91,7 @@ class PlannerPDFGenerator:
 
     def draw_page_number(self, pdf_canvas, number, theme):
         """繪製頁碼"""
-        draw_text(
+        draw_text_left(
             pdf_canvas,
             str(number),
             self.width - 40,  # 右邊距離
@@ -173,6 +175,24 @@ class PlannerPDFGenerator:
                 self.draw_grid(pdf_canvas, base_grid, theme)
                 self.draw_table_grid(pdf_canvas, layouts['layouts'][name]['table_grid'], theme)
 
+                text = contents['contents'][data['language']][name]['title']['text']
+                style = contents['contents'][data['language']][name]['title']['style']
+
+                top = float(style['top'].replace('px', ''))
+                left = float(style['left'].replace('px', ''))
+                width = float(style['width'].replace('px', ''))
+                height = float(style['height'].replace('px', ''))
+
+                draw_text_left(
+                        pdf_canvas,
+                        text,
+                        left,
+                        self.height - top - height/2,
+                        font_size=16,
+                        font_name=self.font_name,
+                        color=convert_color(theme['styles']['text']['page_titles'])
+                    )
+
                 for i,n in enumerate(contents['contents'][data['language']][name]['content']):
                     text = n['text']
                     style = n['style']
@@ -182,7 +202,7 @@ class PlannerPDFGenerator:
                     width = float(style['width'].replace('px', ''))
                     height = float(style['height'].replace('px', ''))
 
-                    draw_text(
+                    draw_text_center(
                         pdf_canvas,
                         text,
                         left + width/2,
@@ -215,7 +235,7 @@ class PlannerPDFGenerator:
             # 測試代碼：生成一個簡單的測試頁面
             try:
                 # 繪製測試文字
-                draw_text(
+                draw_text_center(
                     pdf_canvas,
                     "Test PDF Generation",
                     self.width/2,
