@@ -45,6 +45,15 @@ export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
       // 獲取所有可見的虛擬項目
       const virtualItems = rowVirtualizer.getVirtualItems();
 
+      // 特殊處理：如果滾動到最上方，直接設置為第一頁
+      if (container.scrollTop === 0) {
+        if (currentPage !== 1) {
+          setCurrentPage(1);
+          setInputValue("1");
+        }
+        return;
+      }
+
       // 找出在 1/4 位置的項目
       const currentItem = virtualItems.find((item) => {
         const itemTop = item.start;
@@ -74,7 +83,7 @@ export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
     return () => {
       container.removeEventListener("scroll", handleScroll);
     };
-  }, [scrollContainerRef.current, rowVirtualizer]);
+  }, [scrollContainerRef.current, rowVirtualizer, currentPage]);
 
   // 處理頁面跳轉
   const handlePageChange = useCallback(
