@@ -93,13 +93,25 @@ export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
 
       isScrollingRef.current = true;
 
-      const virtualItem = rowVirtualizer
-        .getVirtualItems()
-        .find((item) => item.index === newPage - 1);
+      // 重新獲取最新的虛擬項目
+      const virtualItems = rowVirtualizer.getVirtualItems();
+      const virtualItem = virtualItems.find(
+        (item) => item.index === newPage - 1
+      );
 
       if (virtualItem) {
-        scrollContainerRef.current.scrollTo({
-          top: virtualItem.start,
+        const container = scrollContainerRef.current;
+        // 確保容器存在並滾動
+        if (container) {
+          container.scrollTo({
+            top: virtualItem.start,
+            behavior: "smooth",
+          });
+        }
+      } else {
+        // 如果找不到虛擬項目，先更新 virtualizer
+        rowVirtualizer.scrollToIndex(newPage - 1, {
+          align: "start",
           behavior: "smooth",
         });
       }
@@ -112,7 +124,7 @@ export const usePageNavigator = (totalPages, { scale, layouts }, isDesktop) => {
         isScrollingRef.current = false;
       }, 1000);
     },
-    [totalPages, rowVirtualizer]
+    [totalPages, rowVirtualizer, scrollContainerRef]
   );
 
   // 處理輸入框變更
