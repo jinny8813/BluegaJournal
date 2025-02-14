@@ -14,8 +14,12 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+import sys
+
+# 將 apps 目錄加入 Python 路徑
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -27,7 +31,6 @@ SECRET_KEY = 'django-insecure-3x1cpefvc4)!ilurr2lh1wh18x6$u6hyt_!5+w+x%d1)+7-%h*
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -41,7 +44,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'apps.planner',
+    'apps.member',
 ]
+
+AUTH_USER_MODEL = 'member.Member' 
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
