@@ -51,7 +51,7 @@ class PlannerPDFGenerator:
         """繪製網格"""
         pdf_canvas.setStrokeColor(convert_color(theme['styles']['gridLines']['small']['color']))
         pdf_canvas.setLineWidth(px_to_points(float(theme['styles']['gridLines']['small']['width'].replace('px', ''))))
-        pdf_canvas.setDash([0.5, 0.5])
+        pdf_canvas.setDash([0.25, 0.25])
 
         # 垂直線
         for i in range(grid_config['vertical']['count']):
