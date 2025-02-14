@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'apps.planner',
     'apps.member',
+    'apps.myadmin',
 ]
 
 AUTH_USER_MODEL = 'member.Member' 
