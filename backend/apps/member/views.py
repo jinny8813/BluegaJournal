@@ -115,7 +115,7 @@ class MemberViewSet(JWTValidationMixin, viewsets.GenericViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post'], url_path='change-password')
     def change_password(self, request):
         """修改密碼"""
         user = self.validate_jwt_token(request)
