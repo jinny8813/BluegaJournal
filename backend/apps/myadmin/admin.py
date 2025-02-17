@@ -1,47 +1,41 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from .models import AdminLog, AdminSetting
+from .models import Admin, AdminLoginLog  # 修改這裡
 
-
-@admin.register(AdminLog)
-class AdminLogAdmin(admin.ModelAdmin):
-    list_display = ['admin', 'action', 'model_type', 'object_id', 'ip_address', 'created_at']
-    list_filter = ['action', 'model_type', 'created_at']
-    search_fields = ['admin__email', 'model_type', 'object_id', 'ip_address']
-    readonly_fields = ['created_at', 'updated_at']
-    ordering = ['-created_at']
-    
+@admin.register(Admin)
+class AdminAdmin(admin.ModelAdmin):
+    list_display = ('email', 'username', 'name', 'is_active', 'is_staff', 'date_joined', 'last_login')
+    list_filter = ('is_active', 'is_staff', 'is_superuser', 'date_joined', 'last_login')
+    search_fields = ('email', 'username', 'name')
+    ordering = ('-date_joined',)
+    readonly_fields = ('date_joined', 'last_login')
     fieldsets = (
+        (None, {'fields': ('email', 'username', 'name', 'password')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                     'groups', 'user_permissions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
+    add_fieldsets = (
         (None, {
-            'fields': ('admin', 'action', 'model_type', 'object_id')
-        }),
-        (_('Details'), {
-            'fields': ('detail', 'ip_address')
-        }),
-        (_('Timestamps'), {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
+            'classes': ('wide',),
+            'fields': ('email', 'username', 'name', 'password1', 'password2'),
         }),
     )
 
+@admin.register(AdminLoginLog)
+class AdminLoginLogAdmin(admin.ModelAdmin):
+    list_display = ('admin', 'ip_address', 'login_at', 'status', 'browser_info')
+    list_filter = ('status', 'login_at')
+    search_fields = ('admin__email', 'admin__username', 'ip_address')
+    ordering = ('-login_at',)
+    readonly_fields = ('admin', 'ip_address', 'user_agent', 'login_at', 'status')
 
-@admin.register(AdminSetting)
-class AdminSettingAdmin(admin.ModelAdmin):
-    list_display = ['key', 'is_active', 'updated_at']
-    list_filter = ['is_active']
-    search_fields = ['key', 'description']
-    readonly_fields = ['created_at', 'updated_at']
-    ordering = ['key']
-    
-    fieldsets = (
-        (None, {
-            'fields': ('key', 'value', 'is_active')
-        }),
-        (_('Additional Information'), {
-            'fields': ('description',)
-        }),
-        (_('Timestamps'), {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
-        }),
-    )
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def browser_info(self, obj):
+        return obj.browser_info
+    browser_info.short_description = _('Browser')

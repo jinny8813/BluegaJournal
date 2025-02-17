@@ -1,60 +1,56 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 from .models import Member, MemberProfile
 
-
 @admin.register(Member)
-class MemberAdmin(UserAdmin):
-    list_display = ('email', 'username', 'nickname', 'is_active', 'is_staff', 'created_at')
-    list_filter = ('is_active', 'is_staff', 'is_superuser', 'groups')
-    search_fields = ('email', 'username', 'nickname', 'first_name', 'last_name')
-    ordering = ('-created_at',)
+class MemberAdmin(admin.ModelAdmin):
+    list_display = ('email', 'name', 'is_active', 'is_verified', 'date_joined', 'last_login')
+    list_filter = ('is_active', 'is_verified', 'date_joined', 'last_login')
+    search_fields = ('email', 'name')
+    ordering = ('-date_joined',)
+    readonly_fields = ('date_joined', 'last_login')
     
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {
-            'fields': ('username', 'nickname', 'first_name', 'last_name', 'avatar', 'bio')
-        }),
-        (_('Status'), {
-            'fields': ('is_active', 'is_verified', 'last_login_ip')
-        }),
-        (_('Permissions'), {
-            'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions'),
-        }),
-        (_('Important dates'), {
-            'fields': ('last_login', 'date_joined', 'created_at', 'updated_at')
-        }),
+        (None, {'fields': ('email', 'name', 'password')}),
+        (_('Profile'), {'fields': ('avatar',)}),
+        (_('Permissions'), {'fields': ('is_active', 'is_verified')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
-    readonly_fields = ('created_at', 'updated_at', 'last_login', 'date_joined')
+    
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2'),
+            'fields': ('email', 'name', 'password1', 'password2'),
         }),
     )
 
+    def get_fieldsets(self, request, obj=None):
+        if not obj:
+            return self.add_fieldsets
+        return super().get_fieldsets(request, obj)
 
 @admin.register(MemberProfile)
 class MemberProfileAdmin(admin.ModelAdmin):
-    list_display = ('member', 'phone', 'gender', 'birth_date', 'created_at')
-    list_filter = ('gender',)
+    list_display = ('member', 'phone', 'birth_date', 'address')
+    list_filter = ('birth_date',)
     search_fields = ('member__email', 'phone', 'address')
-    ordering = ('-created_at',)
+    ordering = ('-id',)
+    readonly_fields = ('member',)
     
     fieldsets = (
-        (_('Basic Information'), {
-            'fields': ('member', 'phone', 'address')
+        (_('Basic Info'), {
+            'fields': ('member', 'bio')
         }),
-        (_('Personal Details'), {
-            'fields': ('birth_date', 'gender')
+        (_('Contact Info'), {
+            'fields': ('phone', 'address')
         }),
-        (_('Preferences'), {
-            'fields': ('preferences',)
-        }),
-        (_('Timestamps'), {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
+        (_('Personal Info'), {
+            'fields': ('birth_date',)
         }),
     )
-    readonly_fields = ('created_at', 'updated_at')
+
+    def has_add_permission(self, request):
+        return False  # 禁止直接添加 Profile，應該通過 Member 創建時自動生成
+
+    def has_delete_permission(self, request, obj=None):
+        return False  # 禁止刪除 Profile，應該通過刪除 Member 時自動刪除

@@ -6,9 +6,3 @@ class MemberConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.member'
     verbose_name = _('會員管理')
-
-    def ready(self):
-        try:
-            import apps.member.signals  # noqa F401
-        except ImportError:
-            pass

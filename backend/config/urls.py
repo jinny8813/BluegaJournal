@@ -7,4 +7,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', get_services, name='get_services'),
     path('api/planner/', include('apps.planner.urls')),
+    path('api/v1/member/', include('apps.member.urls')),
 ]
