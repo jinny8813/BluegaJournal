@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authService } from "../../services/api/authService";
+import { useAuth } from "../../contexts/AuthContext";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,6 +14,7 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,11 +22,49 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      // TODO: 實現實際的 API 調用
-      console.log("Form submitted:", formData);
+      if (isLogin) {
+        // 登入
+        await login({
+          email: formData.email,
+          password: formData.password,
+        });
+      } else {
+        // 註冊
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error("密碼不匹配");
+        }
+        const response = await authService.register({
+          email: formData.email,
+          password: formData.password,
+          confirm_password: formData.confirmPassword,
+          name: formData.name,
+        });
+        console.log("Registration successful:", response);
+        // 註冊成功後自動登入
+        await login({
+          email: formData.email,
+          password: formData.password,
+        });
+      }
       navigate("/");
     } catch (error) {
-      setError(error.message || "發生錯誤，請稍後再試");
+      let errorMessage = "發生錯誤，請稍後再試";
+      if (error.response) {
+        // 處理後端返回的錯誤訊息
+        const data = error.response.data;
+        if (data.detail) {
+          errorMessage = data.detail;
+        } else if (data.email) {
+          errorMessage = `電子郵件: ${data.email[0]}`;
+        } else if (data.password) {
+          errorMessage = `密碼: ${data.password[0]}`;
+        } else if (data.name) {
+          errorMessage = `姓名: ${data.name[0]}`;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -1,9 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const MainLayout = ({ children }) => {
+  const { user, logout } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false); // 控制手機選單的開關
+
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false); // 關閉手機選單
+  };
 
   return (
     <div className="w-full h-screen">
@@ -47,16 +54,37 @@ const MainLayout = ({ children }) => {
             >
               關於我
             </Link>
-            <Link
-              to="/auth"
-              className={`h-full flex items-center px-4 text-white ${
-                location.pathname === "/auth"
-                  ? "bg-blue-400"
-                  : "hover:bg-blue-500 transition-colors duration-200"
-              }`}
-            >
-              登入
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/member"
+                  className={`h-full flex items-center px-4 text-white ${
+                    location.pathname === "/member"
+                      ? "bg-blue-400"
+                      : "hover:bg-blue-500 transition-colors duration-200"
+                  }`}
+                >
+                  會員中心
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="h-full flex items-center px-4 text-white hover:bg-blue-500 transition-colors duration-200"
+                >
+                  登出
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/auth"
+                className={`h-full flex items-center px-4 text-white ${
+                  location.pathname === "/auth"
+                    ? "bg-blue-400"
+                    : "hover:bg-blue-500 transition-colors duration-200"
+                }`}
+              >
+                登入
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Icon */}
@@ -106,17 +134,37 @@ const MainLayout = ({ children }) => {
             >
               關於我
             </Link>
-            <Link
-              to="/auth"
-              className={`py-2 px-4 ${
-                location.pathname === "/auth"
-                  ? "bg-blue-400"
-                  : "hover:bg-blue-500 transition-colors duration-200"
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              登入
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/member"
+                  className={`py-2 px-4 ${
+                    location.pathname === "/member"
+                      ? "bg-blue-400"
+                      : "hover:bg-blue-500 transition-colors duration-200"
+                  }`}
+                >
+                  會員中心
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="py-2 px-4 text-left hover:bg-blue-500 transition-colors duration-200"
+                >
+                  登出
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/auth"
+                className={`py-2 px-4 ${
+                  location.pathname === "/auth"
+                    ? "bg-blue-400"
+                    : "hover:bg-blue-500 transition-colors duration-200"
+                }`}
+              >
+                登入
+              </Link>
+            )}
           </div>
         )}
       </nav>
