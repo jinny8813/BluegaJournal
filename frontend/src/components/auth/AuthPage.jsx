@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "../../services/api/authService";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -13,7 +13,9 @@ const AuthPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const location = useLocation();
   const navigate = useNavigate();
+  const from = location.state?.from || "/";
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -28,6 +30,7 @@ const AuthPage = () => {
           email: formData.email,
           password: formData.password,
         });
+        navigate(from, { replace: true });
       } else {
         // 註冊
         if (formData.password !== formData.confirmPassword) {
@@ -46,7 +49,7 @@ const AuthPage = () => {
           password: formData.password,
         });
       }
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (error) {
       let errorMessage = "發生錯誤，請稍後再試";
       if (error.response) {
