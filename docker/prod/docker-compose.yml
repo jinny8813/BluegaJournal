@@ -59,7 +59,7 @@ services:
     image: postgres:15-alpine
     container_name: bluega_db_prod
     volumes:
-      - postgres_data_prod:/var/lib/postgresql/data/
+      - /var/lib/postgresql/data:/var/lib/postgresql/data # 改用主機目錄
     environment:
       - POSTGRES_DB=bluega_journal_prod
       - POSTGRES_USER=postgres
@@ -68,6 +68,11 @@ services:
       - bluega_network_prod
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:alpine
