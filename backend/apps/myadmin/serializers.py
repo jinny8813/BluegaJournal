@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from .models import Admin, AdminLoginLog
 from .utils import mask_ip
 from apps.member.models import Member, MemberProfile
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 class AdminMemberProfileSerializer(serializers.ModelSerializer):
     """管理員用的會員檔案序列化器"""
@@ -156,3 +158,38 @@ class AdminLoginLogSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_superuser:
             data.pop('ip_address', None)
         return data
+    
+class AdminCreateSerializer(serializers.ModelSerializer):
+    """用於創建管理員的序列化器"""
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Member
+        fields = ['email', 'name', 'password', 'confirm_password']
+
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError("密碼不匹配")
+        try:
+            validate_password(data['password'])
+        except ValidationError as e:
+            raise serializers.ValidationError(str(e))
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop('confirm_password')
+        member = Member.objects.create_superuser(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            name=validated_data.get('name', '')
+        )
+        return member
+
+class AdminStatsSerializer(serializers.Serializer):
+    """管理員統計數據序列化器"""
+    total_members = serializers.IntegerField()
+    active_members = serializers.IntegerField()
+    inactive_members = serializers.IntegerField()
+    total_admins = serializers.IntegerField()
+    recent_registrations = serializers.IntegerField()
