@@ -24,9 +24,31 @@ def register_fonts():
         print(f"Font registration error: {str(e)}")
         return False
 
-def draw_text(canvas, text, x, y, font_name='Helvetica', font_size=10, color=None):
+def draw_text_center(canvas, text, x, y, font_name='Helvetica', font_size=10, color=None):
     """繪製文字"""
     canvas.setFont(font_name, font_size)
+
     if color:
         canvas.setFillColor(color)
-    canvas.drawString(px_to_points(x), px_to_points(y), text)
+
+    text_width = canvas.stringWidth(text, font_name, font_size)
+    text_height = font_size * 0.75
+
+    x_offset = px_to_points(x) - text_width/2
+    y_offset = px_to_points(y) - text_height/2
+
+    canvas.drawString(x_offset, y_offset, text)
+
+def draw_text_left(canvas, text, x, y, font_name='Helvetica', font_size=10, color=None):
+    """繪製文字"""
+    canvas.setFont(font_name, font_size)
+
+    if color:
+        canvas.setFillColor(color)
+
+    text_height = font_size * 0.75
+
+    x_offset = px_to_points(x)
+    y_offset = px_to_points(y) - text_height/2
+
+    canvas.drawString(x_offset, y_offset, text)
