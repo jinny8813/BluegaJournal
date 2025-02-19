@@ -90,6 +90,9 @@ jobs:
             echo "Cleaning up unused resources..."
             docker system prune -f
 
+            # 確保前端目錄存在
+            mkdir -p frontend/dist
+
             echo "Building and starting new containers..."
             docker-compose -f docker/dev/docker-compose.yml up -d --build
 
