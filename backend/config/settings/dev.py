@@ -1,75 +1,77 @@
 from .base import *
 
-DEBUG = True
-ALLOWED_HOSTS = [
-    'dev.bluegajournal.com',
-    'localhost',
-    '127.0.0.1',
-    '3.24.138.130',
-    'backend',
-    'backend:8000'
-]
+DEBUG = False
+ALLOWED_HOSTS = ['bluegaplayground.com', 'www.bluegaplayground.com', 'localhost', 'backend', 'backend:8000']
 
-# CORS 設置
-CORS_ALLOWED_ORIGINS = [
-    'https://dev.bluegajournal.com:8443',  # 需要包含端口
-    'http://localhost:5173',
-    "https://3.24.138.130:8443",
-]
-
+# 確保這些設置正確
+CSRF_TRUSTED_ORIGINS = ['https://bluegaplayground.com', 'https://www.bluegaplayground.com']
+CORS_ALLOWED_ORIGINS = ['https://bluegaplayground.com', 'https://www.bluegaplayground.com']
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True  # 開發環境可以允許所有來源
-
-# 靜態文件設置
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
-# 數據庫設置
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'bluega_journal_dev'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
-        'HOST': os.environ.get('DB_HOST', 'db'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
-    }
-}
 
 # 安全設置
+SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-CSRF_TRUSTED_ORIGINS = [
-    "https://dev.bluegajournal.com",
-    "https://localhost",
-    "https://3.24.138.130",
-]
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+# 靜態文件
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# 媒體文件
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID_DEV')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY_DEV')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME_DEV')
+AWS_S3_REGION_NAME = os.environ.get('AWS_REGION_DEV', 'ap-northeast-1')
+AWS_DEFAULT_ACL = 'private'
+
+# 快取設置
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': os.environ.get('REDIS_URL', 'redis://redis:6379/1'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 
 # 日誌設置
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-        },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
+            'formatter': 'verbose'
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',  # 開發環境使用 DEBUG 級別
-        },
-        'django.db.backends': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
+            'propagate': True,
         },
-    },
+    }
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'bluega_journal_dev'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'bluega_db_dev'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+    }
 }
