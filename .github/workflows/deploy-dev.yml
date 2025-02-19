@@ -14,6 +14,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -25,33 +36,73 @@ jobs:
             # 設置工作目錄
             DEPLOY_DIR=~/BluegaJournalDev
 
-            # 確保目錄存在並清理
-            mkdir -p $DEPLOY_DIR
-            cd $DEPLOY_DIR
-            rm -f .env.dev
+            # 如果目錄不存在，創建它
+            if [ ! -d "$DEPLOY_DIR" ]; then
+              mkdir -p "$DEPLOY_DIR"
+            fi
+
+            # 進入工作目錄
+            cd "$DEPLOY_DIR"
+
+            # 如果不是 git 倉庫，初始化它
+            if [ ! -d .git ]; then
+              rm -rf * .[!.]*  # 清空目錄（保留當前目錄和父目錄）
+              git clone https://github.com/jinny8813/BluegaJournal.git .
+            else
+              # 保存環境文件
+              if [ -f .env.dev ]; then
+                mv .env.dev /tmp/.env.dev.backup
+              fi
+              
+              # 重置並更新倉庫
+              git fetch origin
+              git reset --hard origin/master
+              
+              # 恢復環境文件
+              if [ -f /tmp/.env.dev.backup ]; then
+                mv /tmp/.env.dev.backup .env.dev
+              fi
+            fi
+
+            # 複製前端構建文件
+            mkdir -p frontend/dist
+            cp -r frontend/dist/* frontend/dist/
 
             # 創建新的環境文件
-            echo "DEBUG=True" > .env.dev
+            echo "DEBUG=False" > .env.dev
             echo "DJANGO_SETTINGS_MODULE=config.settings.dev" >> .env.dev
             echo "DB_NAME=bluega_journal_dev" >> .env.dev
             echo "DB_USER=postgres" >> .env.dev
             echo "DB_PASSWORD=postgres" >> .env.dev
             echo "DB_HOST=db" >> .env.dev
             echo "DB_PORT=5432" >> .env.dev
-            echo "ALLOWED_HOSTS=dev.bluegajournal.com,localhost,3.24.138.130" >> .env.dev
+            echo "ALLOWED_HOSTS=bluegaplayground.com,localhost,${{ secrets.EC2_HOST_DEV }}" >> .env.dev
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}" >> .env.dev
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}" >> .env.dev
 
-            # 克隆或更新代碼
-            if [ -d .git ]; then
-              git fetch
-              git checkout dev
-              git reset --hard origin/dev
-            else
-              git clone https://github.com/jinny8813/BluegaJournal.git .
-              git checkout dev
-            fi
+            # 創建必要的目錄
+            mkdir -p nginx/conf.d
 
-            # 設置權限
-            chmod +x scripts/deploy-dev.sh
+            # 執行部署命令
+            echo "Stopping existing containers..."
+            docker-compose -f docker/dev/docker-compose.yml down
 
-            # 執行部署腳本
-            ./scripts/deploy-dev.sh
+            echo "Cleaning up unused resources..."
+            docker system prune -f
+
+            echo "Building and starting new containers..."
+            docker-compose -f docker/dev/docker-compose.yml up -d --build
+
+            echo "Waiting for database to be ready..."
+            sleep 15
+
+            echo "Running database migrations..."
+            docker-compose -f docker/dev/docker-compose.yml exec -T backend python manage.py migrate
+
+            echo "Collecting static files..."
+            docker-compose -f docker/dev/docker-compose.yml exec -T backend python manage.py collectstatic --noinput
+
+            echo "Checking container status..."
+            docker-compose -f docker/dev/docker-compose.yml ps
+
+            echo "Deployment completed successfully!"
