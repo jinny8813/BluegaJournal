@@ -24,7 +24,7 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     environment:
-      - POSTGRES_DB=bluegajournal
+      - POSTGRES_DB=bluega_journal_prod
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=bluega_db_prod
@@ -62,9 +62,9 @@ services:
     image: postgres:15-alpine
     container_name: bluega_db_prod
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=bluega_journal
+      - POSTGRES_DB=bluega_journal_prod
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     networks:
