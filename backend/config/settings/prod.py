@@ -1,10 +1,16 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['bluegajournal.com', 'www.bluegajournal.com']
+ALLOWED_HOSTS = ['bluegajournal.com', 'www.bluegajournal.com', 'localhost', 'backend', 'backend:8000']
+
+# 確保這些設置正確
+CSRF_TRUSTED_ORIGINS = ['https://bluegajournal.com', 'https://www.bluegajournal.com']
+CORS_ALLOWED_ORIGINS = ['https://bluegajournal.com', 'https://www.bluegajournal.com']
+CORS_ALLOW_CREDENTIALS = True
 
 # 安全設置
 SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
@@ -67,5 +73,16 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+    }
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'bluega_journal_prod'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'bluega_db_prod'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }

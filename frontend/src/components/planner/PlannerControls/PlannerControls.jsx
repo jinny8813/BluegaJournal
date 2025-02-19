@@ -1,123 +1,156 @@
-import React from "react";
-import DateControl from "../controls/DateControl";
-import LayoutSelector from "../controls/LayoutSelector";
-import ThemeSelector from "../controls/ThemeSelector";
-import PageNavigator from "../controls/PageNavigator";
-import ScaleControl from "../controls/ScaleControl";
+import { useState, useRef } from "react";
+import ScaleControl from "./controls/ScaleControl";
+import PageNavigator from "./controls/PageNavigator";
+import { message } from "antd";
+import PlannerDownloadModal from "./controls/PlannerDownloadModal";
+import { plannerService } from "../../../services/api/plannerService";
 
 const PlannerControls = ({
-  startDate,
-  duration,
-  selectedLayouts,
-  currentTheme,
-  themes,
   scale,
+  onScaleChange,
   currentPage,
   totalPages,
-  onDateChange,
-  onDurationChange,
-  onLayoutChange,
-  onThemeChange,
-  onScaleChange,
+  inputValue,
   onPageChange,
-  onDownload,
-  isLoading,
+  onInputChange,
+  onInputConfirm,
+  userSelection,
 }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const abortControllerRef = useRef(null);
+  const progressIntervalRef = useRef(null);
+
+  const MAX_RETRIES = 3;
+
+  const handleCancel = () => {
+    if (isDownloading) {
+      abortControllerRef.current?.abort();
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+      message.info("下載已取消");
+    }
+    setIsModalVisible(false);
+    setIsDownloading(false);
+    setRetryCount(0);
+  };
+
+  const handleDownload = async (surveyData, setProgress) => {
+    if (retryCount >= MAX_RETRIES) {
+      message.error("已達最大重試次數，請稍後再試");
+      handleCancel();
+      return;
+    }
+
+    try {
+      setIsDownloading(true);
+
+      // 創建新的 AbortController
+      abortControllerRef.current = new AbortController();
+
+      // 準備配置數據
+      const downloadConfig = {
+        userSelection: userSelection,
+        surveyData: surveyData,
+      };
+
+      // 模擬下載進度
+      progressIntervalRef.current = setInterval(() => {
+        setProgress((prev) => (prev >= 95 ? 95 : prev + 5));
+      }, 500);
+      // 調用 API 生成 PDF
+      const pdfBlob = await plannerService.generatePDF(
+        downloadConfig,
+        abortControllerRef.current.signal
+      );
+
+      // 清除進度條計時器
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+      setProgress(100);
+
+      const now = new Date();
+
+      // 處理下載
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `planner-${now.toLocaleDateString()}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      // 成功後重置重試計數
+      setRetryCount(0);
+      message.success("下載完成！");
+
+      setTimeout(() => {
+        handleCancel();
+      }, 1500);
+    } catch (error) {
+      console.error("下載失敗:", error);
+
+      if (error.message === "Download cancelled") {
+        return;
+      }
+
+      // 增加重試計數
+      setRetryCount((prev) => {
+        const newCount = prev + 1;
+        if (newCount < MAX_RETRIES) {
+          message.warning(`下載失敗，正在進行第 ${newCount} 次重試...`);
+          // 使用遞迴調用進行重試，但加入延遲
+          setTimeout(() => handleDownload(surveyData, setProgress), 1000);
+        }
+        return newCount;
+      });
+    } finally {
+      if (retryCount >= MAX_RETRIES) {
+        setIsDownloading(false);
+        handleCancel();
+      }
+    }
+  };
+
   return (
     <div className="space-y-4">
-      {/* 手帳配置設定 Card */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
-          手帳配置設定
-        </h2>
-
-        <div className="space-y-6">
-          <DateControl
-            startDate={startDate}
-            duration={duration}
-            onDateChange={onDateChange}
-            onDurationChange={onDurationChange}
-          />
-
-          <LayoutSelector
-            selectedLayouts={selectedLayouts}
-            onLayoutChange={onLayoutChange}
-          />
-
-          <ThemeSelector
-            currentTheme={currentTheme}
-            themes={themes}
-            onThemeChange={onThemeChange}
-          />
-        </div>
-      </div>
-
       {/* 畫面預覽和下載 Card */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
           畫面預覽和下載
         </h2>
-
-        <ScaleControl scale={scale} onScaleChange={onScaleChange} />
-
-        <PageNavigator
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-        />
-
-        <button
-          onClick={onDownload}
-          disabled={isLoading}
-          className={`w-full px-4 py-2 rounded-md flex items-center justify-center gap-2 transition-colors
-              ${
-                isLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              } text-white`}
-        >
-          {isLoading ? (
-            <>
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              生成中...
-            </>
-          ) : (
-            <>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              下載 PDF
-            </>
-          )}
-        </button>
+        <div className="space-y-4">
+          <ScaleControl scale={scale} onScaleChange={onScaleChange} />
+          <PageNavigator
+            currentPage={currentPage}
+            totalPages={totalPages}
+            inputValue={inputValue}
+            onPageChange={onPageChange}
+            onInputChange={onInputChange}
+            onInputConfirm={onInputConfirm}
+          />
+          <button
+            onClick={() => setIsModalVisible(true)}
+            disabled={isDownloading}
+            className="w-full px-4 py-2 rounded-md flex items-center justify-center gap-2 bg-blue-400 hover:bg-blue-500 transition-colors duration-200 my-4 text-white"
+          >
+            <i className="fa-solid fa-download"></i>下載 PDF
+          </button>
+          <PlannerDownloadModal
+            visible={isModalVisible}
+            onCancel={handleCancel}
+            userSelection={userSelection}
+            onSubmit={handleDownload}
+            isDownloading={isDownloading}
+            retryCount={retryCount}
+            maxRetries={MAX_RETRIES}
+          />
+        </div>
       </div>
     </div>
   );

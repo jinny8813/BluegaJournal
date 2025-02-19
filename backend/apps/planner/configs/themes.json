@@ -1,0 +1,119 @@
+{
+  "themes": {
+    "white": {
+      "id": "white",
+      "label": "純白色",
+      "styles": {
+        "background": "#FFFFFF",
+        "text": {
+          "covers": "#000000",
+          "page_titles": "#333333",
+          "page_contents": "#999999",
+          "page_dynamic_elements": "#666666"
+        },
+        "gridLines": {
+          "small": {
+            "color": "#cccccc",
+            "width": "0.25px"
+          },
+          "large": {
+            "color": "#666666",
+            "width": "0.5px"
+          }
+        }
+      }
+    },
+    "lightGray": {
+      "id": "lightGray",
+      "label": "淺米灰色",
+      "styles": {
+        "background": "#F5F5F0",
+        "text": {
+          "covers": "#000000",
+          "page_titles": "#333333",
+          "page_contents": "#999999",
+          "page_dynamic_elements": "#666666"
+        },
+        "gridLines": {
+          "small": {
+            "color": "#cccccc",
+            "width": "0.25px"
+          },
+          "large": {
+            "color": "#666666",
+            "width": "0.5px"
+          }
+        }
+      }
+    },
+    "darkGray": {
+      "id": "darkGray",
+      "label": "深灰咖色",
+      "styles": {
+        "background": "#E5E5DF",
+        "text": {
+          "covers": "#000000",
+          "page_titles": "#333333",
+          "page_contents": "#999999",
+          "page_dynamic_elements": "#666666"
+        },
+        "gridLines": {
+          "small": {
+            "color": "#cccccc",
+            "width": "0.25px"
+          },
+          "large": {
+            "color": "#666666",
+            "width": "0.5px"
+          }
+        }
+      }
+    },
+    "cream": {
+      "id": "cream",
+      "label": "奶油米色",
+      "styles": {
+        "background": "#FFF8DC",
+        "text": {
+          "covers": "#000000",
+          "page_titles": "#333333",
+          "page_contents": "#999999",
+          "page_dynamic_elements": "#666666"
+        },
+        "gridLines": {
+          "small": {
+            "color": "#cccccc",
+            "width": "0.25px"
+          },
+          "large": {
+            "color": "#666666",
+            "width": "0.5px"
+          }
+        }
+      }
+    },
+    "darkBrown": {
+      "id": "darkBrown",
+      "label": "黑咖色",
+      "styles": {
+        "background": "#2C2C2C",
+        "text": {
+          "covers": "#FFFFFF",
+          "page_titles": "#cccccc",
+          "page_contents": "#666666",
+          "page_dynamic_elements": "#999999"
+        },
+        "gridLines": {
+          "small": {
+            "color": "#333333",
+            "width": "0.25px"
+          },
+          "large": {
+            "color": "#999999",
+            "width": "0.5px"
+          }
+        }
+      }
+    }
+  }
+}

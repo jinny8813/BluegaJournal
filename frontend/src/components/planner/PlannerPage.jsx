@@ -1,79 +1,246 @@
 import React from "react";
+import { useThemes } from "../../hooks/useThemes";
+import { useLayouts } from "../../hooks/useLayouts";
+import { useScale } from "../../hooks/useScale";
+import { useDateRange } from "../../hooks/useDateRange";
+import { usePageNavigator } from "../../hooks/usePageNavigator";
+import { useOrientation } from "../../hooks/useOrientation";
+import { useLanguage } from "../../hooks/useLanguage";
+import { useWeekStart } from "../../hooks/useWeekStart";
+import { usePageConfiguration } from "../../hooks/usePageConfig";
+import { useLunarDate } from "../../hooks/useLunarDate";
+import { useHolidays } from "../../hooks/useHolidays";
 import PlannerPreviews from "./PlannerPreviews/PlannerPreviews";
+import PlannerSettings from "./PlannerSettings/PlannerSettings";
 import PlannerControls from "./PlannerControls/PlannerControls";
-import { usePlannerState } from "../../hooks/usePlannerState";
-import { themeConfig } from "../../config/themes";
 
 const PlannerPage = () => {
+  const isDesktop = window.innerWidth >= 1024; // 根據視窗大小判斷模式
+
+  const { orientation, handleOrientationChange } = useOrientation();
+  const { language, handleLanguageChange } = useLanguage();
+  const { weekStart, handleWeekStartChange } = useWeekStart();
+  const { lunarDate, handleLunarDateChange } = useLunarDate();
+  const { holidays, handleHolidaysChange } = useHolidays();
+
   const {
+    contents,
+    layouts,
+    selectedLayouts,
+    loading: layoutsLoading,
+    error: layoutsError,
+    handleLayoutChange,
+  } = useLayouts(orientation);
+
+  const {
+    themes,
+    currentTheme,
+    loading: themesLoading,
+    error: themesError,
+    handleThemeChange,
+  } = useThemes();
+
+  const { scale, handleScaleChange } = useScale();
+
+  const { startDate, duration, handleDateChange, handleDurationChange } =
+    useDateRange();
+
+  // 生成預覽頁面配置
+  const {
+    pages,
+    getPageByNumber,
+    getPagesByDate,
+    getPagesByLayoutType,
+    getPagesByType,
+    getFirstContentPage,
+    getMonthlyPages,
+    getWeeklyPages,
+    createPageLink,
+    getTableOfContents,
+    getAdjacentPages,
+    getPagesByLayoutIdandDate,
+    getTotalPages,
+  } = usePageConfiguration({
+    layouts,
+    selectedLayouts,
     startDate,
     duration,
-    selectedLayouts,
-    currentTheme,
-    scale,
+    weekStart,
+  });
+
+  const totalPages = getTotalPages();
+
+  const {
+    desktopRef,
+    mobileRef,
     currentPage,
-    totalPages,
-    scrollContainerRef,
-    handleDateChange,
-    handleDurationChange,
-    handleLayoutChange,
-    setCurrentTheme,
-    setScale,
+    inputValue,
     handlePageChange,
-  } = usePlannerState();
+    handleInputChange,
+    handleInputConfirm,
+    rowVirtualizer,
+  } = usePageNavigator(totalPages, { scale, layouts }, isDesktop);
 
-  const [isLoading, setIsLoading] = React.useState(false);
+  // 處理加載狀態
+  if (layoutsLoading || themesLoading) {
+    return <div>Loading...</div>;
+  }
 
-  const handleDownload = async () => {
-    setIsLoading(true);
-    try {
-      // 實現下載邏輯
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    } catch (error) {
-      console.error("Download failed:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  // 處理錯誤狀態
+  if (layoutsError || themesError) {
+    return <div>Error: {layoutsError || themesError}</div>;
+  }
+
+  const userSelection = {
+    theme: currentTheme.id,
+    layouts: selectedLayouts.myLayouts,
+    startDate: startDate,
+    duration: duration,
+    orientation: orientation,
+    language: language,
+    weekStart: weekStart,
+    lunarDate: lunarDate,
+    holidays: holidays,
   };
 
   return (
-    <div className="flex h-[calc(100vh-7.25rem)]">
-      <div
-        className="w-3/4 overflow-auto"
-        style={{ backgroundColor: "#F5F5F5" }}
-      >
-        <PlannerPreviews
-          scale={scale}
-          scrollContainerRef={scrollContainerRef}
-          pages={[]} // 需要實現頁面生成邏輯
-          currentTheme={currentTheme}
-        />
+    <>
+      <div className="hidden lg:flex lg:flex-row lg:h-[calc(100dvh-6rem)]">
+        <div className="lg:w-1/3 lg:h-auto lg:flex lg:flex-col">
+          <div
+            className="overflow-auto bg-gray-200 lg:p-4"
+            style={{ scrollBehavior: "smooth" }}
+          >
+            <PlannerSettings
+              themes={themes}
+              currentTheme={currentTheme}
+              onThemeChange={handleThemeChange}
+              layouts={layouts}
+              selectedLayouts={selectedLayouts}
+              onLayoutChange={handleLayoutChange}
+              startDate={startDate}
+              duration={duration}
+              onDateChange={handleDateChange}
+              onDurationChange={handleDurationChange}
+              orientation={orientation}
+              onOrientationChange={handleOrientationChange}
+              language={language}
+              onLanguageChange={handleLanguageChange}
+              weekStart={weekStart}
+              onWeekStartChange={handleWeekStartChange}
+              lunarDate={lunarDate}
+              onLunarDateChange={handleLunarDateChange}
+              holidays={holidays}
+              onHolidaysChange={handleHolidaysChange}
+            />
+          </div>
+          <div
+            className="overflow-auto bg-gray-100 lg:p-4 min-h-[calc(28dvh-3rem)]"
+            style={{ scrollBehavior: "smooth" }}
+          >
+            <PlannerControls
+              scale={scale}
+              onScaleChange={handleScaleChange}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              inputValue={inputValue}
+              onPageChange={handlePageChange}
+              onInputChange={handleInputChange}
+              onInputConfirm={handleInputConfirm}
+              userSelection={userSelection}
+            />
+          </div>
+        </div>
+        <div
+          className="overflow-auto bg-gray-300 lg:w-2/3 lg:h-full"
+          style={{ scrollBehavior: "smooth" }}
+          ref={desktopRef}
+        >
+          <PlannerPreviews
+            contents={contents}
+            layouts={layouts}
+            allPages={pages}
+            currentTheme={currentTheme}
+            scale={scale}
+            language={language}
+            orientation={orientation}
+            weekStart={weekStart}
+            getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
+            onPageChange={handlePageChange}
+            lunarDate={lunarDate}
+            holidays={holidays}
+            rowVirtualizer={rowVirtualizer}
+          />
+        </div>
       </div>
 
-      <div
-        className="w-1/4 p-4 overflow-auto pb-24"
-        style={{ backgroundColor: "#E5E5E5" }}
-      >
-        <PlannerControls
-          startDate={startDate}
-          duration={duration}
-          selectedLayouts={selectedLayouts}
-          currentTheme={currentTheme}
-          themes={themeConfig.themes}
-          scale={scale}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onDateChange={handleDateChange}
-          onDurationChange={handleDurationChange}
-          onLayoutChange={handleLayoutChange}
-          onThemeChange={setCurrentTheme}
-          onScaleChange={setScale}
-          onPageChange={handlePageChange}
-          onDownload={handleDownload}
-          isLoading={isLoading}
-        />
+      <div className="flex flex-col h-[calc(100dvh-6rem)] lg:hidden">
+        <div
+          className="overflow-auto bg-gray-100 p-2 h-[calc(36dvh-4rem)]"
+          style={{ scrollBehavior: "smooth" }}
+        >
+          <PlannerSettings
+            themes={themes}
+            currentTheme={currentTheme}
+            onThemeChange={handleThemeChange}
+            layouts={layouts}
+            selectedLayouts={selectedLayouts}
+            onLayoutChange={handleLayoutChange}
+            startDate={startDate}
+            duration={duration}
+            onDateChange={handleDateChange}
+            onDurationChange={handleDurationChange}
+            orientation={orientation}
+            onOrientationChange={handleOrientationChange}
+            language={language}
+            onLanguageChange={handleLanguageChange}
+            weekStart={weekStart}
+            onWeekStartChange={handleWeekStartChange}
+            lunarDate={lunarDate}
+            onLunarDateChange={handleLunarDateChange}
+            holidays={holidays}
+            onHolidaysChange={handleHolidaysChange}
+          />
+        </div>
+        <div
+          className="overflow-auto bg-gray-300 h-[calc(48dvh)]"
+          style={{ scrollBehavior: "smooth" }}
+          ref={mobileRef}
+        >
+          <PlannerPreviews
+            contents={contents}
+            layouts={layouts}
+            allPages={pages}
+            currentTheme={currentTheme}
+            scale={scale}
+            language={language}
+            orientation={orientation}
+            weekStart={weekStart}
+            getPagesByLayoutIdandDate={getPagesByLayoutIdandDate}
+            onPageChange={handlePageChange}
+            lunarDate={lunarDate}
+            holidays={holidays}
+            rowVirtualizer={rowVirtualizer}
+          />
+        </div>
+        <div
+          className="overflow-auto bg-gray-200 p-2 h-[calc(16dvh-2rem)]"
+          style={{ scrollBehavior: "smooth" }}
+        >
+          <PlannerControls
+            scale={scale}
+            onScaleChange={handleScaleChange}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            inputValue={inputValue}
+            onPageChange={handlePageChange}
+            onInputChange={handleInputChange}
+            onInputConfirm={handleInputConfirm}
+            userSelection={userSelection}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

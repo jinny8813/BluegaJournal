@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine as build
+FROM node:18-alpine as builder
 
 WORKDIR /app
 
@@ -9,11 +9,17 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Production stage
+# Nginx 階段
 FROM nginx:alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
+# 從構建階段複製構建文件
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# 複製簡單的 nginx 配置
 COPY nginx/prod.conf /etc/nginx/conf.d/default.conf
+
+# 設置權限
+RUN chmod -R 755 /usr/share/nginx/html
 
 EXPOSE 80
 

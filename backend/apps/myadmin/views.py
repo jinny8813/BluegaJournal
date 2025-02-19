@@ -1,0 +1,204 @@
+from rest_framework import viewsets, status, filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.db.models import Q
+from apps.member.mixins import JWTValidationMixin
+from apps.member.models import Member
+from .serializers import (
+    AdminMemberSerializer, AdminCreateSerializer,
+    AdminStatsSerializer
+)
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
+class AdminViewSet(JWTValidationMixin, viewsets.GenericViewSet):
+    queryset = Member.objects.all()
+    serializer_class = AdminMemberSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['email', 'name']
+    ordering_fields = ['date_joined', 'last_login']
+    ordering = ['-date_joined']
+    authentication_classes = [JWTAuthentication]
+
+    def get_permissions(self):
+        permission_classes = [IsAuthenticated, IsAdminUser]
+        return [permission() for permission in permission_classes]
+
+    def list(self, request):
+        """獲取會員列表"""
+        user = self.validate_jwt_token(request)
+        if not user or not user.is_staff:
+            return Response(
+                {'detail': '需要管理員權限'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        queryset = self.queryset
+        search = request.query_params.get('search', '')
+        if search:
+            queryset = queryset.filter(
+                Q(email__icontains=search) |
+                Q(name__icontains=search)
+            )
+
+        ordering = request.query_params.get('ordering', '-date_joined')
+        if ordering:
+            queryset = queryset.order_by(ordering)
+
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        """獲取特定會員"""
+        user = self.validate_jwt_token(request)
+        if not user or not user.is_staff:
+            return Response(
+                {'detail': '需要管理員權限'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            member = self.queryset.get(pk=pk)
+        except Member.DoesNotExist:
+            return Response(
+                {'detail': '會員不存在'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.serializer_class(member)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        """更新特定會員"""
+        user = self.validate_jwt_token(request)
+        if not user or not user.is_staff:
+            return Response(
+                {'detail': '需要管理員權限'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            member = self.queryset.get(pk=pk)
+        except Member.DoesNotExist:
+            return Response(
+                {'detail': '會員不存在'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.serializer_class(
+            member,
+            data=request.data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    def destroy(self, request, pk=None):
+        """刪除特定會員"""
+        user = self.validate_jwt_token(request)
+        if not user or not user.is_staff:
+            return Response(
+                {'detail': '需要管理員權限'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        try:
+            member = self.queryset.get(pk=pk)
+        except Member.DoesNotExist:
+            return Response(
+                {'detail': '會員不存在'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        member.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=False, methods=['post'])
+    def create_admin(self, request):
+        """創建新管理員"""
+        user = self.validate_jwt_token(request)
+        if not user or not user.is_staff:
+            return Response(
+                {'detail': '需要管理員權限'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = AdminCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {'detail': '管理員創建成功'},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """獲取統計數據"""
+        user = self.validate_jwt_token(request)
+        if not user or not user.is_staff:
+            return Response(
+                {'detail': '需要管理員權限'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        now = timezone.now()
+        last_week = now - timedelta(days=7)
+
+        stats = {
+            'total_members': Member.objects.count(),
+            'active_members': Member.objects.filter(is_active=True).count(),
+            'inactive_members': Member.objects.filter(is_active=False).count(),
+            'total_admins': Member.objects.filter(is_staff=True).count(),
+            'recent_registrations': Member.objects.filter(
+                date_joined__gte=last_week
+            ).count(),
+        }
+
+        serializer = AdminStatsSerializer(stats)
+        return Response(serializer.data)
+        
+    @action(detail=True, methods=['post'])
+    def reset_password(self, request, pk=None):
+        """重置會員密碼"""
+        user = self.validate_jwt_token(request)
+        if not user or not user.is_staff:
+            return Response(
+                {'detail': '需要管理員權限'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        new_password = request.data.get('new_password')
+        if not new_password:
+            return Response(
+                {'detail': '需要提供新密碼'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            validate_password(new_password)
+        except ValidationError as e:
+            return Response(
+                {'detail': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            member = self.queryset.get(pk=pk)
+            member.set_password(new_password)
+            member.save()
+            return Response({'detail': '密碼已重置'})
+        except Member.DoesNotExist:
+            return Response(
+                {'detail': '會員不存在'},
+                status=status.HTTP_404_NOT_FOUND
+            )

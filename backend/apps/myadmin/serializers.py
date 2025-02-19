@@ -1,0 +1,195 @@
+from rest_framework import serializers
+from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
+from .models import Admin, AdminLoginLog
+from .utils import mask_ip
+from apps.member.models import Member, MemberProfile
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
+class AdminMemberProfileSerializer(serializers.ModelSerializer):
+    """管理員用的會員檔案序列化器"""
+    class Meta:
+        model = MemberProfile
+        fields = ['bio', 'birth_date', 'phone', 'address']
+
+class AdminMemberSerializer(serializers.ModelSerializer):
+    """管理員用的會員序列化器"""
+    profile = AdminMemberProfileSerializer()
+    
+    class Meta:
+        model = Member
+        fields = [
+            'id', 'email', 'name', 'is_active', 'is_staff',
+            'avatar', 'profile', 'date_joined', 'last_login'
+        ]
+        read_only_fields = ['date_joined', 'last_login']
+
+    def update(self, instance, validated_data):
+        """處理巢狀更新"""
+        profile_data = validated_data.pop('profile', None)
+        
+        # 更新會員基本資料
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        # 更新會員檔案
+        if profile_data:
+            profile = instance.profile
+            for attr, value in profile_data.items():
+                setattr(profile, attr, value)
+            profile.save()
+            
+        return instance
+    
+class AdminLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        if email and password:
+            user = authenticate(request=self.context.get('request'),
+                              email=email, password=password)
+            if not user:
+                msg = _('Unable to log in with provided credentials.')
+                raise serializers.ValidationError(msg, code='authorization')
+            if not user.is_active:
+                msg = _('Account is disabled.')
+                raise serializers.ValidationError(msg, code='authorization')
+            if not user.is_staff:
+                msg = _('Account does not have admin privileges.')
+                raise serializers.ValidationError(msg, code='authorization')
+        else:
+            msg = _('Must include "email" and "password".')
+            raise serializers.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs
+
+class AdminSerializer(serializers.ModelSerializer):
+    last_login_ip = serializers.CharField(read_only=True)
+    login_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Admin
+        fields = ('id', 'email', 'username', 'name', 'avatar', 
+                 'is_active', 'is_staff', 'is_superuser',
+                 'date_joined', 'last_login', 'last_login_ip',
+                 'login_count')
+        read_only_fields = ('id', 'email', 'date_joined', 'last_login',
+                           'is_staff', 'is_superuser')
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # 移除敏感信息
+        request = self.context.get('request')
+        if not request or not request.user.is_superuser:
+            data.pop('is_superuser', None)
+        return data
+
+class AdminCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'}
+    )
+    confirm_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'}
+    )
+
+    class Meta:
+        model = Admin
+        fields = ('email', 'username', 'name', 'password', 
+                 'confirm_password', 'is_active', 'is_superuser')
+
+    def validate_email(self, value):
+        if Admin.objects.filter(email=value).exists():
+            raise serializers.ValidationError(_("This email is already registered."))
+        return value
+
+    def validate_username(self, value):
+        if Admin.objects.filter(username=value).exists():
+            raise serializers.ValidationError(_("This username is already taken."))
+        return value
+
+    def validate(self, data):
+        if data.get('password') != data.get('confirm_password'):
+            raise serializers.ValidationError({
+                'confirm_password': _("Passwords don't match")
+            })
+        if len(data.get('password', '')) < 8:
+            raise serializers.ValidationError({
+                'password': _("Password must be at least 8 characters long")
+            })
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop('confirm_password')
+        # 只有超級管理員可以創建超級管理員
+        request = self.context.get('request')
+        if not request or not request.user.is_superuser:
+            validated_data['is_superuser'] = False
+        return Admin.objects.create_user(**validated_data)
+
+class AdminLoginLogSerializer(serializers.ModelSerializer):
+    admin_email = serializers.CharField(source='admin.email', read_only=True)
+    admin_name = serializers.CharField(source='admin.name', read_only=True)
+    masked_ip = serializers.SerializerMethodField()
+    browser_info = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = AdminLoginLog
+        fields = ('id', 'admin_email', 'admin_name', 'masked_ip',
+                 'browser_info', 'login_at', 'status')
+
+    def get_masked_ip(self, obj):
+        return mask_ip(obj.ip_address)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # 只有超級管理員可以看到完整IP
+        request = self.context.get('request')
+        if not request or not request.user.is_superuser:
+            data.pop('ip_address', None)
+        return data
+    
+class AdminCreateSerializer(serializers.ModelSerializer):
+    """用於創建管理員的序列化器"""
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Member
+        fields = ['email', 'name', 'password', 'confirm_password']
+
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError("密碼不匹配")
+        try:
+            validate_password(data['password'])
+        except ValidationError as e:
+            raise serializers.ValidationError(str(e))
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop('confirm_password')
+        member = Member.objects.create_superuser(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            name=validated_data.get('name', '')
+        )
+        return member
+
+class AdminStatsSerializer(serializers.Serializer):
+    """管理員統計數據序列化器"""
+    total_members = serializers.IntegerField()
+    active_members = serializers.IntegerField()
+    inactive_members = serializers.IntegerField()
+    total_admins = serializers.IntegerField()
+    recent_registrations = serializers.IntegerField()

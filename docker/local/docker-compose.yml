@@ -1,9 +1,9 @@
-# docker/local/docker-compose.yml
 version: "3.8"
 
 services:
   db:
     image: postgres:14-alpine
+    container_name: bluega_db_local
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -12,11 +12,20 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
+    networks:
+      - bluega_network_dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   backend:
     build:
       context: ../../backend
       dockerfile: Dockerfile
+    container_name: bluega_backend_local
     volumes:
       - ../../backend:/app
     ports:
@@ -24,30 +33,47 @@ services:
     environment:
       - DEBUG=1
       - DJANGO_SETTINGS_MODULE=config.settings.local
-      - DB_NAME=postgres
+      - DB_NAME=bluega_journal
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_HOST=db
       - DB_PORT=5432
+      - PYTHONUNBUFFERED=1 # 確保 Python 輸出不被緩存
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - bluega_network_dev
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
 
   frontend:
     build:
       context: ../../frontend
       dockerfile: Dockerfile
+    container_name: bluega_frontend_local
     volumes:
       - ../../frontend:/app
       - /app/node_modules
     ports:
       - "5173:5173"
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.local
+      - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=development
       - VITE_ENV=local
       - VITE_API_BASE_URL=http://localhost:8000
     depends_on:
       - backend
+    networks:
+      - bluega_network_dev
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+    name: bluega_journal_local_data
+
+networks:
+  bluega_network_dev:
+    name: bluega_network_dev
