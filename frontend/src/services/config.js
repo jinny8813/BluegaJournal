@@ -23,6 +23,12 @@ const apiConfig = {
 // 服務路徑配置
 const servicePaths = {
   home: "/api/",
+  auth: {
+    base: "/api/v1/member",
+    login: "/api/v1/member/login/",
+    register: "/api/v1/member/register/",
+    profile: "/api/v1/member/profile/",
+  },
   blog: {
     base: "/api/blog",
     posts: "/api/blog/posts",
