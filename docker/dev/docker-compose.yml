@@ -24,6 +24,7 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.dev
       - POSTGRES_DB=bluega_journal_dev
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -60,7 +61,7 @@ services:
 
   db:
     image: postgres:15-alpine
-    container_name: bluega_db_prod
+    container_name: bluega_db_dev
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data/
     environment:
