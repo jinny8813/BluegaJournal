@@ -24,8 +24,11 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.prod
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/bluega_journal_prod
+      - POSTGRES_DB=bluegajournal
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=bluega_db_prod
+      - POSTGRES_PORT=5432
     depends_on:
       - db
       - redis
@@ -59,9 +62,9 @@ services:
     image: postgres:15-alpine
     container_name: bluega_db_prod
     volumes:
-      - /var/lib/postgresql/data:/var/lib/postgresql/data # 改用主機目錄
+      - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=bluega_journal_prod
+      - POSTGRES_DB=bluega_journal
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     networks:
