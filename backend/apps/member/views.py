@@ -1,59 +1,106 @@
-from rest_framework import status, generics
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import logout
 from .serializers import (
     MemberRegisterSerializer,
     MemberProfileSerializer,
     ChangePasswordSerializer
 )
-from .models import Member, MemberProfile
+from apps.utils.mixins import APIViewMixin, ResponseMixin
 
-class MemberRegisterView(generics.CreateAPIView):
-    queryset = Member.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = MemberRegisterSerializer
-
-class MemberLoginView(TokenObtainPairView):
-    permission_classes = (AllowAny,)
-
-class MemberLogoutView(APIView):
-    permission_classes = (IsAuthenticated,)
-
+class MemberRegisterView(ResponseMixin, APIView):
+    """會員註冊"""
     def post(self, request):
+        serializer = MemberRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return self.success_response(
+                data={
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                },
+                msg="註冊成功"
+            )
+        return self.error_response(
+            msg="註冊失敗",
+            errors=serializer.errors
+        )
+
+class MemberLoginView(ResponseMixin, TokenObtainPairView):
+    """會員登入"""
+    def post(self, request, *args, **kwargs):
         try:
-            refresh_token = request.data["refresh_token"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response({"detail": "登出成功"}, status=status.HTTP_200_OK)
-        except Exception:
-            return Response({"detail": "登出失敗"}, status=status.HTTP_400_BAD_REQUEST)
+            response = super().post(request, *args, **kwargs)
+            if response.status_code == 200:
+                return self.success_response(
+                    data=response.data,
+                    msg="登入成功"
+                )
+        except Exception as e:
+            return self.error_response(
+                msg="登入失敗",
+                errors=str(e)
+            )
 
-class MemberProfileView(generics.RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = MemberProfileSerializer
+class MemberProfileView(APIViewMixin, APIView):
+    """會員資料查看與修改"""
+    def get(self, request):
+        serializer = MemberProfileSerializer(request.user.profile)
+        return self.success_response(
+            data=serializer.data,
+            msg="獲取資料成功"
+        )
 
-    def get_object(self):
-        return self.request.user.profile
+    def patch(self, request):
+        serializer = MemberProfileSerializer(
+            request.user.profile,
+            data=request.data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return self.success_response(
+                data=serializer.data,
+                msg="資料更新成功"
+            )
+        return self.error_response(
+            msg="資料更新失敗",
+            errors=serializer.errors
+        )
 
-class ChangePasswordView(generics.UpdateAPIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = ChangePasswordSerializer
-
-    def update(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+class ChangePasswordView(APIViewMixin, APIView):
+    """修改密碼"""
+    def put(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        if not serializer.is_valid():
+            return self.error_response(
+                msg="資料驗證失敗",
+                errors=serializer.errors
+            )
 
         user = request.user
         if not user.check_password(serializer.data.get("old_password")):
-            return Response(
-                {"old_password": "舊密碼不正確"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return self.error_response(msg="舊密碼不正確")
 
         user.set_password(serializer.data.get("new_password"))
         user.save()
-        return Response({"detail": "密碼修改成功"}, status=status.HTTP_200_OK)
+        return self.success_response(msg="密碼修改成功")
+
+class MemberLogoutView(APIViewMixin, APIView):
+    """會員登出"""
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh_token")
+            if not refresh_token:
+                return self.error_response(msg="未提供 refresh token")
+            
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return self.success_response(msg="登出成功")
+        except Exception as e:
+            return self.error_response(
+                msg="登出失敗",
+                errors=str(e)
+            )
