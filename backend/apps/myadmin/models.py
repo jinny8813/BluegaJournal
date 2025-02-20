@@ -1,111 +1,181 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import Permission
+from apps.member.models import Member
 from django.utils import timezone
-from .managers import AdminManager
 
-class Admin(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_('email address'), unique=True)
-    username = models.CharField(_('username'), max_length=150, unique=True)
-    name = models.CharField(_('name'), max_length=150)
-    is_active = models.BooleanField(_('active'), default=True)
-    is_staff = models.BooleanField(_('staff status'), default=True)
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-    last_login = models.DateTimeField(_('last login'), null=True)
-    avatar = models.ImageField(_('avatar'), upload_to='admin/avatars/', null=True, blank=True)
-    groups = models.ManyToManyField(
-        'auth.Group',
-        verbose_name=_('groups'),
-        blank=True,
-        related_name='admin_set'  # 添加這個
+class AdminRole(models.Model):
+    """管理員角色"""
+    ROLE_CHOICES = (
+        ('superadmin', '超級管理員'),
+        ('level_1', '一級管理員'),
+        ('level_2', '二級管理員'),
+        ('level_3', '三級管理員'),
     )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        verbose_name=_('user permissions'),
-        blank=True,
-        related_name='admin_set'  # 添加這個
+    
+    name = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        unique=True,
+        verbose_name='角色名稱'
     )
-
-    objects = AdminManager()
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'name']
-
-    class Meta:
-        verbose_name = _('admin')
-        verbose_name_plural = _('admins')
-
-    def __str__(self):
-        return self.email
-    
-    def get_full_name(self):
-        """
-        返回管理員全名
-        """
-        return self.name
-
-    def get_short_name(self):
-        """
-        返回管理員簡稱
-        """
-        return self.username
-
-    def has_module_perms(self, app_label):
-        """
-        判斷是否有某個應用的權限
-        """
-        return self.is_active and (self.is_staff or self.is_superuser)
-
-    def has_perm(self, perm, obj=None):
-        """
-        判斷是否有某個特定權限
-        """
-        return self.is_active and (self.is_staff or self.is_superuser)
-    
-    @property
-    def login_count(self):
-        """
-        獲取登入次數
-        """
-        return self.login_logs.filter(status='success').count()
-
-    @property
-    def last_login_ip(self):
-        """
-        獲取最後登入IP
-        """
-        last_log = self.login_logs.filter(status='success').first()
-        return last_log.ip_address if last_log else None
-
-class AdminLoginLog(models.Model):
-    admin = models.ForeignKey(Admin, on_delete=models.CASCADE, related_name='login_logs')
-    ip_address = models.GenericIPAddressField()
-    user_agent = models.TextField()
-    login_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20)  # success, failed
+    description = models.TextField(
+        blank=True,
+        verbose_name='角色描述'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='創建時間'
+    )
     
     class Meta:
-        ordering = ['-login_at']
-
+        verbose_name = '管理員角色'
+        verbose_name_plural = '管理員角色'
+        
     def __str__(self):
-        return f"{self.admin.email} - {self.login_at}"
+        return self.get_name_display()
 
-    @property
-    def masked_ip(self):
-        """
-        返回遮罩後的IP地址
-        """
-        from .utils import mask_ip
-        return mask_ip(self.ip_address)
+class AdminPermission(models.Model):
+    """管理員權限項目"""
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        verbose_name='權限名稱'
+    )
+    codename = models.CharField(
+        max_length=100,
+        unique=True,
+        verbose_name='權限代碼'
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='權限描述'
+    )
+    module = models.CharField(
+        max_length=50,
+        verbose_name='所屬模組'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='啟用狀態'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='創建時間'
+    )
+    
+    class Meta:
+        verbose_name = '權限項目'
+        verbose_name_plural = '權限項目'
+        ordering = ['module', 'codename']
+        
+    def __str__(self):
+        return f"{self.module} - {self.name}"
 
-    @property
-    def browser_info(self):
-        """
-        返回簡化的瀏覽器信息
-        """
-        import re
-        if self.user_agent:
-            browser = re.search(r'(Chrome|Firefox|Safari|Edge|MSIE|Opera)[/\s]([0-9.]+)', self.user_agent)
-            if browser:
-                return f"{browser.group(1)} {browser.group(2)}"
-        return "Unknown Browser"
+class RolePermission(models.Model):
+    """角色權限關聯"""
+    role = models.ForeignKey(
+        AdminRole,
+        on_delete=models.CASCADE,
+        related_name='role_permissions',
+        verbose_name='角色'
+    )
+    permission = models.ForeignKey(
+        AdminPermission,
+        on_delete=models.CASCADE,
+        verbose_name='權限'
+    )
+    
+    class Meta:
+        verbose_name = '角色權限'
+        verbose_name_plural = '角色權限'
+        unique_together = ('role', 'permission')
+
+class AdminUser(Member):
+    """管理員用戶"""
+    role = models.ForeignKey(
+        AdminRole,
+        on_delete=models.PROTECT,
+        related_name='admin_users',
+        verbose_name='管理員角色'
+    )
+    department = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name='部門'
+    )
+    position = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name='職位'
+    )
+    note = models.TextField(
+        blank=True,
+        verbose_name='備註'
+    )
+    
+    class Meta:
+        verbose_name = '管理員'
+        verbose_name_plural = '管理員'
+        
+    def __str__(self):
+        return f"{self.email} ({self.role.get_name_display()})"
+    
+    def has_permission(self, permission_codename):
+        """檢查是否有特定權限"""
+        if self.role.name == 'superadmin':
+            return True
+        return RolePermission.objects.filter(
+            role=self.role,
+            permission__codename=permission_codename,
+            permission__is_active=True
+        ).exists()
+
+class AdminLog(models.Model):
+    """管理員操作記錄"""
+    ACTION_CHOICES = (
+        ('CREATE', '創建'),
+        ('UPDATE', '更新'),
+        ('DELETE', '刪除'),
+        ('LOGIN', '登入'),
+        ('LOGOUT', '登出'),
+        ('OTHER', '其他'),
+    )
+    
+    admin = models.ForeignKey(
+        AdminUser,
+        on_delete=models.CASCADE,
+        related_name='logs',
+        verbose_name='管理員'
+    )
+    action = models.CharField(
+        max_length=10,
+        choices=ACTION_CHOICES,
+        verbose_name='操作類型'
+    )
+    target_model = models.CharField(
+        max_length=50,
+        verbose_name='目標模型'
+    )
+    target_id = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name='目標ID'
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='操作描述'
+    )
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        verbose_name='IP地址'
+    )
+    created_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name='操作時間'
+    )
+    
+    class Meta:
+        verbose_name = '管理記錄'
+        verbose_name_plural = '管理記錄'
+        ordering = ['-created_at']
