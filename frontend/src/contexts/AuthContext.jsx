@@ -35,11 +35,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.login(credentials);
 
-      if (response.tokens.access) {
-        localStorage.setItem("token", response.tokens.access);
+      if (response.data.access) {
+        localStorage.setItem("token", response.data.access);
         axiosInstance.defaults.headers.common[
           "Authorization"
-        ] = `Bearer ${response.tokens.access}`;
+        ] = `Bearer ${response.data.access}`;
 
         try {
           const userProfile = await authService.getProfile();

@@ -23,6 +23,7 @@ const apiConfig = {
 // 服務路徑配置
 const servicePaths = {
   home: "/api/",
+  csrf: "/api/v1/member/csrf-cookie/",
   auth: {
     base: "/api/v1/member",
     login: "/api/v1/member/login/",
@@ -47,6 +48,21 @@ const servicePaths = {
   },
 };
 
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 // 創建 axios 實例
 const axiosInstance = axios.create({
   baseURL: apiConfig[env].baseURL,
@@ -60,7 +76,10 @@ const axiosInstance = axios.create({
 // 請求攔截器
 axiosInstance.interceptors.request.use(
   (config) => {
-    // 這裡可以添加 token 等認證信息
+    const csrfToken = getCookie("csrftoken");
+    if (csrfToken) {
+      config.headers["X-CSRFToken"] = csrfToken;
+    }
     return config;
   },
   (error) => {
