@@ -69,10 +69,9 @@ const MemberProfile = () => {
       // 發送更新請求
       const response = await authService.updateProfile(formDataToSend);
 
-      if (response.code === 200) {
-        alert("更新成功");
+      if (response) {
         setIsEditing(false);
-        fetchProfile(); // 重新取得最新資料
+        fetchProfile();
       }
     } catch (err) {
       alert("更新失敗");
