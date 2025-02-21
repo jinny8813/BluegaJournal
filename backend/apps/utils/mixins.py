@@ -2,26 +2,37 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework.renderers import JSONRenderer
 
 class ResponseMixin:
     """統一回應格式的 Mixin"""
-    @staticmethod
-    def success_response(data=None, msg="success", status_code=status.HTTP_200_OK):
-        return Response({
+    renderer_classes = [JSONRenderer]
+    
+    def success_response(self, data=None, msg="success", status_code=status.HTTP_200_OK):
+        response = Response({
             "code": status_code,
             "msg": msg,
             "data": data
         }, status=status_code)
+        if not hasattr(response, 'accepted_renderer'):
+            response.accepted_renderer = JSONRenderer()
+            response.accepted_media_type = "application/json"
+            response.renderer_context = {}
+        return response
 
-    @staticmethod
-    def error_response(msg="error", errors=None, status_code=status.HTTP_400_BAD_REQUEST):
+    def error_response(self, msg="error", errors=None, status_code=status.HTTP_400_BAD_REQUEST):
         response_data = {
             "code": status_code,
             "msg": msg,
         }
         if errors:
             response_data["errors"] = errors
-        return Response(response_data, status=status_code)
+        response = Response(response_data, status=status_code)
+        if not hasattr(response, 'accepted_renderer'):
+            response.accepted_renderer = JSONRenderer()
+            response.accepted_media_type = "application/json"
+            response.renderer_context = {}
+        return response
 
 class JWTAuthenticationMixin:
     """JWT 認證 Mixin"""
