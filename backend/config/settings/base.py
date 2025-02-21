@@ -217,3 +217,18 @@ LOGGING = {
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # 開發環境使用，生產環境要改為具體的域名
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF 設定
+CSRF_COOKIE_SAMESITE = 'Lax'  # 或 'None'
+CSRF_COOKIE_SECURE = False  # 開發環境設 False，生產環境設 True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Session 設定
+SESSION_COOKIE_SAMESITE = 'Lax'  # 或 'None'
+SESSION_COOKIE_SECURE = False  # 開發環境設 False，生產環境設 True
+
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']

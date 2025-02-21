@@ -5,7 +5,8 @@ from .views import (
     MemberLoginView,
     MemberLogoutView,
     MemberProfileView,
-    ChangePasswordView
+    ChangePasswordView,
+    GetCSRFToken
 )
 
 app_name = 'member'
@@ -17,4 +18,5 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('profile/', MemberProfileView.as_view(), name='profile'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
+    path('csrf-cookie/', GetCSRFToken.as_view(), name='csrf_cookie'),
 ]

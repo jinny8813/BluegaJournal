@@ -8,6 +8,10 @@ from .serializers import (
     ChangePasswordSerializer
 )
 from apps.utils.mixins import APIViewMixin, ResponseMixin
+from rest_framework.permissions import IsAuthenticated
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.decorators import method_decorator
+from django.http import JsonResponse
 
 class MemberRegisterView(ResponseMixin, APIView):
     """會員註冊"""
@@ -43,9 +47,11 @@ class MemberLoginView(ResponseMixin, TokenObtainPairView):
                 msg="登入失敗",
                 errors=str(e)
             )
-
+        
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class MemberProfileView(APIViewMixin, APIView):
     """會員資料查看與修改"""
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         serializer = MemberProfileSerializer(request.user.profile)
         return self.success_response(
@@ -70,8 +76,10 @@ class MemberProfileView(APIViewMixin, APIView):
             errors=serializer.errors
         )
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class ChangePasswordView(APIViewMixin, APIView):
     """修改密碼"""
+    permission_classes = [IsAuthenticated]
     def put(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
         if not serializer.is_valid():
@@ -90,6 +98,7 @@ class ChangePasswordView(APIViewMixin, APIView):
 
 class MemberLogoutView(APIViewMixin, APIView):
     """會員登出"""
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         try:
             refresh_token = request.data.get("refresh_token")
@@ -104,3 +113,8 @@ class MemberLogoutView(APIViewMixin, APIView):
                 msg="登出失敗",
                 errors=str(e)
             )
+        
+@method_decorator(ensure_csrf_cookie, name='dispatch')
+class GetCSRFToken(APIView):
+    def get(self, request):
+        return JsonResponse({'detail': 'CSRF cookie set'})
