@@ -33,7 +33,24 @@ export const authService = {
   getProfile: async () => {
     try {
       const response = await axiosInstance.get(servicePaths.auth.profile);
-      return response;
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  updateProfile: async (profileData) => {
+    try {
+      const response = await axiosInstance.patch(
+        servicePaths.auth.profile,
+        profileData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
     } catch (error) {
       throw error;
     }

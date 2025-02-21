@@ -8,8 +8,7 @@ const AuthPage = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    confirmPassword: "",
-    name: "",
+    password2: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -33,14 +32,13 @@ const AuthPage = () => {
         navigate(from, { replace: true });
       } else {
         // 註冊
-        if (formData.password !== formData.confirmPassword) {
+        if (formData.password !== formData.password2) {
           throw new Error("密碼不匹配");
         }
         const response = await authService.register({
           email: formData.email,
           password: formData.password,
-          confirm_password: formData.confirmPassword,
-          name: formData.name,
+          password2: formData.password2,
         });
         console.log("Registration successful:", response);
         // 註冊成功後自動登入
@@ -61,8 +59,6 @@ const AuthPage = () => {
           errorMessage = `電子郵件: ${data.email[0]}`;
         } else if (data.password) {
           errorMessage = `密碼: ${data.password[0]}`;
-        } else if (data.name) {
-          errorMessage = `姓名: ${data.name[0]}`;
         }
       } else if (error.message) {
         errorMessage = error.message;
@@ -113,22 +109,6 @@ const AuthPage = () => {
             />
           </div>
 
-          {!isLogin && (
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1">
-                姓名
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-          )}
-
           <div>
             <label className="block text-gray-700 text-sm font-medium mb-1">
               密碼
@@ -150,8 +130,8 @@ const AuthPage = () => {
               </label>
               <input
                 type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
+                name="password2"
+                value={formData.password2}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required

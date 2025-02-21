@@ -143,28 +143,46 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 APPEND_SLASH = False
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'
+    ],
+    # 添加默認渲染器設置
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    # 添加默認解析器設置
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ],
+    # 添加認證類
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
     ],
 }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
+    'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'SIGNING_KEY': SECRET_KEY,  # 確保使用相同的 SECRET_KEY
-    'VERIFYING_KEY': None,
-    'ALGORITHM': 'HS256',  # 添加這行
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),  # 添加這行
-    'TOKEN_TYPE_CLAIM': 'token_type',  # 添加這行
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    # 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    # 'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    # 'ROTATE_REFRESH_TOKENS': True,
+    # 'BLACKLIST_AFTER_ROTATION': True,
+    # 'AUTH_HEADER_TYPES': ('Bearer',),
+    # 'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    # 'USER_ID_FIELD': 'id',
+    # 'USER_ID_CLAIM': 'user_id',
+    # 'SIGNING_KEY': SECRET_KEY,  # 確保使用相同的 SECRET_KEY
+    # 'VERIFYING_KEY': None,
+    # 'ALGORITHM': 'HS256',  # 添加這行
+    # 'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),  # 添加這行
+    # 'TOKEN_TYPE_CLAIM': 'token_type',  # 添加這行
 }
 
 LOGGING = {
@@ -199,3 +217,18 @@ LOGGING = {
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # 開發環境使用，生產環境要改為具體的域名
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF 設定
+CSRF_COOKIE_SAMESITE = 'Lax'  # 或 'None'
+CSRF_COOKIE_SECURE = False  # 開發環境設 False，生產環境設 True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Session 設定
+SESSION_COOKIE_SAMESITE = 'Lax'  # 或 'None'
+SESSION_COOKIE_SECURE = False  # 開發環境設 False，生產環境設 True
+
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
